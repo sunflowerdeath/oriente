@@ -1,26 +1,24 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 
 import Popup from '../../core/Popup'
 import { Layer } from '../../core/layers'
 
 const PopupExample = () => {
     const [active, setActive] = useState(false)
-    const popup = (ref) => (
-        <Layer>
-            <div
-                ref={ref}
-                style={{
-                    width: 200,
-                    height: 200,
-                    background: 'darkslateblue',
-                    position: 'absolute',
-                    willChange: 'transform'
-                }}
-            >
-                Popup
-            </div>
-        </Layer>
-    )
+    const [n, setN] = useState(0)
+    const popup = useCallback((ref) => (
+        <div
+            ref={ref}
+            style={{
+                width: 200,
+                height: 200,
+                background: 'cornflowerblue',
+                willChange: 'transform'
+            }}
+        >
+            Popup <button onClick={() => setN((n) => n + 1)}>{n}</button>
+        </div>
+    ))
     return (
         <Popup isActive={active} popup={popup}>
             <div

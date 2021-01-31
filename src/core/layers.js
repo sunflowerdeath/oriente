@@ -24,7 +24,7 @@ const LayerView = React.memo(({ id, children, type }) => (
     </ParentLayerContext.Provider>
 ))
 
-const Layer = memo((props) => {
+const Layer = React.memo((props) => {
     let parentId = useContext(ParentLayerContext)
     let stack = useContext(StackContext)
     let idRef = useRef(null)
@@ -37,16 +37,21 @@ const Layer = memo((props) => {
             stack.updateLayer(idRef.current, props)
         } else {
             stack.removeLayer(idRef.current)
+            idRef.current = null
         }
+    }, [props])
+    useLayoutEffect(() => {
         return () => {
             if (idRef.current !== null) {
                 stack.removeLayer(idRef.current)
                 idRef.current = null
             }
         }
-    }, [props])
+    }, [])
     return <></>
 })
+
+Layer.displayName = 'Layer'
 
 Layer.propTypes = {
     /** Controls the visibility of the layer. */

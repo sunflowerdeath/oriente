@@ -1,8 +1,8 @@
 import React, { useRef, useLayoutEffect, useState, useMemo } from 'react'
 import PropTypes from 'prop-types'
 
-import cloneElementWithRef from '../utils/cloneElementWithRef'
 import { Layer } from './layers'
+import cloneElementWithRef from '../utils/cloneElementWithRef'
 import PopupController from './PopupController'
 
 const Popup = (props) => {
@@ -50,7 +50,7 @@ const Popup = (props) => {
             {typeof children === 'function'
                 ? children(setTargetElem)
                 : cloneElementWithRef(children, { ref: setTargetElem })}
-            {isActive && memoizedPopup}
+            <Layer isActive={isActive}>{memoizedPopup}</Layer>
         </>
     )
 }

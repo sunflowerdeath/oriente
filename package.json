@@ -6,17 +6,31 @@
   "scripts": {
     "test": "karma start",
     "build": "gnoll lib",
-    "docs": "gnoll start --config docs.webpack.config.js --no-html"
+    "docs": "gnoll start --config docs.webpack.config.js --no-html",
+    "lint": "eslint ./src"
   },
   "author": "sunflowerdeath",
   "license": "Unlicense",
   "dependencies": {
     "@reach/observe-rect": "^1.2.0",
     "@reach/rect": "^0.11.2",
+    "@react-spring/animated": "^9.0.0-rc.3",
+    "animated": "^0.2.2",
     "prop-types": "^15.7.2",
+    "react-spring": "^8.0.27",
+    "shallow-equal": "^1.2.1",
     "taply": "^0.2.4"
   },
   "devDependencies": {
+    "@babel/preset-flow": "^7.12.1",
+    "@babel/preset-typescript": "^7.12.7",
+    "@types/react": "^17.0.0",
+    "@typescript-eslint/parser": "^4.13.0",
+    "eslint": "^7.17.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-react": "^7.22.0",
+    "flow-bin": "^0.143.1",
     "gnoll": "^0.7.0-alpha.5",
     "karma": "^5.2.3",
     "karma-chrome-launcher": "^3.1.0",
@@ -25,10 +39,12 @@
     "minibook": "^0.7.4",
     "minimark-loader": "^0.7.2",
     "mocha": "^8.2.0",
+    "prettier": "^2.2.1",
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
     "react-draggable": "^4.4.3",
-    "react-test-renderer": "^17.0.1"
+    "react-test-renderer": "^17.0.1",
+    "typescript": "^4.1.3"
   },
   "peerDependecies": {
     "react": "^16.8.0",
