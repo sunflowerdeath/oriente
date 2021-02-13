@@ -22,7 +22,7 @@ module.exports = merge(baseConfig, {
                 ]
             },
             {
-                test: /\.ts$/,
+                test: /\.tsx?$/,
                 use: [
                     { loader: 'babel-loader', options: babelConfig }
                 ]
@@ -33,7 +33,7 @@ module.exports = merge(baseConfig, {
         alias: {
             '@': path.resolve(__dirname, 'src')
         },
-        extensions: [...baseConfig.resolve.extensions, '.ts']
+        extensions: [...baseConfig.resolve.extensions, '.ts', '.tsx']
     },
     devServer: {
         port: 1337,
