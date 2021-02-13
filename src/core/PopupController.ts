@@ -2,6 +2,31 @@ import observeRect from '@reach/observe-rect'
 
 import observeViewport, { measureViewport } from '../utils/observeViewport'
 
+export interface PopupPlacement {
+    side: 'left' | 'top' | 'right' | 'bottom'
+    align: 'start' | 'center' | 'end'
+    offset: number
+    flip: boolean
+    constrain: boolean
+    padding: number
+}
+
+export interface PopupOptions {
+    target: HTMLElement
+    popup: HTMLElement
+    placement: PopupPlacement
+    onFlip?: (vert: boolean, horiz: boolean) => void
+}
+
+const defaultPlacement: PopupPlacement = {
+    side: 'bottom',
+    align: 'start',
+    offset: 0,
+    flip: true,
+    constrain: false,
+    padding: 0
+}
+
 const calcPosition = (measurements, config) => {
     const { popup, target, bounds } = measurements
     const { side, align, offset } = config
@@ -73,7 +98,7 @@ const fitsViewport = (pos, measurements, padding) => {
     )
 }
 
-// TODO
+/* TODO
 const constrainPosition = (position, measurements, padding) => {
     const { bounds, popup } = measurements
     const res = { ...position }
@@ -87,6 +112,7 @@ const constrainPosition = (position, measurements, padding) => {
     }
     return res
 }
+*/
 
 const getPopupPosition = (measurements, placement) => {
     let { viewport, popupRect, targetRect } = measurements
@@ -109,17 +135,8 @@ const getViewportBounds = (viewport) => ({
     bottom: viewport.scrollTop + viewport.height
 })
 
-const defaultPlacement = {
-    side: 'bottom',
-    align: 'start',
-    offset: 0,
-    flip: true,
-    constrain: false,
-    padding: 0
-}
-
 class PopupController {
-    constructor(options) {
+    constructor(options: PopupOptions) {
         this.disableUpdate = true
         this.viewport = measureViewport()
         this.viewportObserver = observeViewport((viewport) => {
@@ -130,6 +147,11 @@ class PopupController {
         this.placement = { ...defaultPlacement }
         this.setOptions(options)
     }
+
+    disableUpdate: boolean
+    popup: HTMLElement
+    target: HTMLElement
+    placement: PopupPlacement
 
     unobserve() {
         this.viewportObserver.unobserve()
