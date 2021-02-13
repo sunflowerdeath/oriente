@@ -6,6 +6,12 @@ export interface TapState {
     isPressed: boolean
 }
 
+export const initialTapState = {
+    isHovered: false,
+    isFocused: false,
+    isPressed: false
+}
+
 interface FloralStyles {
     [key: string]: React.CSSProperties
 }

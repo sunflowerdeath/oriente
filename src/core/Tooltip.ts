@@ -4,46 +4,107 @@ import React, {
     useState,
     cloneElement,
     useEffect,
-    useCallback
+    useCallback,
+    forwardRef
 } from 'react'
 import { useStyles } from 'floral'
 import Taply from 'taply/lib/new'
 import { useSpring, animated } from 'react-spring'
 
-import Animated from 'animated/lib/targets/react-dom'
-
 import mergeRefs from '../utils/mergeRefs'
 import useControlledState from '../utils/useControlledState'
 
-import { FloralProps, TapState, PopupPlacement } from '../types'
+import {
+    FloralProps,
+    TapState,
+    initialTapState,
+    PopupPlacement
+} from '../types'
 
 import { Layer } from './layers'
 import Popup from './Popup'
 
 const useAnimatedValue = (to: any) => {
-    let value = useMemo(() => new Animated.Value(to), [])
     let [isRest, setIsRest] = useState(false)
+    let [props, set] = useSpring(() => ({
+        value: to,
+        onRest: () => setIsRest(true)
+    }))
     useEffect(() => {
         setIsRest(false)
-        value.stopAnimation()
-        Animated.spring(value, { toValue: to }).start(() => {
-            setIsRest(true)
-        })
+        set({ value: to })
     }, [to])
-    return [value.current, isRest]
+    return [props.value, isRest]
 }
 
-// TODO animations, showOnTap, showOnFocus, show on hover tooltip
+interface AppearAnimationProps extends React.HTMLProps<HTMLDivElement> {
+    openValue: any
+    children: React.ReactNode
+}
+
+type AppearAnimation = (props: AppearAnimationProps) => React.Node
+
+const OpacityAnimation = forwardRef(
+    (
+        { children, openValue, style, ...restProps }: AppearAnimationProps,
+        ref
+    ) => (
+        <animated.div
+            ref={ref}
+            style={{ ...style, opacity: openValue }}
+            {...restProps}
+        >
+            {children}
+        </animated.div>
+    )
+)
+
+interface SlideAnimationProps extends AppearAnimationProps {
+    side?: 'top' | 'right' | 'left' | 'bottom'
+    distance?: number
+}
+
+const SlideAnimation = forwardRef(
+    (
+        {
+            children,
+            openValue,
+            side = 'bottom',
+            distance = 10,
+            style,
+            ...restProps
+        }: AppearAnimationProps,
+        ref
+    ) => {
+        let axis = side === 'left' || side === 'right' ? 'X' : 'Y'
+        let dir = side === 'left' || side === 'bottom' ? 1 : -1
+        let resStyle = {
+            ...style,
+            opacity: openValue,
+            transform: openValue
+                .interpolate([0, 1], [distance * dir, 0])
+                .interpolate((v) => `translate${axis}(${v}px)`)
+        }
+        return (
+            <animated.div {...restProps} ref={ref} style={resStyle}>
+                {children}
+            </animated.div>
+        )
+    }
+)
+
+// TODO animations, arrow
 
 interface TooltipProps extends FloralProps {
     placement: PopupPlacement
     showOnTap: boolean
     showOnHover: boolean
     showOnFocus: boolean
-    showTimeout: number
-    hideTimeout: number
+    showDelay: number
+    hideDelay: number
     tooltip: React.ReactNode
     children: React.ReactElement<any>
+    Animation: AppearAnimation
 }
 
 const Tooltip = (props: TooltipProps) => {
@@ -52,67 +113,69 @@ const Tooltip = (props: TooltipProps) => {
         showOnTap,
         showOnHover,
         showOnFocus,
-        showTimeout,
-        hideTimeout,
+        showDelay,
+        hideDelay,
         tooltip,
-        children
+        children,
+        Animation
     } = props
+
     let [isOpen, setIsOpen] = useControlledState(props, 'isOpen', false)
     let styles = useStyles(null, [props, { isOpen }])
-    let closeTimerRef = useRef()
-    let [tapState, setTapState] = useState({})
-    let [tooltipTapState, setTooltipTapState] = useState({})
+    let [tapState, setTapState] = useState<TapState>(initialTapState)
+    let [tooltipTapState, setTooltipTapState] = useState<TapState>(
+        initialTapState
+    )
     let state = useRef('rest')
-    let timer = useRef()
+    let timer = useRef<number>()
     let [openValue, isRest] = useAnimatedValue(isOpen ? 1 : 0)
+
+    let openWithDelay = useCallback(() => {
+        if (state.current === 'opening') return
+        state.current = 'opening'
+        clearTimeout(timer.current)
+        timer.current = window.setTimeout(
+            () => setIsOpen(true),
+            tooltipTapState.isHovered ? 0 : showDelay
+        )
+    }, [showDelay])
+
+    let closeWithDelay = useCallback(() => {
+        if (state.current === 'closing') return
+        state.current = 'closing'
+        clearTimeout(timer.current)
+        timer.current = window.setTimeout(() => setIsOpen(false), hideDelay)
+    }, [hideDelay])
+
     useEffect(() => {
-        console.log(tapState, tooltipTapState)
         let openByFocus = showOnFocus && tapState.isFocused
         let openByHover =
             showOnHover && (tapState.isHovered || tooltipTapState.isHovered)
         let nextIsOpen = openByFocus || openByHover
         if (nextIsOpen !== isOpen) {
-            if (nextIsOpen) {
-                if (state.current === 'opening') return
-                state.current = 'opening'
-                clearTimeout(timer.current)
-                timer.current = setTimeout(
-                    () => {
-                        state.current = 'rest'
-                        console.log('open')
-                        setIsOpen(true)
-                    },
-                    tooltipTapState.isHovered ? 0 : showTimeout
-                )
-            } else {
-                if (state.current === 'closing') return
-                clearTimeout(timer.current)
-                timer.current = setTimeout(() => {
-                    state.current = 'rest'
-                    setIsOpen(false)
-                    console.log('close')
-                }, hideTimeout)
-            }
+            if (nextIsOpen) openWithDelay()
+            else closeWithDelay()
         }
-        return () => clearTimeout(timer.current)
     }, [tapState, tooltipTapState])
 
-    let onTap = () => {
-        if (showOnTap) setIsOpen((val) => !val)
-    }
+    useEffect(() => () => clearTimeout(timer.current), [])
 
-    let popup = useCallback((ref) => (
-        <Taply onChangeTapState={setTooltipTapState}>
-            <div
-                ref={ref}
-                style={{
-                    ...styles.root
-                }}
-            >
-                {tooltip}
-            </div>
-        </Taply>
-    ))
+    let onTap = useCallback(() => {
+        if (showOnTap) setIsOpen((val) => !val)
+    }, [])
+
+    let popup = useCallback(
+        (ref) => (
+            <Taply onChangeTapState={setTooltipTapState}>
+                <div ref={ref}>
+                    <Animation openValue={openValue} style={styles.root}>
+                        {tooltip}
+                    </Animation>
+                </div>
+            </Taply>
+        ),
+        [tooltip]
+    )
 
     let target = (popupRef) =>
         typeof children === 'function' ? (
@@ -127,7 +190,6 @@ const Tooltip = (props: TooltipProps) => {
             </Taply>
         )
 
-    console.log('render', isOpen, isRest)
     return (
         <Popup isActive={isOpen || !isRest} placement={placement} popup={popup}>
             {target}
@@ -136,8 +198,8 @@ const Tooltip = (props: TooltipProps) => {
 }
 
 Tooltip.defaultProps = {
-    showTimeout: 250,
-    hideTimeout: 0,
+    showDelay: 150,
+    hideDelay: 0,
     showOnHover: true,
     showOnFocus: true,
     showOnTap: false,
@@ -145,7 +207,8 @@ Tooltip.defaultProps = {
         side: 'top',
         align: 'center',
         offset: 5
-    }
+    },
+    Animation: SlideAnimation
 }
 
 export default Tooltip

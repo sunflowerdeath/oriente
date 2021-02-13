@@ -6,11 +6,11 @@ import cloneElementWithRef from '../utils/cloneElementWithRef'
 import PopupController from './PopupController'
 
 const Popup = (props) => {
-    const { children, popup, isActive, placement } = props
+    let { children, popup, isActive, placement } = props
 
-    const [targetElem, setTargetElem] = useState()
-    const [popupElem, setPopupElem] = useState()
-    const instanceRef = useRef()
+    let [targetElem, setTargetElem] = useState()
+    let [popupElem, setPopupElem] = useState()
+    let controllerRef = useRef()
 
     useLayoutEffect(() => {
         if (isActive && targetElem && popupElem) {
@@ -19,38 +19,39 @@ const Popup = (props) => {
                 popup: popupElem,
                 placement
             }
-            if (!instanceRef.current) {
-                instanceRef.current = new PopupController(options)
+            if (!controllerRef.current) {
+                controllerRef.current = new PopupController(options)
             } else {
-                instanceRef.current.setOptions(options)
+                controllerRef.current.setOptions(options)
             }
         } else {
-            if (instanceRef.current) {
-                instanceRef.current.unobserve()
-                instanceRef.current = undefined
+            if (controllerRef.current) {
+                controllerRef.current.unobserve()
+                controllerRef.current = undefined
             }
         }
         return () => {
-            if (instanceRef.current) {
-                instanceRef.current.unobserve()
-                instanceRef.current = undefined
+            if (controllerRef.current) {
+                controllerRef.current.unobserve()
+                controllerRef.current = undefined
             }
         }
     }, [targetElem, popupElem, isActive, placement])
 
-    const memoizedPopup = useMemo(
+    let memoizedPopup = useMemo(
         () =>
             typeof popup === 'function'
                 ? popup(setPopupElem)
                 : cloneElementWithRef(popup, { ref: setPopupElem }),
         [popup]
     )
+
     return (
         <>
+            <Layer isActive={isActive}>{memoizedPopup}</Layer>
             {typeof children === 'function'
                 ? children(setTargetElem)
                 : cloneElementWithRef(children, { ref: setTargetElem })}
-            <Layer isActive={isActive}>{memoizedPopup}</Layer>
         </>
     )
 }
