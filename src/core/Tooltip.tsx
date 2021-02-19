@@ -186,6 +186,12 @@ const Tooltip = (props: TooltipProps) => {
     let timer = useRef<number>()
     let [openValue, isRest] = useAnimatedValue(isOpen ? 1 : 0)
 
+    /*
+    let isVert = placement.side === 'top' || placement.side === 'bottom'
+    let isFlipped = isVert ? flip.vert : flip.horiz
+    let arrowSide = isFlipped ? placement.side : oppositeSides[placement.side]
+    */
+
     let openWithDelay = useCallback(() => {
         if (state.current === 'open' || state.current === 'willOpen') return
         clearTimeout(timer.current)
