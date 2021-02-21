@@ -18,5 +18,8 @@
         "prettier/prettier": "error",
         "no-unused-vars": "warn",
         "react/prop-types": "warn"
+    },
+    "env": {
+        "browser": true
     }
 }

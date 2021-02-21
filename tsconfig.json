@@ -13,7 +13,10 @@
     "moduleResolution": "node",
     "allowJs": true,
     "lib": [
-      "DOM"
+      "es6",
+      "es7",
+      "dom",
+      "esnext"
     ],
   },
   "include": [
