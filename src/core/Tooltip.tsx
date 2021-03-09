@@ -7,7 +7,7 @@ import React, {
     forwardRef
 } from 'react'
 import { useStyles } from 'floral'
-import Taply from 'taply/lib/new'
+import Taply from 'taply'
 import { useSpring, animated } from 'react-spring'
 
 import mergeRefs from '../utils/mergeRefs'

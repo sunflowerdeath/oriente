@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import Popup from './Popup'
 
 const FocusTrap = ({ children }: { children: React.ReactNode }) => (
     <>{children}</>
 )
+
+interface DropdownProps {}
 
 interface DropdownRenderProps {
     ref: any
@@ -34,6 +36,11 @@ const Dropdown = (props: DropdownProps) => {
 }
 
 export default Dropdown
+
+// focus on open
+// close on blur
+
+interface DropdownMenuProps extends DropdownProps {}
 
 const DropdownMenu = (props: DropdownMenuProps) => {
     let menuRef = useRef()

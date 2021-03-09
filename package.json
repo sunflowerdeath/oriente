@@ -14,12 +14,10 @@
   "dependencies": {
     "@reach/observe-rect": "^1.2.0",
     "@reach/rect": "^0.11.2",
-    "@react-spring/animated": "^9.0.0-rc.3",
-    "animated": "^0.2.2",
     "prop-types": "^15.7.2",
     "react-spring": "^8.0.27",
     "shallow-equal": "^1.2.1",
-    "taply": "^0.2.4"
+    "taply": "^0.3.1"
   },
   "devDependencies": {
     "@babel/preset-flow": "^7.12.1",

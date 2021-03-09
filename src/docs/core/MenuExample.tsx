@@ -4,10 +4,10 @@ import { extendComponentStyles } from 'floral'
 
 import { Menu, MenuItem } from '../../core/Menu'
 
-const exampleItemStyles = ({ isDisabled }, { tapState, isSelected }) => ({
+const exampleItemStyles = ({ isDisabled }, { isSelected }) => ({
     root: {
         color: isDisabled ? '#666' : 'white',
-        background: tapState.isHovered ? 'rgba(255,255,255,.3)' : 'transparent',
+        background: isSelected ? 'rgba(255,255,255,.3)' : 'transparent',
         padding: 4
     }
 })

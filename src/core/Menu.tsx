@@ -1,105 +1,126 @@
-import React, {
-    useState,
-    createContext,
-    useContext,
-    useRef,
-    useCallback
-} from 'react'
+import React, { useState, createContext, useContext, useCallback } from 'react'
 // @ts-ignore
-import Taply from 'taply/lib/new'
+import Taply from 'taply'
 // @ts-ignore
 import { useStyles } from 'floral'
 
-import {
-    useDescendant,
-    useDescendants,
-    DescendantContext
-} from '../utils/descendants'
+import { useDescendant, useDescendants } from '../utils/descendants'
 import { initialTapState, TapState } from '../types'
 
 interface MenuContextProps {
-    descendants: DescendantContext<HTMLElement>
+    descendants: any
     selectedIndex: number
+    setSelectedIndex: (index: number) => void
 }
 
 const MenuContext = createContext<MenuContextProps | undefined>(undefined)
 
 interface MenuItemProps {
     isDisabled?: boolean
-    isFocusable?: boolean
     onSelect?: () => void
     children: React.ReactNode
 }
 
 const MenuItem = (props: MenuItemProps) => {
-    let { isDisabled, isFocusable, onSelect, children } = props
-    let ref = useRef<HTMLElement>()
-    let [tapState, setTapState] = useState(initialTapState)
-    let { descendants, selectedIndex } = useContext(MenuContext)!
-    let index = useDescendant({
-        context: descendants,
-        elem: ref.current,
-        isDisabled
-    })
-    let isSelected = selectedIndex === index
-    let s = useStyles(undefined, [props, { isSelected, tapState }])
+    const { isDisabled, onSelect, children } = props
+    const { descendants, selectedIndex, setSelectedIndex } = useContext(
+        MenuContext
+    )!
+    const { ref, index } = useDescendant(descendants, { isDisabled })
+    const isSelected = index !== -1 && index === selectedIndex
+    const [tapState, setTapState] = useState(initialTapState)
+    const onChangeTapState = useCallback(
+        (tapState) => {
+            setTapState(tapState)
+            if (tapState.isHovered) setSelectedIndex(index)
+        },
+        [index]
+    )
+    const styles = useStyles(undefined, [props, { isSelected }])
+
     return (
         <Taply
-            onChangeTapState={setTapState}
+            onChangeTapState={onChangeTapState}
+            tapState={tapState}
             onTap={onSelect}
             isDisabled={isDisabled}
-            isFocusable={isFocusable}
+            isFocusable={false}
         >
-            <div style={s.root} ref={ref}>
+            <div style={styles.root} ref={ref}>
                 {children}
             </div>
         </Taply>
     )
 }
 
-MenuItem.defaultProps = {
-    isFocusable: true
-}
-
 interface MenuProps {
     isActive: boolean
     children: React.ReactNode
+    onFocus?: () => void
+    onBlur?: () => void
+    onSelect?: (value: string) => void
 }
 
-const getNextIndex = (currentIndex: number, length: number) =>
-    currentIndex < length ? currentIndex + 1 : 0
+const getNextIndex = (index: number, length: number) =>
+    index < length - 1 ? index + 1 : 0
 
-const getPrevIndex = (currentIndex: number, length: number) =>
-    currentIndex > 0 ? currentIndex - 1 : length - 1
+const getPrevIndex = (index: number, length: number) =>
+    index > 0 ? index - 1 : length - 1
+
+const menuStyles = {
+    root: { outline: 'none' }
+}
+
+interface MenuDescendantProps {
+    isDisabled: boolean
+}
 
 const Menu = (props: MenuProps) => {
-    let { children } = props
-    let descendants = useDescendants()
-    let [selectedIndex, setSelectedIndex] = React.useState(-1)
-    let s = useStyles(undefined, [props])
+    const { children } = props
+    const descendants = useDescendants<MenuDescendantProps>()
+    const [selectedIndex, setSelectedIndex] = useState(-1)
+    const context = { descendants, selectedIndex, setSelectedIndex }
+    const styles = useStyles(menuStyles, [props])
 
-    let onKeyDown = useCallback(
+    const onKeyDown = useCallback(
         (event: React.KeyboardEvent) => {
+            const selectableDescendants = descendants.items.filter(
+                (item) => !item.props.isDisabled
+            )
+            const selectableIndex = selectableDescendants.findIndex(
+                (item) => item === descendants.items[selectedIndex]
+            )
+            if (selectableIndex === -1) return
+            const mapSelectedIndex = (index: number) =>
+                descendants.items.findIndex(
+                    (item) => item === selectableDescendants[index]
+                )
             const handlers = {
                 ArrowDown: () => {
-                    const nextIndex = getNextIndex(
-                        selectedIndex,
-                        descendants.items.length
+                    let nextIndex = mapSelectedIndex(
+                        getNextIndex(
+                            selectableIndex,
+                            selectableDescendants.length
+                        )
                     )
                     setSelectedIndex(nextIndex)
                 },
                 ArrowUp: () => {
-                    const prevIndex = getPrevIndex(
-                        selectedIndex,
-                        descendants.items.length
+                    let prevIndex = mapSelectedIndex(
+                        getPrevIndex(
+                            selectableIndex,
+                            selectableDescendants.length
+                        )
                     )
                     setSelectedIndex(prevIndex)
                 },
                 Home: () => {
-                    setSelectedIndex(1)
+                    setSelectedIndex(mapSelectedIndex(0))
                 },
                 End: () => {
-                    setSelectedIndex(length - 1)
+                    setSelectedIndex(
+                        mapSelectedIndex(selectableDescendants.length - 1)
+                    )
                 }
             }
             const handler = handlers[event.key]
@@ -112,11 +133,11 @@ const Menu = (props: MenuProps) => {
     )
 
     return (
-        <MenuContext.Provider value={{ descendants, selectedIndex }}>
-            <div style={s.root} onKeyDown={onKeyDown} tabIndex={-1}>
+        <div style={styles.root} onKeyDown={onKeyDown} tabIndex={0}>
+            <MenuContext.Provider value={context}>
                 {children}
-            </div>
-        </MenuContext.Provider>
+            </MenuContext.Provider>
+        </div>
     )
 }
 
