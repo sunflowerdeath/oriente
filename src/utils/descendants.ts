@@ -5,18 +5,18 @@ import useForceUpdate from './useForceUpdate'
 const isPreceding = (a: Node, b: Node) =>
     Boolean(b.compareDocumentPosition(a) & Node.DOCUMENT_POSITION_PRECEDING)
 
-interface Descendant<T> {
+export interface Descendant<T> {
     element: HTMLElement
     props: T
 }
 
-interface Descendants<T> {
+export interface Descendants<T> {
     items: Descendant<T>[]
     register: (desc: Descendant<T>) => void
     unregister: (element: HTMLElement) => void
 }
 
-const useDescendants = <T,>() => {
+const useDescendants = <T>() => {
     const [items, setItems] = useState<Descendant<T>[]>([])
     const register = useCallback(({ element, ...props }) => {
         if (!element) return
@@ -42,7 +42,7 @@ const useDescendants = <T,>() => {
     return { items, register, unregister }
 }
 
-const useDescendant = <T,>(descendants: Descendants<T>, props: T) => {
+const useDescendant = <T>(descendants: Descendants<T>, props: T) => {
     const forceUpdate = useForceUpdate()
     const ref = useRef<HTMLElement>()
     const { register, unregister } = descendants

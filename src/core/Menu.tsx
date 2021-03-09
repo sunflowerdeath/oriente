@@ -4,11 +4,21 @@ import Taply from 'taply'
 // @ts-ignore
 import { useStyles } from 'floral'
 
-import { useDescendant, useDescendants } from '../utils/descendants'
+import {
+    useDescendant,
+    useDescendants,
+    Descendants
+} from '../utils/descendants'
 import { initialTapState, TapState } from '../types'
 
+interface MenuDescendantProps {
+    isDisabled?: boolean
+    onSelect?: () => void
+    value?: string
+}
+
 interface MenuContextProps {
-    descendants: any
+    descendants: Descendants<MenuDescendantProps>
     selectedIndex: number
     setSelectedIndex: (index: number) => void
 }
@@ -18,15 +28,20 @@ const MenuContext = createContext<MenuContextProps | undefined>(undefined)
 interface MenuItemProps {
     isDisabled?: boolean
     onSelect?: () => void
+    value?: string
     children: React.ReactNode
 }
 
 const MenuItem = (props: MenuItemProps) => {
-    const { isDisabled, onSelect, children } = props
+    const { isDisabled, onSelect, value, children } = props
     const { descendants, selectedIndex, setSelectedIndex } = useContext(
         MenuContext
     )!
-    const { ref, index } = useDescendant(descendants, { isDisabled })
+    const { ref, index } = useDescendant(descendants, {
+        isDisabled,
+        onSelect,
+        value
+    })
     const isSelected = index !== -1 && index === selectedIndex
     const [tapState, setTapState] = useState(initialTapState)
     const onChangeTapState = useCallback(
@@ -71,12 +86,8 @@ const menuStyles = {
     root: { outline: 'none' }
 }
 
-interface MenuDescendantProps {
-    isDisabled: boolean
-}
-
 const Menu = (props: MenuProps) => {
-    const { children } = props
+    const { children, onSelect } = props
     const descendants = useDescendants<MenuDescendantProps>()
     const [selectedIndex, setSelectedIndex] = useState(-1)
     const context = { descendants, selectedIndex, setSelectedIndex }
@@ -121,6 +132,12 @@ const Menu = (props: MenuProps) => {
                     setSelectedIndex(
                         mapSelectedIndex(selectableDescendants.length - 1)
                     )
+                },
+                Enter: () => {
+                    let item = descendants.items[selectedIndex]
+                    let { onSelect: itemOnSelect, value } = item.props
+                    if (itemOnSelect) itemOnSelect()
+                    if (onSelect && value !== undefined) onSelect(value)
                 }
             }
             const handler = handlers[event.key]
