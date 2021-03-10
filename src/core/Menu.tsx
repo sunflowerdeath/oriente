@@ -102,13 +102,13 @@ const Menu = (props: MenuProps) => {
                 (item) => item === descendants.items[selectedIndex]
             )
             if (selectableIndex === -1) return
-            const mapSelectedIndex = (index: number) =>
+            const mapIndex = (index: number) =>
                 descendants.items.findIndex(
                     (item) => item === selectableDescendants[index]
                 )
             const handlers = {
                 ArrowDown: () => {
-                    let nextIndex = mapSelectedIndex(
+                    let nextIndex = mapIndex(
                         getNextIndex(
                             selectableIndex,
                             selectableDescendants.length
@@ -117,7 +117,7 @@ const Menu = (props: MenuProps) => {
                     setSelectedIndex(nextIndex)
                 },
                 ArrowUp: () => {
-                    let prevIndex = mapSelectedIndex(
+                    let prevIndex = mapIndex(
                         getPrevIndex(
                             selectableIndex,
                             selectableDescendants.length
@@ -126,12 +126,10 @@ const Menu = (props: MenuProps) => {
                     setSelectedIndex(prevIndex)
                 },
                 Home: () => {
-                    setSelectedIndex(mapSelectedIndex(0))
+                    setSelectedIndex(mapIndex(0))
                 },
                 End: () => {
-                    setSelectedIndex(
-                        mapSelectedIndex(selectableDescendants.length - 1)
-                    )
+                    setSelectedIndex(mapIndex(selectableDescendants.length - 1))
                 },
                 Enter: () => {
                     let item = descendants.items[selectedIndex]
