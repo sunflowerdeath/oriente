@@ -9,7 +9,7 @@ import {
     useDescendants,
     Descendants
 } from '../utils/descendants'
-import { initialTapState, TapState } from '../types'
+import { initialTapState, TapState, FloralProps } from '../types'
 
 interface MenuDescendantProps {
     isDisabled?: boolean
@@ -68,7 +68,7 @@ const MenuItem = (props: MenuItemProps) => {
     )
 }
 
-interface MenuProps {
+interface MenuProps extends FloralProps {
     isActive: boolean
     children: React.ReactNode
     onFocus?: () => void

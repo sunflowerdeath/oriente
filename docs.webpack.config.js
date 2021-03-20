@@ -24,7 +24,10 @@ module.exports = merge(baseConfig, {
             {
                 test: /\.tsx?$/,
                 use: [
-                    { loader: 'babel-loader', options: babelConfig }
+                    {
+                        loader: 'babel-loader',
+                        options: { ...babelConfig, cacheDirectory: true }
+                    }
                 ]
             }
         ]
@@ -50,5 +53,8 @@ module.exports = merge(baseConfig, {
             template: './src/index.html',
             chunks: ['popup-demo']
         })
-    ]
+    ],
+    cache: {
+        type: 'filesystem'
+    }
 })

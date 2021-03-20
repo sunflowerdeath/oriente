@@ -3,15 +3,17 @@ import React, {
     useState,
     cloneElement,
     useEffect,
-    useCallback,
-    forwardRef
+    useCallback
 } from 'react'
+// @ts-ignore
 import { useStyles } from 'floral'
+// @ts-ignore
 import Taply from 'taply'
-import { useSpring, animated } from 'react-spring'
 
 import mergeRefs from '../utils/mergeRefs'
 import useControlledState from '../utils/useControlledState'
+import useAnimatedValue from '../utils/useAnimatedValue'
+import { AppearAnimation, SlideAnimation } from './animations'
 
 import {
     FloralProps,
@@ -81,75 +83,6 @@ const TooltipArrow = (props: TooltipArrowProps) => {
     let { side, align, width, height, margin, ...restProps } = props
     return <div {...restProps} style={styles.root} />
 }
-
-const useAnimatedValue = (to: any) => {
-    let [isRest, setIsRest] = useState(false)
-    let [props, set] = useSpring(() => ({
-        value: to,
-        onRest: () => setIsRest(true)
-    }))
-    useEffect(() => {
-        setIsRest(false)
-        set({ value: to })
-    }, [to])
-    return [props.value, isRest]
-}
-
-interface AppearAnimationProps extends React.HTMLProps<HTMLDivElement> {
-    openValue: any
-    children: React.ReactNode
-}
-
-type AppearAnimation = (props: AppearAnimationProps) => React.ReactNode
-
-const OpacityAnimation = forwardRef<HTMLDivElement>(
-    (
-        { children, openValue, style, ...restProps }: AppearAnimationProps,
-        ref
-    ) => (
-        <animated.div
-            ref={ref}
-            style={{ ...style, opacity: openValue }}
-            {...restProps}
-        >
-            {children}
-        </animated.div>
-    )
-)
-
-OpacityAnimation.displayName = 'OpacityAnimation'
-
-interface SlideAnimationProps extends AppearAnimationProps {
-    side?: 'top' | 'right' | 'left' | 'bottom'
-    distance?: number
-}
-
-const SlideAnimation = forwardRef((props: SlideAnimationProps, ref) => {
-    let {
-        children,
-        openValue,
-        side = 'bottom',
-        distance = 10,
-        style,
-        ...restProps
-    } = props
-    let axis = side === 'left' || side === 'right' ? 'X' : 'Y'
-    let dir = side === 'left' || side === 'bottom' ? 1 : -1
-    let resStyle = {
-        ...style,
-        opacity: openValue,
-        transform: openValue
-            .interpolate([0, 1], [distance * dir, 0])
-            .interpolate((v: number) => `translate${axis}(${v}px)`)
-    }
-    return (
-        <animated.div {...restProps} ref={ref} style={resStyle}>
-            {children}
-        </animated.div>
-    )
-})
-
-SlideAnimation.displayName = 'SlideAnimation'
 
 interface TooltipProps extends FloralProps {
     placement: PopupPlacement

@@ -2,6 +2,7 @@ import LayersStory from './layers.md'
 import PopupStory from './popup.md'
 import TooltipStory from './tooltip.md'
 import MenuStory from './menu.md'
+import ModalStory from './modal.md'
 
 const coreSection = {
     name: 'Core',
@@ -21,6 +22,10 @@ const coreSection = {
         menu: {
             name: 'Menu',
             markdown: MenuStory
+        },
+        modal: {
+            name: 'Modal',
+            markdown: ModalStory
         }
     }
 }

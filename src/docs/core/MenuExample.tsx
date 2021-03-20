@@ -20,12 +20,13 @@ const MenuExample = () => (
             value="one"
             onSelect={() => console.log(`MenuItem onSelect`)}
         >
-            Item
+            Item 1
         </ExampleMenuItem>
         <ExampleMenuItem value="two" isDisabled>
-            Disabled item
+            Disabled item 2
         </ExampleMenuItem>
-        <ExampleMenuItem value="three">Item</ExampleMenuItem>
+        <ExampleMenuItem value="three">Item 3</ExampleMenuItem>
+        <ExampleMenuItem value="four">Item 4</ExampleMenuItem>
     </Menu>
 )
 

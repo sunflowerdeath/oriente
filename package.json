@@ -7,6 +7,7 @@
     "test": "karma start",
     "build": "gnoll lib",
     "docs": "gnoll start --config docs.webpack.config.js --no-html",
+    "build-docs": "gnoll build --config docs.webpack.config.js --no-html --assets-caching",
     "lint": "eslint ./src"
   },
   "author": "sunflowerdeath",
@@ -30,7 +31,7 @@
     "eslint-plugin-prettier": "^3.3.1",
     "eslint-plugin-react": "^7.22.0",
     "flow-bin": "^0.143.1",
-    "gnoll": "^0.7.0-alpha.5",
+    "gnoll": "^0.7.0-alpha.7",
     "karma": "^5.2.3",
     "karma-chrome-launcher": "^3.1.0",
     "karma-mocha": "^2.0.1",

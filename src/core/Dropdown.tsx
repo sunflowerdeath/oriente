@@ -2,11 +2,31 @@ import React, { useEffect } from 'react'
 
 import Popup from './Popup'
 
-const FocusTrap = ({ children }: { children: React.ReactNode }) => (
-    <>{children}</>
-)
+/*
+Example usage:
 
-interface DropdownProps {}
+<Dropdown
+    render={(ref) => (
+        <Menu onSelect={} ref={ref}>
+            <MenuItem value="value">Item</MenuItem>
+            <MenuItem value="value" isDisabled>Disabled item</MenuItem>
+        </Menu>
+    )}
+>
+    {({ open, isOpen }) => (
+        <Button onTap={open}>
+            <Icon />
+        </Button>
+    )}
+</Dropdown>
+*/
+
+interface DropdownProps {
+    closeOnEsc?: boolean
+    overlay: boolean
+    closeOnOverlayClick?: boolean
+    closeOnOutsideClick?: boolean
+}
 
 interface DropdownRenderProps {
     ref: any
