@@ -1,9 +1,12 @@
-import React from 'react'
+import React, { useMemo } from 'react'
+// @ts-ignore
+import Taply from 'taply'
 // @ts-ignore
 import { useStyles } from 'floral'
+import FocusLock from 'react-focus-lock'
 
 import { Layer } from './layers'
-import { AppearAnimation, FadeAnimation, SlideAnimation } from './animations'
+import { AppearAnimation, FadeAnimation } from './animations'
 import useAnimatedValue from '../utils/useAnimatedValue'
 import { FloralProps } from '../types'
 
@@ -16,7 +19,7 @@ Example usage:
 */
 
 interface ModalProps extends FloralProps {
-    children: React.ReactNode
+    children: () => React.ReactNode | React.ReactNode
     isOpen?: boolean
     onClose?: () => void
     initialFocusRef?: any
@@ -28,7 +31,7 @@ interface ModalProps extends FloralProps {
 }
 
 const modalStyles = (props: ModalProps) => {
-    let container = {
+    const container = {
         position: 'fixed',
         width: '100%',
         height: '100%',
@@ -37,13 +40,15 @@ const modalStyles = (props: ModalProps) => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: props.isCentered ? 'center' : 'flex-start',
-        overflowY: 'auto'
+        overflowY: 'auto',
+        pointerEvents: 'none'
     }
-    let window = {
+    const window = {
         background: 'white',
-        width: props.width
+        width: props.width,
+        pointerEvents: 'all'
     }
-    let overlay = {
+    const overlay = {
         background: 'rgba(0,0,0,.5)',
         position: 'fixed',
         top: 0,
@@ -55,26 +60,42 @@ const modalStyles = (props: ModalProps) => {
 }
 
 const Modal = (props: ModalProps) => {
-    let { isOpen, children, Animation } = props
-    let styles = useStyles(modalStyles, [props])
-    let [openValue, isRest] = useAnimatedValue(isOpen ? 1 : 0)
-    let isActive = isOpen || !isRest
+    const { isOpen, children, Animation, closeOnOverlayClick, onClose } = props
+    const styles = useStyles(modalStyles, [props])
+    const [openValue, isRest] = useAnimatedValue(isOpen ? 1 : 0)
+    const isActive = isOpen || !isRest
+    const modalChildren = useMemo(() => {
+        if (isActive) {
+            return typeof children === 'function' ? children() : children
+        } else {
+            return null
+        }
+    }, [children, isActive])
     return (
         <>
             <Layer type="modal" isActive={isActive}>
-                <FadeAnimation openValue={openValue} style={styles.overlay} />
+                <FadeAnimation
+                    openValue={openValue}
+                    style={styles.overlay}
+                    onClick={closeOnOverlayClick && onClose}
+                />
             </Layer>
             <Layer type="modal" isActive={isActive}>
-                <Animation openValue={openValue} style={styles.container}>
-                    <div style={styles.window}>{children}</div>
-                </Animation>
+                <div style={styles.container}>
+                    <Animation openValue={openValue}>
+                        <FocusLock>
+                            <div style={styles.window}>{modalChildren}</div>
+                        </FocusLock>
+                    </Animation>
+                </div>
             </Layer>
         </>
     )
 }
 
 Modal.defaultProps = {
-    Animation: SlideAnimation,
+    Animation: FadeAnimation,
+    closeOnEsc: true,
     width: 800
 }
 
@@ -82,6 +103,19 @@ interface ModalCloseButtonProps extends FloralProps {
     children: React.ReactNode
 }
 
-const ModalCloseButton = () => <div />
+const ModalCloseButtonStyles = {
+    root: {
+        cursor: 'pointer'
+    }
+}
+
+const ModalCloseButton = (props: ModalCloseButtonStyles) => {
+    const styles = useStyles(modalStyles, [props])
+    return (
+        <Taply onTap={() => {}}>
+            <div style={styles.root}>{children}</div>
+        </Taply>
+    )
+}
 
 export { Modal, ModalCloseButton }

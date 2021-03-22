@@ -24,7 +24,8 @@ lang: jsx
 
 ## Props
 
-```@propsdoc
-file: ../../core/Popup.js
+```
+@propsdoc
+file: ../../core/Popup.tsx
 allowMarkdown: true
 ```

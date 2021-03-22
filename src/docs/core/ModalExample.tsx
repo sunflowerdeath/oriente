@@ -9,6 +9,8 @@ const exampleModalStyles = () => ({
         paddingTop: 100
     },
     window: {
+        background: '#333',
+        color: 'white',
         padding: 32
     }
 })
@@ -20,10 +22,21 @@ const ModalExample = () => {
     return (
         <>
             <button onClick={() => setIsOpen(true)}>Open modal</button>
-            <ExampleModal isOpen={isOpen}>
-                Modal
-                <br />
-                <button onClick={() => setIsOpen(false)}>Close modal</button>
+            <ExampleModal
+                isOpen={isOpen}
+                onClose={() => setIsOpen(false)}
+                closeOnOverlayClick={true}
+            >
+                {() => (
+                    <>
+                        Modal
+                        <br />
+                        <br />
+                        <button onClick={() => setIsOpen(false)}>
+                            Close modal
+                        </button>
+                    </>
+                )}
             </ExampleModal>
         </>
     )

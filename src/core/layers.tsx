@@ -3,31 +3,46 @@ import React, {
     useMemo,
     useRef,
     useContext,
+    createContext,
     useState,
     memo
 } from 'react'
-import PropTypes from 'prop-types'
 
 const LAYER_TYPES = ['initial', 'popup', 'fixed', 'modal', 'global']
 
-const StackContext = React.createContext()
-const ParentLayerContext = React.createContext()
+type LayerType = 'initial' | 'popup' | 'fixed' | 'modal' | 'global'
 
-const getStyle = (type) =>
+const StackContext = createContext()
+const ParentLayerContext = createContext()
+
+const getStyle = (type: LayerType) =>
     type === 'initial'
         ? { position: 'relative', height: '100%' }
         : { position: 'absolute', top: 0, left: 0 }
 
-const LayerView = React.memo(({ id, children, type }) => (
+const LayerView = memo(({ id, children, type }) => (
     <ParentLayerContext.Provider value={id}>
         <div style={getStyle(type)}>{children}</div>
     </ParentLayerContext.Provider>
 ))
 
-const Layer = React.memo((props) => {
-    let parentId = useContext(ParentLayerContext)
-    let stack = useContext(StackContext)
-    let idRef = useRef(null)
+interface LayerProps {
+    /** Controls the visibility of the layer. */
+    isActive?: boolean
+
+    /**
+     * Layer type. It is used to sort layers in the stack.
+     *
+     * Possible layer types in order from bottom to top:
+     * `'initial'`, `'popup'`, `'fixed'`, `'modal'`, `'global'`.
+     */
+    type?: LayerType
+}
+
+const Layer = memo((props: LayerProps) => {
+    const parentId = useContext(ParentLayerContext)
+    const stack = useContext(StackContext)
+    const idRef = useRef(null)
     useLayoutEffect(() => {
         if (idRef.current === null) {
             if (props.isActive) {
@@ -53,19 +68,6 @@ const Layer = React.memo((props) => {
 
 Layer.displayName = 'Layer'
 
-Layer.propTypes = {
-    /** Controls the visibility of the layer. */
-    isActive: PropTypes.bool,
-
-    /**
-     * Layer type. It is used to sort layers in the stack.
-     *
-     * Possible layer types in order from bottom to top:
-     * `'initial'`, `'popup'`, `'fixed'`, `'modal'`, `'global'`.
-     */
-    type: PropTypes.oneOf(LAYER_TYPES)
-}
-
 Layer.defaultProps = {
     isActive: true,
     type: 'popup'
@@ -85,7 +87,7 @@ const createLayer = (setLayers, parentId, props) => {
 
         let skipped
         // Skip all layers with index lower than or equal to the index of the new layer
-        let index = LAYER_TYPES.indexOf(props.type)
+        const index = LAYER_TYPES.indexOf(props.type)
         for (skipped = skippedParents; skipped < layers.length; skipped++) {
             const nextLayer = layers[skipped]
             if (!nextLayer) break
@@ -110,9 +112,13 @@ const updateLayer = (setLayers, id, props) => {
 const removeLayer = (setLayers, id) =>
     setLayers((layers) => layers.filter((layer) => id !== layer.id))
 
-const Stack = ({ children }) => {
-    let [layers, setLayers] = useState([])
-    let context = useMemo(
+interface StackProps {
+    children: React.ReactNode
+}
+
+const Stack = ({ children }: StackProps) => {
+    const [layers, setLayers] = useState([])
+    const context = useMemo(
         () => ({
             createLayer: (...args) => createLayer(setLayers, ...args),
             updateLayer: (...args) => updateLayer(setLayers, ...args),
@@ -131,7 +137,5 @@ const Stack = ({ children }) => {
         </StackContext.Provider>
     )
 }
-
-Stack.propTypes = {}
 
 export { Stack, Layer, LayerView }

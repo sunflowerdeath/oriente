@@ -16,6 +16,7 @@
     "@reach/observe-rect": "^1.2.0",
     "@reach/rect": "^0.11.2",
     "prop-types": "^15.7.2",
+    "react-focus-lock": "^2.5.0",
     "react-spring": "^8.0.27",
     "shallow-equal": "^1.2.1",
     "taply": "^0.3.1"
