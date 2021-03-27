@@ -26,10 +26,34 @@ export interface PopupOptions {
     onFlip?: (vert: boolean, horiz: boolean) => void
 }
 
+// Internal types
+
 interface Position {
     left: number
     top: number
 }
+
+interface ViewportBounds {
+    left: number
+    right: number
+    top: number
+    bottom: number
+}
+
+interface PopupMeasurements {
+    popup: DOMRect
+    target: DOMRect
+    bounds: ViewportBounds
+}
+
+type PlacementConfig = Pick<PopupPlacement, 'side' | 'align' | 'offset'>
+
+const getViewportBounds = (viewport: ViewportMeasurements) => ({
+    left: viewport.scrollLeft,
+    right: viewport.scrollLeft + viewport.width,
+    top: viewport.scrollTop,
+    bottom: viewport.scrollTop + viewport.height
+})
 
 const defaultPlacement: PopupPlacement = {
     side: 'bottom',
@@ -40,10 +64,21 @@ const defaultPlacement: PopupPlacement = {
     padding: 0
 }
 
-const calcPosition = (measurements, config) => {
+const oppositeSides: { [key in PopupSide]: PopupSide } = {
+    left: 'right',
+    right: 'left',
+    top: 'bottom',
+    bottom: 'top'
+}
+
+const calcPosition = (
+    measurements: PopupMeasurements,
+    config: PlacementConfig
+) => {
     const { popup, target, bounds } = measurements
     const { side, align, offset } = config
-    let top, left
+    let top = 0
+    let left = 0
 
     if (side === 'top') {
         top = target.top - popup.height - offset
@@ -79,13 +114,6 @@ const calcPosition = (measurements, config) => {
     }
 }
 
-const oppositeSides: { [key in PopupSide]: PopupSide } = {
-    left: 'right',
-    right: 'left',
-    top: 'bottom',
-    bottom: 'top'
-}
-
 const getFlipConfigs = (
     flip: boolean,
     { side, align, offset }: Pick<PopupPlacement, 'side' | 'align' | 'offset'>
@@ -104,7 +132,11 @@ const getFlipConfigs = (
     return configs
 }
 
-const fitsViewport = (pos: Position, measurements, padding: number) => {
+const fitsViewport = (
+    pos: Position,
+    measurements: PopupMeasurements,
+    padding: number
+) => {
     const { bounds, popup } = measurements
     return (
         pos.left >= bounds.left + padding &&
@@ -130,8 +162,11 @@ const constrainPosition = (position, measurements, padding) => {
 }
 */
 
-const getPopupPosition = (measurements, placement: PopupPlacement) => {
-    let { viewport, popupRect, targetRect } = measurements
+const getPopupPosition = (
+    measurements: PopupMeasurements,
+    placement: PopupPlacement
+) => {
+    // let { viewport, popup, target } = measurements
     let { side, align, offset, flip, constrain, padding } = placement
     let configs = getFlipConfigs(flip, { side, align, offset })
     // TODO select position that fits most
@@ -144,12 +179,9 @@ const getPopupPosition = (measurements, placement: PopupPlacement) => {
     return position
 }
 
-const getViewportBounds = (viewport: ViewportMeasurements) => ({
-    left: viewport.scrollLeft,
-    right: viewport.scrollLeft + viewport.width,
-    top: viewport.scrollTop,
-    bottom: viewport.scrollTop + viewport.height
-})
+const forceDefined = <T>() => (undefined as any) as T
+
+type RectObserver = ReturnType<typeof observeRect>
 
 class PopupController {
     constructor(options: PopupOptions) {
@@ -165,18 +197,18 @@ class PopupController {
     }
 
     disableUpdate: boolean
-    popup: HTMLElement
-    target: HTMLElement
+    popup: HTMLElement = forceDefined<HTMLElement>()
+    target: HTMLElement = forceDefined<HTMLElement>()
     placement: PopupPlacement
 
     viewportObserver: ViewportObserver
     viewport: ViewportMeasurements
 
-    targetObserver: ReturnType<typeof observeRect>
-    targetRect: DOMRect
+    targetObserver: RectObserver = forceDefined<RectObserver>()
+    targetRect: DOMRect = forceDefined<DOMRect>()
 
-    popupObserver: ReturnType<typeof observeRect>
-    popupRect: DOMRect
+    popupObserver: RectObserver = forceDefined<RectObserver>()
+    popupRect: DOMRect = forceDefined<DOMRect>()
 
     unobserve() {
         this.viewportObserver.unobserve()
