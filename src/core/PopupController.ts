@@ -1,10 +1,18 @@
 import observeRect from '@reach/observe-rect'
 
-import observeViewport, { measureViewport } from '../utils/observeViewport'
+import observeViewport, {
+    measureViewport,
+    ViewportMeasurements,
+    ViewportObserver
+} from '../utils/observeViewport'
+
+export type PopupSide = 'left' | 'top' | 'right' | 'bottom'
+
+export type PopupAlign = 'start' | 'center' | 'end'
 
 export interface PopupPlacement {
-    side: 'left' | 'top' | 'right' | 'bottom'
-    align: 'start' | 'center' | 'end'
+    side: PopupSide
+    align: PopupAlign
     offset: number
     flip: boolean
     constrain: boolean
@@ -16,6 +24,11 @@ export interface PopupOptions {
     popup: HTMLElement
     placement: PopupPlacement
     onFlip?: (vert: boolean, horiz: boolean) => void
+}
+
+interface Position {
+    left: number
+    top: number
 }
 
 const defaultPlacement: PopupPlacement = {
@@ -66,20 +79,23 @@ const calcPosition = (measurements, config) => {
     }
 }
 
-const oppositeSides = {
+const oppositeSides: { [key in PopupSide]: PopupSide } = {
     left: 'right',
     right: 'left',
     top: 'bottom',
     bottom: 'top'
 }
 
-const getFlipConfigs = (flip, { side, align, offset }) => {
+const getFlipConfigs = (
+    flip: boolean,
+    { side, align, offset }: Pick<PopupPlacement, 'side' | 'align' | 'offset'>
+) => {
     const configs = [{ side, align, offset }]
     if (!flip) return configs
 
     configs.push({ side: oppositeSides[side], align, offset })
     if (align !== 'center') {
-        let oppositeAlign = align === 'start' ? 'end' : 'start'
+        let oppositeAlign: PopupAlign = align === 'start' ? 'end' : 'start'
         configs.push(
             { side, align: oppositeAlign, offset },
             { side: oppositeSides[side], align: oppositeAlign, offset }
@@ -88,7 +104,7 @@ const getFlipConfigs = (flip, { side, align, offset }) => {
     return configs
 }
 
-const fitsViewport = (pos, measurements, padding) => {
+const fitsViewport = (pos: Position, measurements, padding: number) => {
     const { bounds, popup } = measurements
     return (
         pos.left >= bounds.left + padding &&
@@ -114,7 +130,7 @@ const constrainPosition = (position, measurements, padding) => {
 }
 */
 
-const getPopupPosition = (measurements, placement) => {
+const getPopupPosition = (measurements, placement: PopupPlacement) => {
     let { viewport, popupRect, targetRect } = measurements
     let { side, align, offset, flip, constrain, padding } = placement
     let configs = getFlipConfigs(flip, { side, align, offset })
@@ -128,7 +144,7 @@ const getPopupPosition = (measurements, placement) => {
     return position
 }
 
-const getViewportBounds = (viewport) => ({
+const getViewportBounds = (viewport: ViewportMeasurements) => ({
     left: viewport.scrollLeft,
     right: viewport.scrollLeft + viewport.width,
     top: viewport.scrollTop,
@@ -153,15 +169,25 @@ class PopupController {
     target: HTMLElement
     placement: PopupPlacement
 
+    viewportObserver: ViewportObserver
+    viewport: ViewportMeasurements
+
+    targetObserver: ReturnType<typeof observeRect>
+    targetRect: DOMRect
+
+    popupObserver: ReturnType<typeof observeRect>
+    popupRect: DOMRect
+
     unobserve() {
         this.viewportObserver.unobserve()
         this.targetObserver.unobserve()
         this.popupObserver.unobserve()
     }
 
-    setOptions({ target, popup, placement }) {
+    setOptions({ target, popup, placement }: PopupOptions) {
         this.disableUpdate = true
         if (this.target !== target) {
+            this.target = target
             if (this.targetObserver) this.targetObserver.unobserve()
             this.targetRect = target.getBoundingClientRect()
             this.targetObserver = observeRect(target, (rect) => {
@@ -169,9 +195,9 @@ class PopupController {
                 this.updatePosition()
             })
             this.targetObserver.observe()
-            this.target = target
         }
         if (this.popup !== popup) {
+            this.popup = popup
             if (this.popupObserver) this.popupObserver.unobserve()
             this.popupRect = popup.getBoundingClientRect()
             this.popupObserver = observeRect(popup, (rect) => {
@@ -179,7 +205,6 @@ class PopupController {
                 this.updatePosition()
             })
             this.popupObserver.observe()
-            this.popup = popup
         }
         if (placement) Object.assign(this.placement, placement)
         this.disableUpdate = false
@@ -197,7 +222,7 @@ class PopupController {
         if (position) this.setPosition(position)
     }
 
-    setPosition({ left, top }) {
+    setPosition({ left, top }: Position) {
         this.popup.style.transform = `translate(${left}px, ${top}px)`
     }
 }

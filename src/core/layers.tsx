@@ -85,9 +85,9 @@ const createLayer = (setLayers, parentId, props) => {
                 ? layers.findIndex(({ id }) => id === parentId) + 1
                 : 0
 
-        let skipped
         // Skip all layers with index lower than or equal to the index of the new layer
         const index = LAYER_TYPES.indexOf(props.type)
+        let skipped
         for (skipped = skippedParents; skipped < layers.length; skipped++) {
             const nextLayer = layers[skipped]
             if (!nextLayer) break

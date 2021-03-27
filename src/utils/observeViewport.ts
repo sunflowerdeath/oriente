@@ -1,4 +1,18 @@
-const html = document.querySelector('html')
+const html = document.querySelector('html')!
+
+export interface ViewportMeasurements {
+    scrollTop: number
+    scrollLeft: number
+    height: number
+    width: number
+}
+
+export type ViewportObserverCallback = (m: ViewportMeasurements) => void
+
+export interface ViewportObserver {
+    observe: () => void
+    unobserve: () => void
+}
 
 const measureViewport = () => ({
     scrollTop: window.scrollY,
@@ -8,7 +22,7 @@ const measureViewport = () => ({
     width: html.offsetWidth
 })
 
-const viewportObservers = []
+const viewportObservers: ViewportObserverCallback[] = []
 
 const callViewportObservers = () => {
     const viewport = measureViewport()
@@ -18,7 +32,7 @@ const callViewportObservers = () => {
 window.addEventListener('scroll', callViewportObservers)
 window.addEventListener('resize', callViewportObservers)
 
-const observeViewport = (cb) => ({
+const observeViewport = (cb: ViewportObserverCallback) => ({
     observe() {
         viewportObservers.push(cb)
     },
