@@ -10,14 +10,18 @@
     },
     "extends": [
         "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
         "plugin:import/errors",
         "plugin:react/recommended"
     ],
-    "plugins": ["prettier"],
+    "plugins": ["prettier", "@typescript-eslint"],
     "rules": {
         "prettier/prettier": "error",
         "no-unused-vars": "warn",
         "react/prop-types": "warn"
+    },
+    "settings": {
+        "import/resolver": "webpack"
     },
     "env": {
         "browser": true
