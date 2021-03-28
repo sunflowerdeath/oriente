@@ -1,7 +1,7 @@
 const path = require('path')
-const baseConfig = require('gnoll/config/webpack')
 const babelConfig = require('gnoll/config/babel')
-const merge = require('webpack-merge')
+const babelConfig = require('gnoll/config/babel')
+const { merge } = require('webpack-merge')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = merge(baseConfig, {
@@ -12,21 +12,21 @@ module.exports = merge(baseConfig, {
     module: {
         rules: [
             {
+                test: /\.tsx?$/,
+                use: [
+                    {
+                        loader: 'babel-loader',
+                        options: { ...babelConfig, cacheDirectory: true }
+                    }
+                ]
+            },
+            {
                 test: /\.md$/,
                 use: [
                     { loader: 'babel-loader', options: babelConfig },
                     {
                         loader: 'minimark-loader',
                         options: require('minibook/minimark-preset')
-                    }
-                ]
-            },
-            {
-                test: /\.tsx?$/,
-                use: [
-                    {
-                        loader: 'babel-loader',
-                        options: { ...babelConfig, cacheDirectory: true }
                     }
                 ]
             }
@@ -37,10 +37,6 @@ module.exports = merge(baseConfig, {
             '@': path.resolve(__dirname, 'src')
         },
         extensions: [...baseConfig.resolve.extensions, '.ts', '.tsx']
-    },
-    devServer: {
-        port: 1337,
-        host: '0.0.0.0'
     },
     plugins: [
         new HtmlWebpackPlugin({
@@ -54,6 +50,10 @@ module.exports = merge(baseConfig, {
             chunks: ['popup-demo']
         })
     ],
+    devServer: {
+        port: 1337,
+        host: '0.0.0.0'
+    },
     cache: {
         type: 'filesystem'
     }

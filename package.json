@@ -19,7 +19,8 @@
     "react-focus-lock": "^2.5.0",
     "react-spring": "^8.0.27",
     "shallow-equal": "^1.2.1",
-    "taply": "^0.3.1"
+    "taply": "^0.3.1",
+    "webpack-merge": "^5.7.3"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.12.7",
