@@ -12,9 +12,31 @@ const LAYER_TYPES = ['initial', 'popup', 'fixed', 'modal', 'global']
 
 type LayerType = 'initial' | 'popup' | 'fixed' | 'modal' | 'global'
 
-interface StackContextType {}
+interface LayerProps {
+    /** Controls the visibility of the layer. */
+    isActive: boolean
 
-const StackContext = createContext()
+    /**
+     * Layer type. It is used to sort layers in the stack.
+     *
+     * Possible layer types in order from bottom to top:
+     * `'initial'`, `'popup'`, `'fixed'`, `'modal'`, `'global'`.
+     */
+    type: LayerType
+
+    /**
+     * Content of the layer
+     */
+    children: React.ReactNode
+}
+
+interface StackContextType {
+    createLayer: (parentId: number, props: LayerProps) => number
+    updateLayer: (id: number, props: LayerProps) => void
+    removeLayer: (id: number) => void
+}
+
+const StackContext = createContext<StackContextType | undefined>(undefined)
 const ParentLayerContext = createContext<number>(-1)
 
 const getStyle = (type: LayerType): React.CSSProperties =>
@@ -34,28 +56,13 @@ const LayerView = memo(({ id, children, type }: LayerViewProps) => (
     </ParentLayerContext.Provider>
 ))
 
-interface LayerProps {
-    /** Controls the visibility of the layer. */
-    isActive: boolean
-
-    /**
-     * Layer type. It is used to sort layers in the stack.
-     *
-     * Possible layer types in order from bottom to top:
-     * `'initial'`, `'popup'`, `'fixed'`, `'modal'`, `'global'`.
-     */
-    type: LayerType
-
-    /**
-     * Content of the layer
-     */
-    children: React.ReactNode
-}
-
 const Layer = memo((props: LayerProps) => {
     const parentId = useContext(ParentLayerContext)
     const stack = useContext(StackContext)
-    const idRef = useRef(null)
+    if (!stack) {
+        throw new Error('Errir')
+    }
+    const idRef = useRef<number | null>(null)
     useLayoutEffect(() => {
         if (idRef.current === null) {
             if (props.isActive) {
@@ -81,9 +88,6 @@ const Layer = memo((props: LayerProps) => {
 
 Layer.displayName = 'Layer'
 
-let id = 0
-const getNextId = () => id++
-
 interface LayerInfo {
     id: number
     props: LayerProps
@@ -92,6 +96,9 @@ interface LayerInfo {
 type LayersSetState = (
     callback: (prevLayers: LayerInfo[]) => LayerInfo[]
 ) => void
+
+let id = 0
+const getNextId = () => id++
 
 const createLayer = (
     setLayers: LayersSetState,
@@ -145,7 +152,7 @@ interface StackProps {
 
 const Stack = ({ children }: StackProps) => {
     const [layers, setLayers] = useState<LayerInfo[]>([])
-    const context = useMemo(
+    const context = useMemo<StackContextType>(
         () => ({
             createLayer: (...args) => createLayer(setLayers, ...args),
             updateLayer: (...args) => updateLayer(setLayers, ...args),

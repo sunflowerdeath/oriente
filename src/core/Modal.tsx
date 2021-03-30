@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, createContext, useContext } from 'react'
 // @ts-ignore
 import Taply from 'taply'
 // @ts-ignore
@@ -9,6 +9,12 @@ import { Layer } from './layers'
 import { AppearAnimation, FadeAnimation } from './animations'
 import useAnimatedValue from '../utils/useAnimatedValue'
 import { FloralProps } from '../types'
+
+interface ModalContextType {
+    close: () => void
+}
+
+const ModalContext = createContext<ModalContextType | undefined>(undefined)
 
 /*
 Example usage:
@@ -44,6 +50,7 @@ const modalStyles = (props: ModalProps) => {
         pointerEvents: 'none'
     }
     const window = {
+        position: 'relative',
         background: 'white',
         width: props.width,
         pointerEvents: 'all'
@@ -63,6 +70,7 @@ const Modal = (props: ModalProps) => {
     const { isOpen, children, Animation, closeOnOverlayClick, onClose } = props
     const styles = useStyles(modalStyles, [props])
     const [openValue, isRest] = useAnimatedValue(isOpen ? 1 : 0)
+    const context = useMemo(() => ({ close: () => onClose && onClose() }), [])
     const isActive = isOpen || !isRest
     const modalChildren = useMemo(() => {
         if (isActive) {
@@ -84,7 +92,9 @@ const Modal = (props: ModalProps) => {
                 <div style={styles.container}>
                     <Animation openValue={openValue}>
                         <FocusLock>
-                            <div style={styles.window}>{modalChildren}</div>
+                            <ModalContext.Provider value={context}>
+                                <div style={styles.window}>{modalChildren}</div>
+                            </ModalContext.Provider>
                         </FocusLock>
                     </Animation>
                 </div>
@@ -103,19 +113,33 @@ interface ModalCloseButtonProps extends FloralProps {
     children: React.ReactNode
 }
 
-const ModalCloseButtonStyles = {
+const modalCloseButtonStyles = {
     root: {
-        cursor: 'pointer'
+        cursor: 'pointer',
+        position: 'absolute',
+        top: '1rem',
+        right: '1rem',
+        width: '1rem',
+        height: '1rem',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
     }
 }
 
-const ModalCloseButton = (props: ModalCloseButtonStyles) => {
-    const styles = useStyles(modalStyles, [props])
+const ModalCloseButton = (props: ModalCloseButtonProps) => {
+    const { children } = props
+    const styles = useStyles(modalCloseButtonStyles, [props])
+    const context = useContext(ModalContext)
     return (
-        <Taply onTap={() => {}}>
+        <Taply onTap={context?.close}>
             <div style={styles.root}>{children}</div>
         </Taply>
     )
+}
+
+ModalCloseButton.defaultProps = {
+    children: '✕'
 }
 
 export { Modal, ModalCloseButton }

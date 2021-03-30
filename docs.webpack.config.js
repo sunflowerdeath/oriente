@@ -1,5 +1,5 @@
 const path = require('path')
-const babelConfig = require('gnoll/config/babel')
+const baseConfig = require('gnoll/config/webpack')
 const babelConfig = require('gnoll/config/babel')
 const { merge } = require('webpack-merge')
 const HtmlWebpackPlugin = require('html-webpack-plugin')

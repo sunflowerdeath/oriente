@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 // @ts-ignore
 import { extendComponentStyles } from 'floral'
 
-import { Modal } from '../../core/Modal'
+import { Modal, ModalCloseButton } from '../../core/Modal'
 
 const exampleModalStyles = () => ({
     container: {
@@ -29,6 +29,7 @@ const ModalExample = () => {
             >
                 {() => (
                     <>
+                        <ModalCloseButton />
                         Modal
                         <br />
                         <br />
