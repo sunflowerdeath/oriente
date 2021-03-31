@@ -76,7 +76,7 @@ const Popup = (props: PopupProps) => {
 
     return (
         <>
-            <Layer isActive={isActive}>{memoizedPopup}</Layer>
+            <Layer type="popup" isActive={isActive}>{memoizedPopup}</Layer>
             {typeof children === 'function'
                 ? children(setTargetElem)
                 : cloneElementWithRef(children, { ref: setTargetElem })}

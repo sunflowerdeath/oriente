@@ -1,15 +1,61 @@
-import React, { useState, createContext, useContext, useCallback } from 'react'
+import React, {
+    useState,
+    createContext,
+    useContext,
+    useCallback,
+    forwardRef
+} from 'react'
 // @ts-ignore
 import Taply from 'taply'
 // @ts-ignore
 import { useStyles } from 'floral'
+import FocusLock from 'react-focus-lock'
 
 import {
     useDescendant,
     useDescendants,
     Descendants
 } from '../utils/descendants'
-import { initialTapState, TapState, FloralProps } from '../types'
+import {
+    initialTapState,
+    TapState,
+    FloralProps,
+    PopupPlacement
+} from '../types'
+import Popup from './Popup'
+import useControlledState from '../utils/useControlledState'
+import useAnimatedValue from '../utils/useAnimatedValue'
+
+import { AppearAnimation, SlideAnimation } from './animations'
+import { Layer } from './layers'
+
+export interface MenuRenderProps {
+    isOpen: boolean
+    open: () => void
+    close: () => void
+}
+
+export interface MenuProps {
+    list: (props: MenuRenderProps) => React.ReactNode
+    children: (ref: any, props: MenuRenderProps) => React.ReactNode
+    onSelect?: (value: string) => void
+    placement: PopupPlacement
+    Animation: AppearAnimation
+}
+
+export interface MenuListProps extends FloralProps {
+    children: React.ReactNode
+    onFocus?: () => void
+    onBlur?: () => void
+    onSelect?: (value: string) => void
+}
+
+export interface MenuItemProps {
+    isDisabled?: boolean
+    onSelect?: () => void
+    value?: string
+    children: React.ReactNode
+}
 
 interface MenuDescendantProps {
     isDisabled?: boolean
@@ -24,13 +70,6 @@ interface MenuContextProps {
 }
 
 const MenuContext = createContext<MenuContextProps | undefined>(undefined)
-
-interface MenuItemProps {
-    isDisabled?: boolean
-    onSelect?: () => void
-    value?: string
-    children: React.ReactNode
-}
 
 const MenuItem = (props: MenuItemProps) => {
     const { isDisabled, onSelect, value, children } = props
@@ -68,30 +107,22 @@ const MenuItem = (props: MenuItemProps) => {
     )
 }
 
-interface MenuProps extends FloralProps {
-    isActive: boolean
-    children: React.ReactNode
-    onFocus?: () => void
-    onBlur?: () => void
-    onSelect?: (value: string) => void
-}
-
 const getNextIndex = (index: number, length: number) =>
     index < length - 1 ? index + 1 : 0
 
 const getPrevIndex = (index: number, length: number) =>
     index > 0 ? index - 1 : length - 1
 
-const menuStyles = {
+const menuListStyles = {
     root: { outline: 'none' }
 }
 
-const Menu = (props: MenuProps) => {
+const MenuList = forwardRef((props: MenuListProps, ref) => {
     const { children, onSelect } = props
     const descendants = useDescendants<MenuDescendantProps>()
     const [selectedIndex, setSelectedIndex] = useState(-1)
     const context = { descendants, selectedIndex, setSelectedIndex }
-    const styles = useStyles(menuStyles, [props])
+    const styles = useStyles(menuListStyles, [props])
 
     const onKeyDown = useCallback(
         (event: React.KeyboardEvent) => {
@@ -101,7 +132,6 @@ const Menu = (props: MenuProps) => {
             const selectableIndex = selectableDescendants.findIndex(
                 (item) => item === descendants.items[selectedIndex]
             )
-            if (selectableIndex === -1) return
             const mapIndex = (index: number) =>
                 descendants.items.findIndex(
                     (item) => item === selectableDescendants[index]
@@ -148,12 +178,68 @@ const Menu = (props: MenuProps) => {
     )
 
     return (
-        <div style={styles.root} onKeyDown={onKeyDown} tabIndex={0}>
+        <div style={styles.root} onKeyDown={onKeyDown} tabIndex={0} ref={ref}>
             <MenuContext.Provider value={context}>
                 {children}
             </MenuContext.Provider>
         </div>
     )
+})
+
+const menuStyles = {
+    overlay: {
+        background: 'transparent',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        userSelect: 'none'
+    },
+    list: {
+        background: 'white'
+    }
 }
 
-export { Menu, MenuItem }
+const Menu = (props: MenuProps) => {
+    const { placement, list, children, Animation } = props
+    const styles = useStyles(menuStyles, [props])
+    const [isOpen, setIsOpen] = useControlledState(props, 'isOpen', false)
+    const open = useCallback(() => setIsOpen(true), [])
+    const close = useCallback(() => setIsOpen(false), [])
+    const [openValue, isRest] = useAnimatedValue(isOpen ? 1 : 0)
+    const isActive = isOpen || !isRest
+    const renderProps = { isOpen, open, close }
+    return (
+        <>
+            <Layer type="popup" isActive={isOpen}>
+                <div
+                    style={styles.overlay}
+                    onClick={close}
+                    onDragStart={(e) => e.preventDefault()}
+                />
+            </Layer>
+            <Popup
+                placement={placement}
+                isActive={isActive}
+                popup={(ref) => (
+                    <Animation openValue={openValue}>
+                        <FocusLock>
+                            <MenuList style={styles.list} ref={ref}>
+                                {list(renderProps)}
+                            </MenuList>
+                        </FocusLock>
+                    </Animation>
+                )}
+            >
+                {(ref) => children(ref, renderProps)}
+            </Popup>
+        </>
+    )
+}
+
+Menu.defaultProps = {
+    Animation: SlideAnimation
+}
+
+export { Menu, MenuList, MenuItem }

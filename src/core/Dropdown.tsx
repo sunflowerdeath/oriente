@@ -12,6 +12,28 @@ import { Layer } from './layers'
 /*
 Example usage:
 
+<Menu
+    content={() => (
+        <>
+            <MenuItem>1</MenuItem>
+            <MenuItem>2</MenuItem>
+        </>
+    }}
+    onSelect={}
+    closeOnSelect={}
+    placement={}
+>
+    {({ ref, open }) => <Button ref={ref} onTap={open}>Menu</Button>}
+</Menu>
+
+<MenuList
+    onSelect={}
+>
+    <MenuItem>1</MenuItem>
+    <MenuItem>2</MenuItem>
+</Menu>
+
+
 <Dropdown
     render={(ref) => (
         <Menu onSelect={} ref={ref}>

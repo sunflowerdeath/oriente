@@ -1,6 +1,6 @@
 ---
 imports:
-    'MenuExample': './MenuExample'
+    '{ MenuListExample, MenuExample }': './MenuExample'
 ---
 
 # Core/Menu

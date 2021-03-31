@@ -60,7 +60,7 @@ const Layer = memo((props: LayerProps) => {
     const parentId = useContext(ParentLayerContext)
     const stack = useContext(StackContext)
     if (!stack) {
-        throw new Error('Errir')
+        throw new Error('Error')
     }
     const idRef = useRef<number | null>(null)
     useLayoutEffect(() => {
