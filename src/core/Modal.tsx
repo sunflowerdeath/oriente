@@ -4,6 +4,7 @@ import Taply from 'taply'
 // @ts-ignore
 import { useStyles } from 'floral'
 import FocusLock from 'react-focus-lock'
+import { useKey } from 'react-use'
 
 import { Layer } from './layers'
 import { AppearAnimation, FadeAnimation } from './animations'
@@ -27,7 +28,7 @@ Example usage:
 interface ModalProps extends FloralProps {
     children: () => React.ReactNode | React.ReactNode
     isOpen?: boolean
-    onClose?: () => void
+    onClose: () => void
     initialFocusRef?: any
     closeOnOverlayClick?: boolean
     closeOnEsc?: boolean
@@ -36,7 +37,7 @@ interface ModalProps extends FloralProps {
     width?: string | number
 }
 
-const modalStyles = (props: ModalProps) => {
+const modalStyles = (props: ModalProps, { isOpen }) => {
     const container = {
         position: 'fixed',
         width: '100%',
@@ -57,6 +58,8 @@ const modalStyles = (props: ModalProps) => {
     }
     const overlay = {
         background: 'rgba(0,0,0,.5)',
+        userSelect: 'none',
+        pointerEvents: isOpen ? 'all' : 'none',
         position: 'fixed',
         top: 0,
         left: 0,
@@ -67,10 +70,17 @@ const modalStyles = (props: ModalProps) => {
 }
 
 const Modal = (props: ModalProps) => {
-    const { isOpen, children, Animation, closeOnOverlayClick, onClose } = props
-    const styles = useStyles(modalStyles, [props])
+    const {
+        isOpen,
+        children,
+        Animation,
+        closeOnOverlayClick,
+        closeOnEsc,
+        onClose
+    } = props
+    const styles = useStyles(modalStyles, [props, { isOpen }])
     const [openValue, isRest] = useAnimatedValue(isOpen ? 1 : 0)
-    const context = useMemo(() => ({ close: () => onClose && onClose() }), [])
+    const context = useMemo(() => ({ close: onClose }), [])
     const isActive = isOpen || !isRest
     const modalChildren = useMemo(() => {
         if (isActive) {
@@ -79,6 +89,9 @@ const Modal = (props: ModalProps) => {
             return null
         }
     }, [children, isActive])
+    useKey('Escape', () => {
+        if (closeOnEsc) onClose()
+    })
     return (
         <>
             <Layer type="modal" isActive={isActive}>

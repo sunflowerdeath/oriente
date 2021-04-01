@@ -10,6 +10,7 @@ import Taply from 'taply'
 // @ts-ignore
 import { useStyles } from 'floral'
 import FocusLock from 'react-focus-lock'
+import { useKey } from 'react-use'
 
 import {
     useDescendant,
@@ -38,7 +39,8 @@ export interface MenuRenderProps {
 export interface MenuProps {
     list: (props: MenuRenderProps) => React.ReactNode
     children: (ref: any, props: MenuRenderProps) => React.ReactNode
-    onSelect?: (value: string) => void
+    onSelect?: (value?: string) => void
+    closeOnSelect?: boolean
     placement: PopupPlacement
     Animation: AppearAnimation
 }
@@ -47,7 +49,8 @@ export interface MenuListProps extends FloralProps {
     children: React.ReactNode
     onFocus?: () => void
     onBlur?: () => void
-    onSelect?: (value: string) => void
+    onSelect?: (value?: string) => void
+    // TODO autoSelectFirstItem
 }
 
 export interface MenuItemProps {
@@ -67,15 +70,23 @@ interface MenuContextProps {
     descendants: Descendants<MenuDescendantProps>
     selectedIndex: number
     setSelectedIndex: (index: number) => void
+    onSelect: (index: number) => void
 }
 
 const MenuContext = createContext<MenuContextProps | undefined>(undefined)
 
 const MenuItem = (props: MenuItemProps) => {
     const { isDisabled, onSelect, value, children } = props
-    const { descendants, selectedIndex, setSelectedIndex } = useContext(
-        MenuContext
-    )!
+    const menuContext = useContext(MenuContext)
+    if (!menuContext) {
+        throw new Error('MenuItem can be used only inside Menu or MenuList')
+    }
+    const {
+        descendants,
+        selectedIndex,
+        setSelectedIndex,
+        onSelect: menuOnSelect
+    } = menuContext
     const { ref, index } = useDescendant(descendants, {
         isDisabled,
         onSelect,
@@ -96,7 +107,7 @@ const MenuItem = (props: MenuItemProps) => {
         <Taply
             onChangeTapState={onChangeTapState}
             tapState={tapState}
-            onTap={onSelect}
+            onTap={() => menuOnSelect(index)}
             isDisabled={isDisabled}
             isFocusable={false}
         >
@@ -121,7 +132,22 @@ const MenuList = forwardRef((props: MenuListProps, ref) => {
     const { children, onSelect } = props
     const descendants = useDescendants<MenuDescendantProps>()
     const [selectedIndex, setSelectedIndex] = useState(-1)
-    const context = { descendants, selectedIndex, setSelectedIndex }
+    const select = useCallback(
+        (index: number) => {
+            let { onSelect: itemOnSelect, value } = descendants.items[
+                index
+            ].props
+            if (itemOnSelect) itemOnSelect()
+            if (onSelect && value !== undefined) onSelect(value)
+        },
+        [onSelect, descendants]
+    )
+    const context = {
+        descendants,
+        selectedIndex,
+        setSelectedIndex,
+        onSelect: select
+    }
     const styles = useStyles(menuListStyles, [props])
 
     const onKeyDown = useCallback(
@@ -161,12 +187,7 @@ const MenuList = forwardRef((props: MenuListProps, ref) => {
                 End: () => {
                     setSelectedIndex(mapIndex(selectableDescendants.length - 1))
                 },
-                Enter: () => {
-                    let item = descendants.items[selectedIndex]
-                    let { onSelect: itemOnSelect, value } = item.props
-                    if (itemOnSelect) itemOnSelect()
-                    if (onSelect && value !== undefined) onSelect(value)
-                }
+                Enter: () => select(selectedIndex)
             }
             const handler = handlers[event.key]
             if (handler) {
@@ -202,11 +223,26 @@ const menuStyles = {
 }
 
 const Menu = (props: MenuProps) => {
-    const { placement, list, children, Animation } = props
+    const {
+        placement,
+        list,
+        children,
+        Animation,
+        closeOnSelect,
+        onSelect
+    } = props
     const styles = useStyles(menuStyles, [props])
     const [isOpen, setIsOpen] = useControlledState(props, 'isOpen', false)
     const open = useCallback(() => setIsOpen(true), [])
     const close = useCallback(() => setIsOpen(false), [])
+    useKey('Escape', close)
+    const menuListOnSelect = useCallback(
+        (value?: string) => {
+            if (onSelect) onSelect(value)
+            if (closeOnSelect) close()
+        },
+        [onSelect, closeOnSelect]
+    )
     const [openValue, isRest] = useAnimatedValue(isOpen ? 1 : 0)
     const isActive = isOpen || !isRest
     const renderProps = { isOpen, open, close }
@@ -225,7 +261,11 @@ const Menu = (props: MenuProps) => {
                 popup={(ref) => (
                     <Animation openValue={openValue}>
                         <FocusLock>
-                            <MenuList style={styles.list} ref={ref}>
+                            <MenuList
+                                style={styles.list}
+                                ref={ref}
+                                onSelect={menuListOnSelect}
+                            >
                                 {list(renderProps)}
                             </MenuList>
                         </FocusLock>
@@ -239,6 +279,7 @@ const Menu = (props: MenuProps) => {
 }
 
 Menu.defaultProps = {
+    closeOnSelect: true,
     Animation: SlideAnimation
 }
 
