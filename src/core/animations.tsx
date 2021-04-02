@@ -1,5 +1,6 @@
 import React, { forwardRef } from 'react'
 import { animated } from 'react-spring'
+import { useMeasure } from 'react-use'
 
 interface AppearAnimationProps extends React.HTMLProps<HTMLDivElement> {
     openValue: any
@@ -57,4 +58,26 @@ const SlideAnimation = forwardRef((props: SlideAnimationProps, ref) => {
 
 SlideAnimation.displayName = 'SlideAnimation'
 
-export { FadeAnimation, SlideAnimation }
+const CollapseAnimation = ({
+    openValue,
+    children,
+    ...restProps
+}: AppearAnimationProps) => {
+    let [ref, { height }] =
+        'ResizeObserver' in window ? useMeasure() : [null, { height: -1 }]
+    let style = { opacity: openValue, ...restProps.style }
+    if (ref) style.height = openValue.interpolate({ output: [0, height] })
+    return (
+        <animated.div {...restProps} style={style}>
+            {typeof children === 'function' ? (
+                children(ref)
+            ) : (
+                <div ref={ref}>{children}</div>
+            )}
+        </animated.div>
+    )
+}
+
+CollapseAnimation.displayName = 'CollapseAnimation'
+
+export { FadeAnimation, SlideAnimation, CollapseAnimation }
