@@ -7,6 +7,7 @@ import FocusLock from 'react-focus-lock'
 import { useKey } from 'react-use'
 
 import { Layer } from './layers'
+import CloseButton from './CloseButton'
 import { AppearAnimation, FadeAnimation } from './animations'
 import useAnimatedValue from '../utils/useAnimatedValue'
 import { FloralProps } from '../types'
@@ -126,33 +127,15 @@ interface ModalCloseButtonProps extends FloralProps {
     children: React.ReactNode
 }
 
-const modalCloseButtonStyles = {
-    root: {
-        cursor: 'pointer',
-        position: 'absolute',
-        top: '1rem',
-        right: '1rem',
-        width: '1rem',
-        height: '1rem',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-    }
-}
-
 const ModalCloseButton = (props: ModalCloseButtonProps) => {
     const { children } = props
-    const styles = useStyles(modalCloseButtonStyles, [props])
     const context = useContext(ModalContext)
-    return (
-        <Taply onTap={context?.close}>
-            <div style={styles.root}>{children}</div>
-        </Taply>
-    )
-}
-
-ModalCloseButton.defaultProps = {
-    children: '✕'
+    if (!context) {
+        throw new Error(
+            'You can use <ModalCloseButton> only inside <Modal> component'
+        )
+    }
+    return <CloseButton onTap={context.close}>{children}</CloseButton>
 }
 
 export { Modal, ModalCloseButton }

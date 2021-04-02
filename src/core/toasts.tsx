@@ -10,6 +10,7 @@ import { FloralProps } from '../types'
 
 import { Layer } from './layers'
 import { AppearAnimation, CollapseAnimation } from './animations'
+import CloseButton from './CloseButton'
 
 type ToastPlacement =
     | 'top'
@@ -52,12 +53,26 @@ interface ToastState {
 
 type ToastsState = { [key in ToastPlacement]: ToastState[] }
 
+interface ToastContextProps {
+    close: () => void
+}
+
+const ToastContext = createContext<ToastContextProps | undefined>(undefined)
+
+const toastStyle = {
+    root: { position: 'relative' }
+}
+
 const Toast = (props: ToastProps) => {
     const { children, onClose } = props
-    const styles = useStyles(undefined, [props])
+    const styles = useStyles(toastStyle, [props])
     return (
         <div style={styles.root}>
-            {typeof children === 'function' ? children(onClose) : children}
+            <ToastContext.Provider
+                value={{ close: () => onClose && onClose() }}
+            >
+                {children}
+            </ToastContext.Provider>
         </div>
     )
 }
@@ -94,7 +109,7 @@ const style: React.CSSProperties = {
     position: 'fixed',
     top: 0,
     right: 0,
-    padding: 16
+    padding: '1rem'
 }
 
 const topPlacements = ['top', 'top-right', 'top-left']
@@ -143,6 +158,20 @@ const ToastContainer = ({ children }: ToastContainerProps) => {
     )
 }
 
+interface ToastCloseButtonProps extends FloralProps {
+    children?: React.ReactNode
+}
+
+const ToastCloseButton = (props: ToastCloseButtonProps) => {
+    const context = useContext(ToastContext)
+    if (!context) {
+        throw new Error(
+            'You can use <ToastCloseButton> only inside <Toast> component'
+        )
+    }
+    return <CloseButton {...props} onTap={context.close} />
+}
+
 const useToast = () => {
     const context = useContext(ToastContainerContext)
     if (!context) {
@@ -153,4 +182,4 @@ const useToast = () => {
     return context
 }
 
-export { ToastContainer, useToast }
+export { ToastContainer, ToastCloseButton, useToast }

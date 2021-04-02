@@ -1,11 +1,11 @@
 import React from 'react'
 
-import { useToast, ToastContainer } from '../../core/toasts'
+import { useToast, ToastContainer, ToastCloseButton } from '../../core/toasts'
 
 const toastStyle = {
     color: 'white',
     background: '#16a085',
-    padding: '12px 16px',
+    padding: '12px 32px 12px 16px',
     marginBottom: 16
 }
 
@@ -14,10 +14,10 @@ const ToastExample = () => {
 
     let showToast = () =>
         toast.show({
-            children: (close) => (
+            children: (
                 <>
                     Toast
-                    <button onClick={close}>x</button>
+                    <ToastCloseButton style={{ top: 4, right: 4 }} />
                 </>
             ),
             style: toastStyle

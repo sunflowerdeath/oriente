@@ -17,8 +17,8 @@ interface FloralStyles {
 }
 
 export interface FloralProps {
-    style: React.CSSProperties
-    styles: FloralStyles | ((...deps: any) => FloralStyles)
+    style?: React.CSSProperties
+    styles?: FloralStyles | ((...deps: any) => FloralStyles)
 }
 
 export interface PopupPlacement {
