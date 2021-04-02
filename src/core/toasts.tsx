@@ -4,12 +4,12 @@ import Taply from 'taply'
 // @ts-ignore
 import { useStyles } from 'floral'
 import { mapValues } from 'lodash'
-import { animated } from 'react-spring'
+import { animated, useTransition } from 'react-spring'
 
 import { FloralProps } from '../types'
 
 import { Layer } from './layers'
-import { AppearAnimation, CollapseAnimation, AnimatedList } from './animations'
+import { AppearAnimation, CollapseAnimation } from './animations'
 
 type ToastPlacement =
     | 'top'
@@ -52,10 +52,49 @@ interface ToastState {
 
 type ToastsState = { [key in ToastPlacement]: ToastState[] }
 
+const Toast = (props: ToastProps) => {
+    const { children, onClose } = props
+    const styles = useStyles(undefined, [props])
+    return (
+        <div style={styles.root}>
+            {typeof children === 'function' ? children(onClose) : children}
+        </div>
+    )
+}
+
+interface ToastListProps {
+    toasts: ToastState[]
+    close: (id: number) => void
+}
+
+const ToastList = ({ toasts, close }: ToastListProps) => {
+    let transitions = useTransition(toasts, (toast) => toast.id, {
+        initial: { slide: 1, height: 1, opacity: 1 },
+        from: { slide: 0, height: 1, opacity: 0 },
+        enter: { slide: 1, height: 1, opacity: 1 },
+        leave: { slide: 1, height: 0, opacity: 0 },
+        unique: true
+    })
+    const renderToast = ({ item, props, key }) => (
+        <CollapseAnimation openValue={props.height} key={key}>
+            <animated.div
+                style={{
+                    marginTop: props.slide.interpolate([0, 1], ['-100%', '0%']),
+                    opacity: props.opacity
+                }}
+            >
+                <Toast {...item.props} onClose={() => close(item.id)} />
+            </animated.div>
+        </CollapseAnimation>
+    )
+    return <>{transitions.map(renderToast)}</>
+}
+
 const style: React.CSSProperties = {
     position: 'fixed',
     top: 0,
-    right: 0
+    right: 0,
+    padding: 16
 }
 
 const topPlacements = ['top', 'top-right', 'top-left']
@@ -88,23 +127,6 @@ const ToastContainer = ({ children }: ToastContainerProps) => {
         )
     const context = { show, close }
 
-    const renderToast = ({ item, props, key }) => (
-        <CollapseAnimation openValue={props.open}>
-            <animated.div
-                style={{
-                    marginTop: props.open.interpolate([0, 1], ['-100%', '0%'])
-                    // transform: props.open.interpolate(
-                    // [0, 1],
-                    // ['translateY(-100%)', 'translateY(0%)']
-                    // )
-                }}
-                key={key}
-            >
-                <Toast {...item.props} onClose={() => close(item.id)} />
-            </animated.div>
-        </CollapseAnimation>
-    )
-
     return (
         <>
             <ToastContainerContext.Provider value={context}>
@@ -113,25 +135,11 @@ const ToastContainer = ({ children }: ToastContainerProps) => {
             <Layer isActive={true} type="global">
                 {Object.entries(toasts).map(([placement, toasts]) => (
                     <div style={style}>
-                        <AnimatedList
-                            items={toasts}
-                            getId={(item) => item.id}
-                            renderItem={renderToast}
-                        />
+                        <ToastList toasts={toasts} close={close} />
                     </div>
                 ))}
             </Layer>
         </>
-    )
-}
-
-const Toast = (props: ToastProps) => {
-    const { children, onClose } = props
-    const styles = useStyles(undefined, [props])
-    return (
-        <div style={styles.root}>
-            {typeof children === 'function' ? children(onClose) : children}
-        </div>
     )
 }
 

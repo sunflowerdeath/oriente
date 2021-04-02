@@ -65,7 +65,7 @@ const CollapseAnimation = ({
 }: AppearAnimationProps) => {
     let [ref, { height }] =
         'ResizeObserver' in window ? useMeasure() : [null, { height: -1 }]
-    let style = { opacity: openValue, overflow: 'hidden', ...restProps.style }
+    let style = { ...restProps.style }
     if (ref) style.height = openValue.interpolate({ output: [0, height] })
     return (
         <animated.div {...restProps} style={style}>
@@ -83,24 +83,4 @@ const CollapseAnimation = ({
 
 CollapseAnimation.displayName = 'CollapseAnimation'
 
-export interface AnimatedListProps<T> {
-    items: Array<T>
-    getId: (item: T) => any
-    renderItem: (item: T, props: { open: any }, key: string) => React.ReactNode
-    isDisabled?: boolean
-}
-
-const AnimatedList = <T extends unknown>(props: AnimatedListProps<T>) => {
-    let { items, getId, renderItem, isDisabled } = props
-    let transitions = useTransition(items, getId, {
-        initial: { open: 1 },
-        from: { open: 0 },
-        enter: { open: 1 },
-        leave: { open: 0 },
-        unique: true,
-        immediate: isDisabled
-    })
-    return <>{transitions.map(renderItem)}</>
-}
-
-export { FadeAnimation, SlideAnimation, CollapseAnimation, AnimatedList }
+export { FadeAnimation, SlideAnimation, CollapseAnimation }

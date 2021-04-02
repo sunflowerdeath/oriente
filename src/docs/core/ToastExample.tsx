@@ -4,8 +4,7 @@ import { useToast, ToastContainer } from '../../core/toasts'
 
 const toastStyle = {
     color: 'white',
-    background: 'green',
-    borderRadius: 8,
+    background: '#16a085',
     padding: '12px 16px',
     marginBottom: 16
 }

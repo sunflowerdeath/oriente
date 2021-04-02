@@ -9,7 +9,7 @@ const exampleModalStyles = () => ({
         paddingTop: 100
     },
     window: {
-        background: '#333',
+        background: '#2c3e50',
         color: 'white',
         padding: 32
     }

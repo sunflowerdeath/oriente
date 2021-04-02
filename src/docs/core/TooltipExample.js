@@ -5,11 +5,10 @@ import Tooltip from '../../core/Tooltip'
 const TooltipExample = ({ children = 'target', ...restProps }) => {
     let [active, setActive] = useState(false)
     let style = {
-        padding: '5px 10px',
-        background: 'cornflowerblue',
+        padding: '8px 12px',
+        background: '#8e44ad',
         willChange: 'transform',
-        color: 'white',
-        borderRadius: 5
+        color: 'white'
     }
     return (
         <Tooltip tooltip="Tooltip!" style={style} {...restProps}>
