@@ -13,7 +13,16 @@ const toastStyle = {
 const ToastExample = () => {
     let toast = useToast()
 
-    let showToast = () => toast.show({ children: 'Toast', style: toastStyle })
+    let showToast = () =>
+        toast.show({
+            children: (close) => (
+                <>
+                    Toast
+                    <button onClick={close}>x</button>
+                </>
+            ),
+            style: toastStyle
+        })
 
     return <button onClick={showToast}>Show toast</button>
 }
