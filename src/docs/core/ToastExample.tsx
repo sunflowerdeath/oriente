@@ -1,6 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
 
-import { useToast, ToastContainer, ToastCloseButton } from '../../core/toasts'
+import {
+    useToast,
+    ToastContainer,
+    ToastCloseButton,
+    ToastPlacement
+} from '../../core/toasts'
 
 const toastStyle = {
     color: 'white',
@@ -9,9 +14,8 @@ const toastStyle = {
     marginBottom: 16
 }
 
-const ToastExample = () => {
+const ToastExample = ({ placement }: { placement?: ToastPlacement }) => {
     let toast = useToast()
-
     let showToast = () =>
         toast.show({
             children: (
@@ -20,10 +24,39 @@ const ToastExample = () => {
                     <ToastCloseButton style={{ top: 4, right: 4 }} />
                 </>
             ),
-            style: toastStyle
+            style: toastStyle,
+            placement
         })
-
     return <button onClick={showToast}>Show toast</button>
 }
 
-export default ToastExample
+const ToastPlacementExample = () => {
+    const [placement, setPlacement] = useState<ToastPlacement>('top-right')
+    const items: ToastPlacement[] = [
+        'top-right',
+        'top',
+        'top-left',
+        'bottom-right',
+        'bottom',
+        'bottom-left'
+    ]
+    return (
+        <>
+            <div>
+                {items.map((value) => (
+                    <label>
+                        <input
+                            type="checkbox"
+                            onChange={() => setPlacement(value)}
+                            checked={placement === value}
+                        />
+                        {value}
+                    </label>
+                ))}
+            </div>
+            <ToastExample placement={placement} />
+        </>
+    )
+}
+
+export { ToastExample, ToastPlacementExample }

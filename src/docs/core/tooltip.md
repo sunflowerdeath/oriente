@@ -3,7 +3,7 @@ imports:
     'TooltipExample, { ControlledTooltipExample }': './TooltipExample.js'
 ---
 
-# Core/Tooltip
+# Tooltip
 
 Tooltip appears near element when a user interacts with an element.
 

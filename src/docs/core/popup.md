@@ -3,7 +3,7 @@ imports:
   'PopupExample': './PopupExample.js'
 ---
 
-# Core/Popup
+# Popup
 
 Popup positions an element relative to the target element.
 

@@ -3,7 +3,7 @@ imports:
     'ModalExample': './ModalExample'
 ---
 
-# Core/Modal
+# Modal
 
 Modal
 

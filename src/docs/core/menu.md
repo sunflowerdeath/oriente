@@ -3,7 +3,7 @@ imports:
     '{ MenuListExample, MenuExample }': './MenuExample'
 ---
 
-# Core/Menu
+# Menu
 
 Menu is a list of items that can be navigated using keyboard.
 

@@ -1,9 +1,9 @@
 ---
 imports:
-    'ToastExample': './ToastExample'
+    '{ ToastExample, ToastPlacementExample }': './ToastExample'
 ---
 
-# Core/Toasts
+# Toasts
 
 Toasts display small messages on top of the page for the short time.
 
@@ -11,6 +11,10 @@ Toasts display small messages on top of the page for the short time.
 
 ```@render
 <ToastExample />
+```
+
+```@render
+<ToastPlacementExample />
 ```
 
 ## Props

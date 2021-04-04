@@ -12,7 +12,7 @@ import { Layer } from './layers'
 import { AppearAnimation, CollapseAnimation } from './animations'
 import CloseButton from './CloseButton'
 
-type ToastPlacement =
+export type ToastPlacement =
     | 'top'
     | 'top-right'
     | 'top-left'
@@ -20,21 +20,23 @@ type ToastPlacement =
     | 'bottom-right'
     | 'bottom-left'
 
-interface ToastContainerProps {
+export interface ToastContainerProps {
     children: React.ReactNode
 }
 
-interface ToastProps extends FloralProps {
+export interface ToastProps extends FloralProps {
     children: React.ReactNode | ((close: () => void) => React.ReactNode)
     onClose?: () => void
 }
 
-interface ToastOptions extends ToastProps {
+export interface ToastCloseButtonProps extends FloralProps {
+    children?: React.ReactNode
+}
+
+export interface ToastOptions extends ToastProps {
     duration?: number
     placement?: ToastPlacement
 }
-
-// internal types
 
 interface ToastContainerContextProps {
     show: (options: ToastOptions) => number
@@ -79,13 +81,14 @@ const Toast = (props: ToastProps) => {
 
 interface ToastListProps {
     toasts: ToastState[]
+    placement: ToastPlacement
     close: (id: number) => void
 }
 
-const ToastList = ({ toasts, close }: ToastListProps) => {
+const ToastList = ({ toasts, placement, close }: ToastListProps) => {
     // @ts-ignore
     let transitions = useTransition(toasts, (toast) => toast.id, {
-        initial: { slide: 1, height: 1, opacity: 1 },
+        initial: { slide: 0, height: 1, opacity: 0 },
         from: { slide: 0, height: 1, opacity: 0 },
         enter: { slide: 1, height: 1, opacity: 1 },
         leave: { slide: 1, height: 0, opacity: 0 },
@@ -103,7 +106,12 @@ const ToastList = ({ toasts, close }: ToastListProps) => {
         <CollapseAnimation openValue={props.height} key={key}>
             <animated.div
                 style={{
-                    marginTop: props.slide.interpolate([0, 1], ['-100%', '0%']),
+                    [topPlacements.includes(placement)
+                        ? 'marginTop'
+                        : 'marginBottom']: props.slide.interpolate(
+                        [0, 1],
+                        ['-100%', '0%']
+                    ),
                     opacity: props.opacity
                 }}
             >
@@ -178,16 +186,16 @@ const ToastContainer = ({ children }: ToastContainerProps) => {
             <Layer isActive={true} type="global">
                 {Object.entries(toasts).map(([placement, toasts]) => (
                     <div style={getContainerStyle(placement as ToastPlacement)}>
-                        <ToastList toasts={toasts} close={close} />
+                        <ToastList
+                            toasts={toasts}
+                            placement={placement as ToastPlacement}
+                            close={close}
+                        />
                     </div>
                 ))}
             </Layer>
         </>
     )
-}
-
-interface ToastCloseButtonProps extends FloralProps {
-    children?: React.ReactNode
 }
 
 const ToastCloseButton = (props: ToastCloseButtonProps) => {
