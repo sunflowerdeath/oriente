@@ -5,7 +5,6 @@ import { Layer } from '../../core/layers'
 
 const PopupExample = () => {
     const [active, setActive] = useState(false)
-    const [n, setN] = useState(0)
     const popup = useCallback((ref) => (
         <div
             ref={ref}
@@ -16,7 +15,7 @@ const PopupExample = () => {
                 willChange: 'transform'
             }}
         >
-            Popup <button onClick={() => setN((n) => n + 1)}>{n}</button>
+            Popup
         </div>
     ))
     return (

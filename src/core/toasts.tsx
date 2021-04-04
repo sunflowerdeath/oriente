@@ -60,7 +60,7 @@ interface ToastContextProps {
 const ToastContext = createContext<ToastContextProps | undefined>(undefined)
 
 const toastStyle = {
-    root: { position: 'relative' }
+    root: { position: 'relative', pointerEvents: 'all' }
 }
 
 const Toast = (props: ToastProps) => {
@@ -83,6 +83,7 @@ interface ToastListProps {
 }
 
 const ToastList = ({ toasts, close }: ToastListProps) => {
+    // @ts-ignore
     let transitions = useTransition(toasts, (toast) => toast.id, {
         initial: { slide: 1, height: 1, opacity: 1 },
         from: { slide: 0, height: 1, opacity: 0 },
@@ -90,7 +91,15 @@ const ToastList = ({ toasts, close }: ToastListProps) => {
         leave: { slide: 1, height: 0, opacity: 0 },
         unique: true
     })
-    const renderToast = ({ item, props, key }) => (
+    const renderToast = ({
+        item,
+        props,
+        key
+    }: {
+        item: ToastState
+        props: { [key: string]: any }
+        key: string
+    }) => (
         <CollapseAnimation openValue={props.height} key={key}>
             <animated.div
                 style={{
@@ -105,14 +114,33 @@ const ToastList = ({ toasts, close }: ToastListProps) => {
     return <>{transitions.map(renderToast)}</>
 }
 
-const style: React.CSSProperties = {
-    position: 'fixed',
-    top: 0,
-    right: 0,
-    padding: '1rem'
-}
-
 const topPlacements = ['top', 'top-right', 'top-left']
+
+const getContainerStyle = (placement: ToastPlacement) => {
+    const style: React.CSSProperties = {
+        position: 'fixed',
+        padding: '1rem',
+        display: 'flex',
+        flexDirection: 'column',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        pointerEvents: 'none',
+        boxSizing: 'border-box'
+    }
+    style.justifyContent = topPlacements.includes(placement)
+        ? 'flex-start'
+        : 'flex-end'
+    if (placement === 'top-left' || placement === 'bottom-left') {
+        style.alignItems = 'flex-start'
+    } else if (placement === 'top-right' || placement === 'bottom-right') {
+        style.alignItems = 'flex-end'
+    } else {
+        style.alignItems = 'center'
+    }
+    return style
+}
 
 const ToastContainer = ({ children }: ToastContainerProps) => {
     const idRef = useRef(0)
@@ -125,7 +153,7 @@ const ToastContainer = ({ children }: ToastContainerProps) => {
         'bottom-left': []
     })
     const show = (options: ToastOptions) => {
-        const { placement = 'top', duration = 3000, ...props } = options
+        const { placement = 'top-right', duration = 3000, ...props } = options
         const id = idRef.current++
         const newToast = { id, props }
         setToasts((toasts) => {
@@ -149,7 +177,7 @@ const ToastContainer = ({ children }: ToastContainerProps) => {
             </ToastContainerContext.Provider>
             <Layer isActive={true} type="global">
                 {Object.entries(toasts).map(([placement, toasts]) => (
-                    <div style={style}>
+                    <div style={getContainerStyle(placement as ToastPlacement)}>
                         <ToastList toasts={toasts} close={close} />
                     </div>
                 ))}
