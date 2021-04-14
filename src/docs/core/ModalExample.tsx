@@ -6,7 +6,8 @@ import { Modal, ModalCloseButton } from '../../core/Modal'
 
 const exampleModalStyles = () => ({
     container: {
-        paddingTop: 100
+        paddingTop: 100,
+        paddingBottom: 100
     },
     window: {
         background: '#2c3e50',
@@ -17,7 +18,7 @@ const exampleModalStyles = () => ({
 
 const ExampleModal = extendComponentStyles(Modal, exampleModalStyles)
 
-const ModalExample = () => {
+const ModalExample = ({ children } : { children : React.ReactNode }) => {
     const [isOpen, setIsOpen] = useState(false)
     return (
         <>
@@ -27,15 +28,10 @@ const ModalExample = () => {
                 onClose={() => setIsOpen(false)}
                 closeOnOverlayClick={true}
             >
-                {() => (
+                {(close) => (
                     <>
                         <ModalCloseButton />
-                        Modal
-                        <br />
-                        <br />
-                        <button onClick={() => setIsOpen(false)}>
-                            Close modal
-                        </button>
+                        {children(close)}
                     </>
                 )}
             </ExampleModal>

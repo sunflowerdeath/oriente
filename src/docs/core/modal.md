@@ -10,7 +10,30 @@ Modal
 ## Example
 
 ```@render
-<ModalExample />
+<ModalExample>
+    {(close) =>
+        <>
+            Modal
+            <br />
+            <br />
+            <button onClick={close}>
+                Close modal
+            </button>
+        </>
+    }
+</ModalExample>
+```
+
+## Scroll
+
+```@render
+<ModalExample>
+    {(close) => Array(50).fill(1).map(() => <>
+        Modal
+        <br />
+        <br />
+    </>)}
+</ModalExample>
 ```
 
 ## Props

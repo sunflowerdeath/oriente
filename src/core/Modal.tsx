@@ -27,7 +27,7 @@ Example usage:
 */
 
 interface ModalProps extends FloralProps {
-    children: () => React.ReactNode | React.ReactNode
+    children: (close: () => void) => React.ReactNode | React.ReactNode
     isOpen?: boolean
     onClose: () => void
     initialFocusRef?: any
@@ -38,7 +38,7 @@ interface ModalProps extends FloralProps {
     width?: string | number
 }
 
-const modalStyles = (props: ModalProps, { isOpen }) => {
+const modalStyles = (props: ModalProps, { isOpen }: { isOpen: boolean }) => {
     const container = {
         position: 'fixed',
         width: '100%',
@@ -49,11 +49,13 @@ const modalStyles = (props: ModalProps, { isOpen }) => {
         justifyContent: 'center',
         alignItems: props.isCentered ? 'center' : 'flex-start',
         overflowY: 'auto',
-        pointerEvents: 'none'
+        boxSizing: 'border-box',
+        pointerEvents: isOpen ? 'all' : 'none'
     }
     const window = {
         position: 'relative',
         background: 'white',
+        maxWidth: '100%',
         width: props.width,
         pointerEvents: 'all'
     }
@@ -85,7 +87,7 @@ const Modal = (props: ModalProps) => {
     const isActive = isOpen || !isRest
     const modalChildren = useMemo(() => {
         if (isActive) {
-            return typeof children === 'function' ? children() : children
+            return typeof children === 'function' ? children(onClose) : children
         } else {
             return null
         }
@@ -101,15 +103,11 @@ const Modal = (props: ModalProps) => {
                     style={styles.overlay}
                     onClick={closeOnOverlayClick && onClose}
                 />
-            </Layer>
-            <Layer type="modal" isActive={isActive}>
                 <div style={styles.container}>
-                    <Animation openValue={openValue}>
-                        <FocusLock>
-                            <ModalContext.Provider value={context}>
-                                <div style={styles.window}>{modalChildren}</div>
-                            </ModalContext.Provider>
-                        </FocusLock>
+                    <Animation openValue={openValue} style={styles.window}>
+                        <ModalContext.Provider value={context}>
+                            <FocusLock>{modalChildren}</FocusLock>
+                        </ModalContext.Provider>
                     </Animation>
                 </div>
             </Layer>

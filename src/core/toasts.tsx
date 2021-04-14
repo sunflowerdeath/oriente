@@ -170,6 +170,7 @@ const ToastContainer = ({ children }: ToastContainerProps) => {
                 : [...toasts[placement], newToast]
             return { ...toasts, [placement]: list }
         })
+        setTimeout(() => close(id), duration)
         return id
     }
     const close = (id: number) =>
