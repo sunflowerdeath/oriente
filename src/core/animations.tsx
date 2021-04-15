@@ -32,7 +32,7 @@ interface SlideAnimationProps extends AppearAnimationProps {
 }
 
 const SlideAnimation = forwardRef((props: SlideAnimationProps, ref) => {
-    let {
+    const {
         children,
         openValue,
         side = 'bottom',
@@ -40,9 +40,9 @@ const SlideAnimation = forwardRef((props: SlideAnimationProps, ref) => {
         style,
         ...restProps
     } = props
-    let axis = side === 'left' || side === 'right' ? 'X' : 'Y'
-    let dir = side === 'left' || side === 'bottom' ? 1 : -1
-    let resStyle = {
+    const axis = side === 'left' || side === 'right' ? 'X' : 'Y'
+    const dir = side === 'left' || side === 'bottom' ? 1 : -1
+    const resStyle = {
         ...style,
         opacity: openValue,
         transform: openValue
@@ -63,9 +63,9 @@ const CollapseAnimation = ({
     children,
     ...restProps
 }: AppearAnimationProps) => {
-    let [ref, { height }] =
+    const [ref, { height }] =
         'ResizeObserver' in window ? useMeasure() : [null, { height: -1 }]
-    let style = { ...restProps.style }
+    const style = { ...restProps.style }
     if (ref) style.height = openValue.interpolate({ output: [0, height] })
     return (
         <animated.div {...restProps} style={style}>

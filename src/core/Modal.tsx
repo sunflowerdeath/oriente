@@ -5,6 +5,7 @@ import Taply from 'taply'
 import { useStyles } from 'floral'
 import FocusLock from 'react-focus-lock'
 import { useKey, useClickAway } from 'react-use'
+import { RemoveScroll } from 'react-remove-scroll'
 
 import { Layer } from './layers'
 import CloseButton from './CloseButton'
@@ -104,17 +105,17 @@ const Modal = (props: ModalProps) => {
         <>
             <Layer type="modal" isActive={isActive}>
                 <FadeAnimation openValue={openValue} style={styles.overlay} />
-                <div style={styles.container}>
-                    <Animation
-                        openValue={openValue}
-                        style={styles.window}
-                        ref={windowRef}
-                    >
-                        <ModalContext.Provider value={context}>
-                            <FocusLock>{modalChildren}</FocusLock>
-                        </ModalContext.Provider>
-                    </Animation>
-                </div>
+                <RemoveScroll>
+                    <div style={styles.container}>
+                        <Animation openValue={openValue} style={styles.window}>
+                            <div ref={windowRef}>
+                                <ModalContext.Provider value={context}>
+                                    <FocusLock>{modalChildren}</FocusLock>
+                                </ModalContext.Provider>
+                            </div>
+                        </Animation>
+                    </div>
+                </RemoveScroll>
             </Layer>
         </>
     )
@@ -127,7 +128,7 @@ Modal.defaultProps = {
 }
 
 interface ModalCloseButtonProps extends FloralProps {
-    children: React.ReactNode
+    children?: React.ReactNode
 }
 
 const ModalCloseButton = (props: ModalCloseButtonProps) => {

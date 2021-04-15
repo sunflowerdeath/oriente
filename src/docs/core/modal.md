@@ -1,6 +1,6 @@
 ---
 imports:
-    'ModalExample': './ModalExample'
+    '{ ModalExample, ModalAnimationExample }': './ModalExample'
 ---
 
 # Modal
@@ -34,6 +34,12 @@ Modal
         <br />
     </>)}
 </ModalExample>
+```
+
+## Animation
+
+```@render
+<ModalAnimationExample />
 ```
 
 ## Props
