@@ -1,10 +1,10 @@
-import React, { useMemo, createContext, useContext } from 'react'
+import React, { useMemo, createContext, useContext, useRef } from 'react'
 // @ts-ignore
 import Taply from 'taply'
 // @ts-ignore
 import { useStyles } from 'floral'
 import FocusLock from 'react-focus-lock'
-import { useKey } from 'react-use'
+import { useKey, useClickAway } from 'react-use'
 
 import { Layer } from './layers'
 import CloseButton from './CloseButton'
@@ -48,8 +48,8 @@ const modalStyles = (props: ModalProps, { isOpen }: { isOpen: boolean }) => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: props.isCentered ? 'center' : 'flex-start',
-        overflowY: 'auto',
         boxSizing: 'border-box',
+        overflowY: 'auto',
         pointerEvents: isOpen ? 'all' : 'none'
     }
     const window = {
@@ -85,6 +85,13 @@ const Modal = (props: ModalProps) => {
     const [openValue, isRest] = useAnimatedValue(isOpen ? 1 : 0)
     const context = useMemo(() => ({ close: onClose }), [])
     const isActive = isOpen || !isRest
+    useKey('Escape', () => {
+        if (closeOnEsc) onClose()
+    })
+    const windowRef = useRef(null)
+    useClickAway(windowRef, (e) => {
+        if (closeOnOverlayClick) onClose()
+    })
     const modalChildren = useMemo(() => {
         if (isActive) {
             return typeof children === 'function' ? children(onClose) : children
@@ -92,19 +99,17 @@ const Modal = (props: ModalProps) => {
             return null
         }
     }, [children, isActive])
-    useKey('Escape', () => {
-        if (closeOnEsc) onClose()
-    })
+
     return (
         <>
             <Layer type="modal" isActive={isActive}>
-                <FadeAnimation
-                    openValue={openValue}
-                    style={styles.overlay}
-                    onClick={closeOnOverlayClick && onClose}
-                />
+                <FadeAnimation openValue={openValue} style={styles.overlay} />
                 <div style={styles.container}>
-                    <Animation openValue={openValue} style={styles.window}>
+                    <Animation
+                        openValue={openValue}
+                        style={styles.window}
+                        ref={windowRef}
+                    >
                         <ModalContext.Provider value={context}>
                             <FocusLock>{modalChildren}</FocusLock>
                         </ModalContext.Provider>
