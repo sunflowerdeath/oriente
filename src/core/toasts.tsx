@@ -38,14 +38,14 @@ export interface ToastOptions extends ToastProps {
     placement?: ToastPlacement
 }
 
-interface ToastContainerContextProps {
+interface ToastConroller {
     show: (options: ToastOptions) => number
     close: (id: number) => void
 }
 
-const ToastContainerContext = createContext<
-    ToastContainerContextProps | undefined
->(undefined)
+const ToastContainerContext = createContext<ToastConroller | undefined>(
+    undefined
+)
 
 interface ToastState {
     id: number
