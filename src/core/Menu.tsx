@@ -37,11 +37,22 @@ export interface MenuRenderProps {
 }
 
 export interface MenuProps {
-    list: (props: MenuRenderProps) => React.ReactNode
+    /* Content of the dropdown menu */
+    menu: (props: MenuRenderProps) => React.ReactNode
+
+    /* Trigger element that menu will be attached to */
     children: (ref: any, props: MenuRenderProps) => React.ReactNode
-    onSelect?: (value?: string) => void
-    closeOnSelect?: boolean
+
+    /* Placement of the menu relative to the target */
     placement: PopupPlacement
+
+    /* Function that is called when `<MenuItem>` is selected */
+    onSelect?: (value?: string) => void
+
+    /* Whether the menu should close when an item is selected */
+    closeOnSelect?: boolean
+
+    /* Component for hide and show animation */
     Animation: AppearAnimation
 }
 
@@ -225,7 +236,7 @@ const menuStyles = {
 const Menu = (props: MenuProps) => {
     const {
         placement,
-        list,
+        menu,
         children,
         Animation,
         closeOnSelect,
@@ -266,7 +277,7 @@ const Menu = (props: MenuProps) => {
                                 ref={ref}
                                 onSelect={menuListOnSelect}
                             >
-                                {list(renderProps)}
+                                {menu(renderProps)}
                             </MenuList>
                         </FocusLock>
                     </Animation>

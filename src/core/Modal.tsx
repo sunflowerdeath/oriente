@@ -28,15 +28,32 @@ Example usage:
 */
 
 interface ModalProps extends FloralProps {
+    /* Content of the modal */
     children: (close: () => void) => React.ReactNode | React.ReactNode
+
+    /* Whether the modal is open */
     isOpen?: boolean
+
+    /* Function that is called when the modal requests to close */
     onClose: () => void
+
+    /* Ref to the element that will get focus on opening the modal */
     initialFocusRef?: any
+
+    /* Whether the modal should close on click on overlay */
     closeOnOverlayClick?: boolean
+
+    /* Whether the modal should close on pressing the Esc key */
     closeOnEsc?: boolean
-    Animation?: AppearAnimation
+
+    /* Vertically centers the modal */
     isCentered?: boolean
+
+    /* CSS value for the width of the modal window */
     width?: string | number
+
+    /* Component for hide and show animation */
+    Animation?: AppearAnimation
 }
 
 const modalStyles = (props: ModalProps, { isOpen }: { isOpen: boolean }) => {
