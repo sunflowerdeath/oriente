@@ -27,11 +27,13 @@ import Popup from './Popup'
 interface TooltipArrowProps
     extends Omit<React.HTMLProps<HTMLDivElement>, 'style'>,
         FloralProps {
-    // Side of the tooltip
+    /**
+     * Side of the tooltip
+     */
     side: 'top' | 'bottom' | 'left' | 'right'
-    // Align of the arrow on the tooltip's side
+    /** // Align of the arrow on the tooltip's side */
     align: 'begin' | 'center' | 'end'
-    // Width of the arrow, for the orientation like this: "/\"
+    /** Width of the arrow, for the orientation like this: "/\" */
     width: number | string
     // Height of the arrow
     height: number | string
@@ -85,34 +87,35 @@ const TooltipArrow = (props: TooltipArrowProps) => {
 }
 
 interface TooltipProps extends FloralProps {
-    /* Content of the tooltip */
+    /** Content of the tooltip */
     tooltip: React.ReactNode
 
-    /* Target element for the tooltip */
+    /** Target element for the tooltip */
     children: React.ReactElement<any>
 
-    /* Placement of the tooltip relative to the target */
+    /** Placement of the tooltip relative to the target */
     placement: PopupPlacement
 
-    /* Tooltip will show and hide on tap on the target element */
+    /** Tooltip will show and hide on tap on the target element */
     showOnTap: boolean
 
-    /* Tooltip will show when the target element is hovered */
+    /** Tooltip will show when the target element is hovered */
     showOnHover: boolean
 
-    /* Tooltip will show when the target element is focused */
+    /** Tooltip will show when the target element is focused */
     showOnFocus: boolean
 
-    /* Delay in ms before showing the tooltip after the show event */
+    /** Delay in ms before showing the tooltip after the show event */
     showDelay: number
 
-    /* Delay in ms before hiding the tooltip after the hide event.
-     * Hide will be cancelled if you will hover the tooltip and `showOnHover` is `true`.
+    /**
+     * Delay in ms before hiding the tooltip after the hide event.
+     * Hide will be cancelled if you will hover the tooltip when `showOnHover` is `true`.
      * This is useful, when you want to copy text from the tooltip or click a link in it.
      */
     hideDelay: number
 
-    /* Component for hide and show animation */
+    /** Component for hide and show animation */
     Animation: AppearAnimation
 }
 

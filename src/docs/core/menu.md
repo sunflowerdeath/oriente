@@ -15,15 +15,17 @@ Menu is a list of items that can be navigated using keyboard.
 
 ## Props
 
-```
-@propsdoc
+**`<Menu>`**
+
+```@propsdoc
 file: ../../core/Menu.tsx
 allowMarkdown: true
 component: Menu
 ```
 
-```
-@propsdoc
+**`<MenuItem>`**
+
+```@propsdoc
 file: ../../core/Menu.tsx
 allowMarkdown: true
 component: MenuItem

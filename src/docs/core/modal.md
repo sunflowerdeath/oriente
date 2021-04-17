@@ -44,16 +44,18 @@ Modal
 
 ## Props
 
-```
-#@propsdoc
+**<Modal>**
+
+```@propsdoc
 file: ../../core/Modal.tsx
 allowMarkdown: true
 component: Modal
 ```
 
-```
-#@propsdoc
-file: ../../core/Menu.tsx
+**<ModalCloseButton>**
+
+```@propsdoc
+file: ../../core/Modal.tsx
 allowMarkdown: true
 component: ModalCloseButton
 ```

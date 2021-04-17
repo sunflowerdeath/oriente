@@ -31,7 +31,7 @@ const MenuListExample = () => (
 )
 
 const MenuExample = () => {
-    let list = () => (
+    let menu = () => (
         <>
             <ExampleMenuItem
                 value="one"
@@ -50,7 +50,7 @@ const MenuExample = () => {
     return (
         <Menu
             onSelect={(value) => console.log(`Menu onSelect: ${value}`)}
-            list={list}
+            menu={menu}
         >
             {(ref, { open }) => (
                 <div ref={ref} onClick={open}>
