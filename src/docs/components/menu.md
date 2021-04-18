@@ -33,9 +33,7 @@ import { Menu } from 'oriente'
 <MenuExample />
 ```
 
-## Props
-
-**`<Menu>`**
+## Menu Props
 
 ```@propsdoc
 file: ../../core/Menu.tsx
@@ -43,7 +41,7 @@ allowMarkdown: true
 component: Menu
 ```
 
-**`<MenuItem>`**
+## MenuItem Props
 
 ```@propsdoc
 file: ../../core/Menu.tsx

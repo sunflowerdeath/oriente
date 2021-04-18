@@ -42,9 +42,7 @@ Modal
 <ModalAnimationExample />
 ```
 
-## Props
-
-**<Modal>**
+## Modal Props
 
 ```@propsdoc
 file: ../../core/Modal.tsx
@@ -52,7 +50,7 @@ allowMarkdown: true
 component: Modal
 ```
 
-**<ModalCloseButton>**
+** ModalCloseButton Props
 
 ```@propsdoc
 file: ../../core/Modal.tsx

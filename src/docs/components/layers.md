@@ -4,16 +4,15 @@
 
 ## Stack Props
 
-```
-@propsdoc
-file: '../../../core/src/Layers/Stack.js'
+```@propsdoc
+file: '../../core/layers.tsx'
 allowMarkdown: true
+component: Stack
 ```
 
 ## Layer Props
 
-```
-@propsdoc
+```@propsdoc
 file: '../../core/layers.tsx'
 allowMarkdown: true
 component: Layer

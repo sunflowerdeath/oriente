@@ -6,7 +6,7 @@ import { dark } from 'minibook/lib/themes'
 import { Stack } from '../core/layers'
 import { ToastContainer } from '../core/toasts'
 
-import coreSection from './core'
+import componentsSection from './components'
 import GettingStartedStory from './getting-started.md'
 
 const sections = {
@@ -14,7 +14,7 @@ const sections = {
         name: 'Getting Started',
         markdown: GettingStartedStory
     },
-    core: coreSection
+    components: componentsSection
 }
 
 ReactDOM.render(

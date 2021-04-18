@@ -5,8 +5,8 @@ import MenuStory from './menu.md'
 import ModalStory from './modal.md'
 import ToastsStory from './toasts.md'
 
-const coreSection = {
-    name: 'Core',
+const componentsSection = {
+    name: 'Components',
     items: {
         layers: {
             name: 'Layers',
@@ -35,4 +35,4 @@ const coreSection = {
     }
 }
 
-export default coreSection
+export default componentsSection

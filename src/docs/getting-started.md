@@ -2,7 +2,7 @@
 
 Oriente is a React UI library.
 
-It provides small, composable and easily customizable components.
+It provides simple, composable and customizable components.
 
 ## Install
 
