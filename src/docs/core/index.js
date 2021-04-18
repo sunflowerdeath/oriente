@@ -7,7 +7,7 @@ import ToastsStory from './toasts.md'
 
 const coreSection = {
     name: 'Core',
-    stories: {
+    items: {
         layers: {
             name: 'Layers',
             markdown: LayersStory

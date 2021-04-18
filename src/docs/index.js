@@ -7,8 +7,13 @@ import { Stack } from '../core/layers'
 import { ToastContainer } from '../core/toasts'
 
 import coreSection from './core'
+import GettingStartedStory from './getting-started.md'
 
 const sections = {
+    'getting-started': {
+        name: 'Getting Started',
+        markdown: GettingStartedStory
+    },
     core: coreSection
 }
 
@@ -21,7 +26,7 @@ ReactDOM.render(
                         <span style={{ fontWeight: 'normal' }}>☀</span> Oriente
                     </span>
                 }
-                sections={sections}
+                items={sections}
                 theme={dark}
             />
         </ToastContainer>
