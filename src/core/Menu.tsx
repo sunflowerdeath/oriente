@@ -27,6 +27,7 @@ import Popup from './Popup'
 import useControlledState from '../utils/useControlledState'
 import useAnimatedValue from '../utils/useAnimatedValue'
 
+import { oppositeSides } from './PopupController'
 import { AppearAnimation, SlideAnimation } from './animations'
 import { Layer } from './layers'
 
@@ -244,6 +245,7 @@ const Menu = (props: MenuProps) => {
     } = props
     const styles = useStyles(menuStyles, [props])
     const [isOpen, setIsOpen] = useControlledState(props, 'isOpen', false)
+    const [side, setSide] = useState('top')
     const open = useCallback(() => setIsOpen(true), [])
     const close = useCallback(() => setIsOpen(false), [])
     useKey('Escape', close)
@@ -269,8 +271,9 @@ const Menu = (props: MenuProps) => {
             <Popup
                 placement={placement}
                 isActive={isActive}
+                onChangeSide={setSide}
                 popup={(ref) => (
-                    <Animation openValue={openValue}>
+                    <Animation openValue={openValue} side={oppositeSides[side]}>
                         <FocusLock>
                             <MenuList
                                 style={styles.list}

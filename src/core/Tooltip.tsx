@@ -121,7 +121,7 @@ interface TooltipProps extends FloralProps {
 }
 
 const Tooltip = (props: TooltipProps) => {
-    let {
+    const {
         placement,
         showOnTap,
         showOnHover,
@@ -133,16 +133,16 @@ const Tooltip = (props: TooltipProps) => {
         Animation
     } = props
 
-    let state = useRef('closed')
-    let [isOpen, setIsOpen] = useControlledState(props, 'isOpen', false)
-    let styles = useStyles(null, [props, { isOpen }])
-    let [tapState, setTapState] = useState<TapState>(initialTapState)
-    let [tooltipTapState, setTooltipTapState] = useState<TapState>(
+    const state = useRef('closed')
+    const [isOpen, setIsOpen] = useControlledState(props, 'isOpen', false)
+    const styles = useStyles(null, [props, { isOpen }])
+    const [tapState, setTapState] = useState<TapState>(initialTapState)
+    const [tooltipTapState, setTooltipTapState] = useState<TapState>(
         initialTapState
     )
-    let timer = useRef<number>()
-    let [openValue, isRest] = useAnimatedValue(isOpen ? 1 : 0)
-    let [side, setSide] = useState('top')
+    const timer = useRef<number>()
+    const [openValue, isRest] = useAnimatedValue(isOpen ? 1 : 0)
+    const [side, setSide] = useState('top')
 
     /*
     let isVert = placement.side === 'top' || placement.side === 'bottom'
@@ -150,7 +150,7 @@ const Tooltip = (props: TooltipProps) => {
     let arrowSide = isFlipped ? placement.side : oppositeSides[placement.side]
     */
 
-    let openWithDelay = useCallback(() => {
+    const openWithDelay = useCallback(() => {
         if (state.current === 'open' || state.current === 'willOpen') return
         clearTimeout(timer.current)
         if (state.current === 'willClose') {
@@ -167,7 +167,7 @@ const Tooltip = (props: TooltipProps) => {
         )
     }, [showDelay])
 
-    let closeWithDelay = useCallback(() => {
+    const closeWithDelay = useCallback(() => {
         if (state.current === 'closed' || state.current === 'willClose') return
         clearTimeout(timer.current)
         if (state.current === 'willOpen') {
@@ -182,21 +182,21 @@ const Tooltip = (props: TooltipProps) => {
     }, [hideDelay])
 
     useEffect(() => {
-        let openByFocus = showOnFocus && tapState.isFocused
-        let openByHover =
+        const openByFocus = showOnFocus && tapState.isFocused
+        const openByHover =
             showOnHover && (tapState.isHovered || tooltipTapState.isHovered)
-        let nextIsOpen = openByFocus || openByHover
+        const nextIsOpen = openByFocus || openByHover
         if (nextIsOpen) openWithDelay()
         else closeWithDelay()
     }, [tapState, tooltipTapState])
 
     useEffect(() => () => clearTimeout(timer.current), [])
 
-    let onTap = useCallback(() => {
+    const onTap = useCallback(() => {
         if (showOnTap) setIsOpen((val) => !val)
     }, [])
 
-    let popup = useCallback(
+    const popup = useCallback(
         (ref) => (
             <div ref={ref}>
                 <Taply onChangeTapState={setTooltipTapState}>
@@ -213,7 +213,7 @@ const Tooltip = (props: TooltipProps) => {
         [tooltip, side]
     )
 
-    let target = (popupRef) =>
+    const target = (popupRef) =>
         typeof children === 'function' ? (
             children({ onChangeTapState: setTapState, onTap, popupRef })
         ) : (
