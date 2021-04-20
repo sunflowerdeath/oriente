@@ -23,7 +23,7 @@ export interface PopupOptions {
     target: HTMLElement
     popup: HTMLElement
     placement: PopupPlacement
-    onFlip?: (vert: boolean, horiz: boolean) => void
+    onChangeSide?: (side: PopupSide) => void
 }
 
 // Internal types
@@ -64,7 +64,7 @@ const defaultPlacement: PopupPlacement = {
     padding: 0
 }
 
-const oppositeSides: { [key in PopupSide]: PopupSide } = {
+export const oppositeSides: { [key in PopupSide]: PopupSide } = {
     left: 'right',
     right: 'left',
     top: 'bottom',
@@ -170,13 +170,14 @@ const getPopupPosition = (
     let { side, align, offset, flip, constrain, padding } = placement
     let configs = getFlipConfigs(flip, { side, align, offset })
     // TODO select position that fits most
-    let position
+    let position: Position, config: any
     for (const i in configs) {
-        position = calcPosition(measurements, configs[i])
+        config = configs[i]
+        position = calcPosition(measurements, config)
         if (fitsViewport(position, measurements, padding)) break
     }
     // if (constrain) position = constrainPosition(position, measurements, padding)
-    return position
+    return { position: position!, config: config! }
 }
 
 const forceDefined = <T>() => (undefined as any) as T
@@ -200,6 +201,7 @@ class PopupController {
     popup: HTMLElement = forceDefined<HTMLElement>()
     target: HTMLElement = forceDefined<HTMLElement>()
     placement: PopupPlacement
+    onChangeSide?: (side: PopupSide) => void
 
     viewportObserver: ViewportObserver
     viewport: ViewportMeasurements
@@ -216,8 +218,9 @@ class PopupController {
         this.popupObserver.unobserve()
     }
 
-    setOptions({ target, popup, placement }: PopupOptions) {
+    setOptions({ target, popup, placement, onChangeSide }: PopupOptions) {
         this.disableUpdate = true
+        this.onChangeSide = onChangeSide
         if (this.target !== target) {
             this.target = target
             if (this.targetObserver) this.targetObserver.unobserve()
@@ -250,8 +253,12 @@ class PopupController {
             target: this.targetRect,
             bounds: getViewportBounds(this.viewport)
         }
-        const position = getPopupPosition(measurements, this.placement)
-        if (position) this.setPosition(position)
+        const { config, position } = getPopupPosition(
+            measurements,
+            this.placement
+        )
+        this.setPosition(position)
+        if (this.onChangeSide) this.onChangeSide(config.side)
     }
 
     setPosition({ left, top }: Position) {

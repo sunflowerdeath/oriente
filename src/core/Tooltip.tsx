@@ -14,6 +14,7 @@ import mergeRefs from '../utils/mergeRefs'
 import useControlledState from '../utils/useControlledState'
 import useAnimatedValue from '../utils/useAnimatedValue'
 import { AppearAnimation, SlideAnimation } from './animations'
+import { oppositeSides } from './PopupController'
 
 import {
     FloralProps,
@@ -141,6 +142,7 @@ const Tooltip = (props: TooltipProps) => {
     )
     let timer = useRef<number>()
     let [openValue, isRest] = useAnimatedValue(isOpen ? 1 : 0)
+    let [side, setSide] = useState('top')
 
     /*
     let isVert = placement.side === 'top' || placement.side === 'bottom'
@@ -198,13 +200,17 @@ const Tooltip = (props: TooltipProps) => {
         (ref) => (
             <div ref={ref}>
                 <Taply onChangeTapState={setTooltipTapState}>
-                    <Animation openValue={openValue} style={styles.root}>
+                    <Animation
+                        openValue={openValue}
+                        style={styles.root}
+                        side={oppositeSides[side]}
+                    >
                         {tooltip}
                     </Animation>
                 </Taply>
             </div>
         ),
-        [tooltip]
+        [tooltip, side]
     )
 
     let target = (popupRef) =>
@@ -221,7 +227,12 @@ const Tooltip = (props: TooltipProps) => {
         )
 
     return (
-        <Popup isActive={isOpen || !isRest} placement={placement} popup={popup}>
+        <Popup
+            isActive={isOpen || !isRest}
+            placement={placement}
+            popup={popup}
+            onChangeSide={setSide}
+        >
             {target}
         </Popup>
     )

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import cloneElementWithRef from '../utils/cloneElementWithRef'
 
 import { Layer } from './layers'
-import PopupController, { PopupPlacement } from './PopupController'
+import PopupController, { PopupPlacement, PopupSide } from './PopupController'
 
 interface PopupProps {
     /** Controls visibility of the popup. */
@@ -31,10 +31,12 @@ interface PopupProps {
      *   to the side of the viewport. Default is `0`.
      */
     placement: PopupPlacement
+
+    onChangeSide?: (side: PopupSide) => void
 }
 
 const Popup = (props: PopupProps) => {
-    let { children, popup, isActive, placement } = props
+    let { children, popup, isActive, placement, onChangeSide } = props
 
     let [targetElem, setTargetElem] = useState()
     let [popupElem, setPopupElem] = useState()
@@ -45,7 +47,8 @@ const Popup = (props: PopupProps) => {
             let options = {
                 target: targetElem,
                 popup: popupElem,
-                placement
+                placement,
+                onChangeSide
             }
             if (!controllerRef.current) {
                 controllerRef.current = new PopupController(options)
@@ -64,7 +67,7 @@ const Popup = (props: PopupProps) => {
                 controllerRef.current = undefined
             }
         }
-    }, [targetElem, popupElem, isActive, placement])
+    }, [targetElem, popupElem, isActive, placement, onChangeSide])
 
     let memoizedPopup = useMemo(
         () =>
