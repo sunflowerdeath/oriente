@@ -3,7 +3,10 @@ import React, {
     useState,
     cloneElement,
     useEffect,
-    useCallback
+    useCallback,
+    useMemo,
+    createContext,
+    useContext
 } from 'react'
 // @ts-ignore
 import { useStyles } from 'floral'
@@ -14,7 +17,7 @@ import mergeRefs from '../utils/mergeRefs'
 import useControlledState from '../utils/useControlledState'
 import useAnimatedValue from '../utils/useAnimatedValue'
 import { AppearAnimation, SlideAnimation } from './animations'
-import { oppositeSides } from './PopupController'
+import { oppositeSides, PopupSide, PopupAlign } from './PopupController'
 
 import {
     FloralProps,
@@ -25,66 +28,104 @@ import {
 
 import Popup from './Popup'
 
+interface TooltipContextProps {
+    side: PopupSide
+    align: PopupAlign
+}
+
+const TooltipContext = createContext<TooltipContextProps | undefined>(undefined)
+
 interface TooltipArrowProps
     extends Omit<React.HTMLProps<HTMLDivElement>, 'style'>,
         FloralProps {
-    /**
-     * Side of the tooltip
-     */
-    side: 'top' | 'bottom' | 'left' | 'right'
-    /** // Align of the arrow on the tooltip's side */
-    align: 'begin' | 'center' | 'end'
     /** Width of the arrow, for the orientation like this: "/\" */
     width: number | string
-    // Height of the arrow
+
+    /** Height of the arrow */
     height: number | string
-    // Margin between arrow and tooltip's corner
+
+    /** Margin between arrow and tooltip's corner */
     margin: number | string
+
+    /** Color of the arrow */
+    color: string
 }
 
-const tooltipArrowStyles = ({
-    side,
-    align,
-    width,
-    height,
-    margin
-}: TooltipArrowProps) => {
-    let style: React.CSSProperties = {}
+const tooltipArrowStyles = (
+    { width, height, margin, color }: TooltipArrowProps,
+    { side, align }: TooltipContextProps
+) => {
+    let root: React.CSSProperties = { position: 'absolute' }
 
-    if (side === 'top') style.top = 0
-    else if (side === 'bottom') style.bottom = 0
-    else if (side === 'left') style.right = 0
-    else if (side === 'right') style.left = 0
+    let triangle: React.CSSProperties = {
+        width: '100%',
+        height: '100%',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        fill: color
+    }
+    if (side === 'left') triangle.transform = 'rotate(90deg)'
+    else if (side === 'right') triangle.transform = 'rotate(-90deg)'
+    else if (side === 'top') triangle.transform = 'rotate(180deg)'
 
-    let translateAcross = side === 'right' || side === 'top' ? '-100%' : 0
+    if (side === 'top') root.bottom = 0
+    else if (side === 'bottom') root.top = 0
+    else if (side === 'left') root.left = 0
+    else if (side === 'right') root.top = 0
+
+    let translateAcross =
+        side === 'left' || side === 'bottom' ? '-100%' : '100%'
     let translateAlong
-    if (align === 'begin') translateAcross = '0'
+    if (align === 'start') translateAcross = '0'
     else if (align === 'center') translateAlong = '-50%'
     else translateAlong = '-100%'
 
     if (side === 'top' || side === 'bottom') {
-        style.width = width
-        style.height = height
-        if (align === 'begin') style.left = margin
-        else if (align === 'center') style.left = '50%'
-        else if (align === 'end') style.right = margin
-        style.transform = `translateX(${translateAcross}) translateY(${translateAlong})`
+        root.width = width
+        root.height = height
+        if (align === 'start') root.left = margin
+        else if (align === 'center') root.left = '50%'
+        else if (align === 'end') root.right = margin
+        root.transform = `translateY(${translateAcross}) translateX(${translateAlong})`
     } else {
-        style.width = height
-        style.height = width
-        if (align === 'begin') style.top = margin
-        else if (align === 'center') style.top = '50%'
-        else if (align === 'end') style.bottom = margin
-        style.transform = `translateX(${translateAlong}) translateY(${translateAcross})`
+        root.width = height
+        root.height = width
+        if (align === 'start') root.top = margin
+        else if (align === 'center') root.top = '50%'
+        else if (align === 'end') root.bottom = margin
+        root.transform = `translateY(${translateAlong}) translateX(${translateAcross})`
     }
 
-    return { root: style }
+    return { root, triangle }
 }
 
 const TooltipArrow = (props: TooltipArrowProps) => {
-    let styles = useStyles(tooltipArrowStyles, [props])
-    let { side, align, width, height, margin, ...restProps } = props
-    return <div {...restProps} style={styles.root} />
+    let context = useContext(TooltipContext)
+    if (!context) {
+        throw new Error(
+            'You can use <TooltipArrow> only inside <Tooltip> component'
+        )
+    }
+    let styles = useStyles(tooltipArrowStyles, [props, context])
+    let { width, height, margin, ...restProps } = props
+    return (
+        <div {...restProps} style={styles.root}>
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 10 5"
+                style={styles.triangle}
+            >
+                <path d="M5 0L0 5h10L5 0z" />
+            </svg>
+        </div>
+    )
+}
+
+TooltipArrow.defaultProps = {
+    width: 16,
+    height: 8,
+    margin: 8
 }
 
 interface TooltipProps extends FloralProps {
@@ -142,7 +183,7 @@ const Tooltip = (props: TooltipProps) => {
     )
     const timer = useRef<number>()
     const [openValue, isRest] = useAnimatedValue(isOpen ? 1 : 0)
-    const [side, setSide] = useState('top')
+    const [side, setSide] = useState<PopupSide>('top')
 
     /*
     let isVert = placement.side === 'top' || placement.side === 'bottom'
@@ -196,6 +237,11 @@ const Tooltip = (props: TooltipProps) => {
         if (showOnTap) setIsOpen((val) => !val)
     }, [])
 
+    const context = useMemo(() => ({ side, align: placement.align }), [
+        side,
+        placement.align
+    ])
+
     const popup = useCallback(
         (ref) => (
             <div ref={ref}>
@@ -205,12 +251,14 @@ const Tooltip = (props: TooltipProps) => {
                         style={styles.root}
                         side={oppositeSides[side]}
                     >
-                        {tooltip}
+                        <TooltipContext.Provider value={context}>
+                            {tooltip}
+                        </TooltipContext.Provider>
                     </Animation>
                 </Taply>
             </div>
         ),
-        [tooltip, side]
+        [tooltip, side, context]
     )
 
     const target = (popupRef) =>
@@ -252,4 +300,4 @@ Tooltip.defaultProps = {
     Animation: SlideAnimation
 }
 
-export default Tooltip
+export { TooltipArrow, Tooltip }

@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 
-import Tooltip from '../../core/Tooltip'
+import { Tooltip, TooltipArrow } from '../../core/Tooltip'
 
-const TooltipExample = ({ children = 'target', ...restProps }) => {
+const TooltipExample = ({ children = 'target', tooltip="Tooltip!", ...restProps }) => {
     let [active, setActive] = useState(false)
     let style = {
         padding: '8px 12px',
@@ -11,10 +11,10 @@ const TooltipExample = ({ children = 'target', ...restProps }) => {
         color: 'white'
     }
     return (
-        <Tooltip tooltip="Tooltip!" style={style} {...restProps}>
+        <Tooltip tooltip={tooltip} style={style} {...restProps}>
             <div
                 style={{
-                    width: 150,
+                    cursor: 'default',
                     height: 40,
                     background: '#444',
                     padding: 8,
@@ -47,5 +47,4 @@ const ControlledTooltipExample = () => {
     )
 }
 
-export default TooltipExample
-export { ControlledTooltipExample }
+export { ControlledTooltipExample, TooltipExample }

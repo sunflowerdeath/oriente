@@ -1,6 +1,7 @@
 ---
 imports:
-    'TooltipExample, { ControlledTooltipExample }': './TooltipExample.js'
+    '{ TooltipExample, ControlledTooltipExample }': './TooltipExample.js'
+    '{ TooltipArrow }': '../../core/Tooltip.tsx'
 ---
 
 # Tooltip
@@ -28,6 +29,17 @@ import { Tooltip } from 'oriente'
 ```@render
 <TooltipExample>top (default)</TooltipExample>
 <TooltipExample placement={{ side: 'bottom', align: 'center', offset: 8 }}>bottom</TooltipExample>
+```
+
+## Arrow
+
+```@render
+<TooltipExample tooltip={(
+    <>
+        <TooltipArrow color="#8e44ad" />
+        Tooltip with arrow
+    </>
+)} />
 ```
 
 ## Delay
@@ -63,9 +75,10 @@ import { Tooltip } from 'oriente'
 <ControlledTooltipExample />
 ```
 
-## Props
+## Tooltip Props
 
 ```@propsdoc
 file: ../../core/Tooltip.tsx
 allowMarkdown: true
+component: Tooltip
 ```
