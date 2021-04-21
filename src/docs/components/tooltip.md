@@ -34,45 +34,60 @@ import { Tooltip } from 'oriente'
 ## Arrow
 
 ```@render
-<TooltipExample tooltip={(
-    <>
-        <TooltipArrow color="#8e44ad" />
-        Tooltip with arrow
-    </>
-)} />
+<TooltipExample
+    tooltip={
+        <>
+            <TooltipArrow color="#8e44ad" />
+            Tooltip with arrow
+        </>
+    }
+/>
+```
+
+```jsx
+<Tooltip
+    tooltip={
+        <>
+            <TooltipArrow color="#8e44ad" />
+            Tooltip with arrow
+        </>
+    }
+>
+    ...
+</Tooltip>
 ```
 
 ## Delay
-
-```js
-<Tooltip ... showDelay={500}>...</Tooltip>
-
-<Tooltip ... hideDelay={500}>...</Tooltip>
-```
 
 ```@render
 <TooltipExample showDelay={500}>show delay</TooltipExample>
 <TooltipExample hideDelay={500}>hide delay</TooltipExample>
 ```
 
-## Show/hide on tap
+```jsx
+<Tooltip ... showDelay={500}>...</Tooltip>
 
-```js
-<Tooltip ... showOnTap={true}>...</Tooltip>
+<Tooltip ... hideDelay={500}>...</Tooltip>
 ```
+
+## Show/hide on tap
 
 ```@render
 <TooltipExample showOnTap>click</TooltipExample>
 ```
 
-## Controlled
-
-```js
-<Tooltip ... isOpen={isOpen} onChangeIsOpen={(value) => setIsOpen(value)}>...</Tooltip>
+```jsx
+<Tooltip ... showOnTap={true}>...</Tooltip>
 ```
+
+## Controlled
 
 ```@render
 <ControlledTooltipExample />
+```
+
+```jsx
+<Tooltip ... isOpen={isOpen} onChangeIsOpen={(value) => setIsOpen(value)}>...</Tooltip>
 ```
 
 ## Tooltip Props
@@ -81,4 +96,12 @@ import { Tooltip } from 'oriente'
 file: ../../core/Tooltip.tsx
 allowMarkdown: true
 component: Tooltip
+```
+
+## TooltipArrow Props
+
+```@propsdoc
+file: ../../core/Tooltip.tsx
+allowMarkdown: true
+component: TooltipArrow
 ```

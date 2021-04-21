@@ -38,7 +38,7 @@ const TooltipContext = createContext<TooltipContextProps | undefined>(undefined)
 interface TooltipArrowProps
     extends Omit<React.HTMLProps<HTMLDivElement>, 'style'>,
         FloralProps {
-    /** Width of the arrow, for the orientation like this: "/\" */
+    /** Width of the arrow, for the orientation like this: "/\\" */
     width: number | string
 
     /** Height of the arrow */
@@ -65,9 +65,7 @@ const tooltipArrowStyles = (
         left: 0,
         fill: color
     }
-    if (side === 'left') triangle.transform = 'rotate(90deg)'
-    else if (side === 'right') triangle.transform = 'rotate(-90deg)'
-    else if (side === 'top') triangle.transform = 'rotate(180deg)'
+    if (side === 'left' || side === 'top') triangle.transform = 'rotate(180deg)'
 
     if (side === 'top') root.bottom = 0
     else if (side === 'bottom') root.top = 0
@@ -113,10 +111,17 @@ const TooltipArrow = (props: TooltipArrowProps) => {
         <div {...restProps} style={styles.root}>
             <svg
                 xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 10 5"
+                viewBox="0 0 10 10"
+                preserveAspectRatio="none"
                 style={styles.triangle}
             >
-                <path d="M5 0L0 5h10L5 0z" />
+                {context.side === 'top' || context.side === 'bottom' ? (
+                    // ^
+                    <path d="M5 0L0 10H10L5 0Z" />
+                ) : (
+                    // >
+                    <path d="M10 5L0 0V10L10 5Z" />
+                )}
             </svg>
         </div>
     )
@@ -125,7 +130,8 @@ const TooltipArrow = (props: TooltipArrowProps) => {
 TooltipArrow.defaultProps = {
     width: 16,
     height: 8,
-    margin: 8
+    margin: 8,
+    color: 'white'
 }
 
 interface TooltipProps extends FloralProps {
