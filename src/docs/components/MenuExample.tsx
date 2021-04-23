@@ -1,18 +1,26 @@
-import React from 'react'
+import React, { useContext, useState, forwardRef } from 'react'
 // @ts-ignore
 import { extendComponentStyles } from 'floral'
 
-import { Menu, MenuList, MenuItem } from '../../core/Menu'
+import { Menu, MenuList, MenuItem, MenuContext } from '../../core/Menu'
+import { Tooltip } from '../../core/Tooltip'
 
 const exampleItemStyles = ({ isDisabled }, { isSelected }) => ({
     root: {
         color: isDisabled ? '#999' : '#333',
         background: isSelected ? 'rgba(0,0,0,.15)' : 'transparent',
-        padding: '12px 16px'
+        padding: '12px 16px',
+        cursor: 'default'
     }
 })
 
-const ExampleMenuItem = extendComponentStyles(MenuItem, exampleItemStyles)
+const ExampleMenuItem = forwardRef((props: any, ref) => (
+    <MenuItem
+        ref={ref}
+        {...props}
+        styles={[exampleItemStyles, props.styles]}
+    />
+))
 
 const MenuListExample = () => (
     <MenuList onSelect={(value) => console.log(`Menu onSelect: ${value}`)}>
@@ -30,6 +38,19 @@ const MenuListExample = () => (
     </MenuList>
 )
 
+const TooltipMenuItem = (props: any) => {
+    const [isHovered, setIsHovered] = useState(false)
+    return (
+        <Tooltip
+            tooltip="test"
+            placement={{ side: 'right', align: 'center', offset: 5 }}
+            style={{ background: 'white', padding: 5 }}
+        >
+            <ExampleMenuItem {...props} />
+        </Tooltip>
+    )
+}
+
 const MenuExample = () => {
     let menu = () => (
         <>
@@ -39,10 +60,10 @@ const MenuExample = () => {
             >
                 Item 1
             </ExampleMenuItem>
-            <ExampleMenuItem value="two" isDisabled>
+            <TooltipMenuItem value="two" isDisabled>
                 Disabled item 2
-            </ExampleMenuItem>
-            <ExampleMenuItem value="three">Item 3</ExampleMenuItem>
+            </TooltipMenuItem>
+            <TooltipMenuItem value="three">Item 3</TooltipMenuItem>
             <ExampleMenuItem value="four">Item 4</ExampleMenuItem>
         </>
     )

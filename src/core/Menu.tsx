@@ -3,6 +3,7 @@ import React, {
     createContext,
     useContext,
     useCallback,
+    useEffect,
     forwardRef
 } from 'react'
 // @ts-ignore
@@ -17,6 +18,7 @@ import {
     useDescendants,
     Descendants
 } from '../utils/descendants'
+import mergeRefs from '../utils/mergeRefs'
 import {
     initialTapState,
     TapState,
@@ -67,9 +69,11 @@ export interface MenuListProps extends FloralProps {
 
 export interface MenuItemProps {
     isDisabled?: boolean
+    onHover?: () => void
+    onBlur?: () => void
     onSelect?: () => void
     value?: string
-    children: React.ReactNode
+    children: React.ReactNode | ((isSelected: boolean) => React.ReactNode)
 }
 
 interface MenuDescendantProps {
@@ -87,8 +91,8 @@ interface MenuContextProps {
 
 const MenuContext = createContext<MenuContextProps | undefined>(undefined)
 
-const MenuItem = (props: MenuItemProps) => {
-    const { isDisabled, onSelect, value, children } = props
+const MenuItem = forwardRef((props: MenuItemProps, ref) => {
+    const { isDisabled, onSelect, value, children, onHover, onBlur } = props
     const menuContext = useContext(MenuContext)
     if (!menuContext) {
         throw new Error('MenuItem can be used only inside Menu or MenuList')
@@ -99,12 +103,19 @@ const MenuItem = (props: MenuItemProps) => {
         setSelectedIndex,
         onSelect: menuOnSelect
     } = menuContext
-    const { ref, index } = useDescendant(descendants, {
+    const { ref: descendantRef, index } = useDescendant(descendants, {
         isDisabled,
         onSelect,
         value
     })
     const isSelected = index !== -1 && index === selectedIndex
+    useEffect(() => {
+        if (isSelected) {
+            if (onHover) onHover()
+        } else {
+            if (onBlur) onBlur()
+        }
+    }, [isSelected])
     const [tapState, setTapState] = useState(initialTapState)
     const onChangeTapState = useCallback(
         (tapState) => {
@@ -123,12 +134,14 @@ const MenuItem = (props: MenuItemProps) => {
             isDisabled={isDisabled}
             isFocusable={false}
         >
-            <div style={styles.root} ref={ref}>
-                {children}
+            <div style={styles.root} ref={mergeRefs(ref, descendantRef)}>
+                {typeof children === 'function'
+                    ? children(isSelected)
+                    : children}
             </div>
         </Taply>
     )
-}
+})
 
 const getNextIndex = (index: number, length: number) =>
     index < length - 1 ? index + 1 : 0
@@ -297,4 +310,4 @@ Menu.defaultProps = {
     Animation: SlideAnimation
 }
 
-export { Menu, MenuList, MenuItem }
+export { Menu, MenuList, MenuItem, MenuContext }

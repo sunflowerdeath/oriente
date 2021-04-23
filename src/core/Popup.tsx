@@ -1,7 +1,8 @@
-import React, { useRef, useLayoutEffect, useState, useMemo } from 'react'
+import React, { useRef, useLayoutEffect, useState, useMemo, forwardRef } from 'react'
 import PropTypes from 'prop-types'
 
 import cloneElementWithRef from '../utils/cloneElementWithRef'
+import mergeRefs from '../utils/mergeRefs'
 
 import { Layer } from './layers'
 import PopupController, { PopupPlacement, PopupSide } from './PopupController'
@@ -35,7 +36,7 @@ interface PopupProps {
     onChangeSide?: (side: PopupSide) => void
 }
 
-const Popup = (props: PopupProps) => {
+const Popup = forwardRef((props: PopupProps, ref) => {
     let { children, popup, isActive, placement, onChangeSide } = props
 
     let [targetElem, setTargetElem] = useState()
@@ -77,15 +78,16 @@ const Popup = (props: PopupProps) => {
         [popup]
     )
 
+    let mergedRef = mergeRefs(ref, setTargetElem)
     return (
         <>
             <Layer type="popup" isActive={isActive}>{memoizedPopup}</Layer>
             {typeof children === 'function'
-                ? children(setTargetElem)
-                : cloneElementWithRef(children, { ref: setTargetElem })}
+                ? children(mergedRef)
+                : cloneElementWithRef(children, { ref: mergedRef })}
         </>
     )
-}
+})
 
 Popup.defaultProps = {
     isActive: true

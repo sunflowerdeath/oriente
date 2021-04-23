@@ -41,7 +41,7 @@ const SlideAnimation = forwardRef((props: SlideAnimationProps, ref) => {
         ...restProps
     } = props
     const axis = side === 'left' || side === 'right' ? 'X' : 'Y'
-    const dir = side === 'left' || side === 'bottom' ? 1 : -1
+    const dir = side === 'right' || side === 'bottom' ? 1 : -1
     const resStyle = {
         ...style,
         opacity: openValue,

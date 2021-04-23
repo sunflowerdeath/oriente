@@ -38,7 +38,7 @@ const TooltipContext = createContext<TooltipContextProps | undefined>(undefined)
 interface TooltipArrowProps
     extends Omit<React.HTMLProps<HTMLDivElement>, 'style'>,
         FloralProps {
-    /** Width of the arrow, for the orientation like this: "/\\" */
+    /** Width of the arrow, for the orientation like this: "^" */
     width: number | string
 
     /** Height of the arrow */
