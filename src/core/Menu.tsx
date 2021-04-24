@@ -49,7 +49,7 @@ export interface MenuProps {
     children: (ref: any, props: MenuRenderProps) => React.ReactNode
 
     /** Placement of the menu relative to the target */
-    placement?: PopupPlacement
+    placement?: Partial<PopupPlacement>
 
     /** Function that is called when `<MenuItem>` is selected */
     onSelect?: (value?: string) => void

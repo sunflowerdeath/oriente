@@ -31,7 +31,7 @@ interface PopupProps {
      * - **padding** `boolean` – Maximum allowed distance from the popup element
      *   to the side of the viewport. Default is `0`.
      */
-    placement: PopupPlacement
+    placement?: Partial<PopupPlacement>
 
     onChangeSide?: (side: PopupSide) => void
 }

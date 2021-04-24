@@ -142,29 +142,29 @@ interface TooltipProps extends FloralProps {
     children: React.ReactElement<any>
 
     /** Placement of the tooltip relative to the target */
-    placement: PopupPlacement
+    placement?: Partial<PopupPlacement>
 
     /** Tooltip will show and hide on tap on the target element */
-    showOnTap: boolean
+    showOnTap?: boolean
 
     /** Tooltip will show when the target element is hovered */
-    showOnHover: boolean
+    showOnHover?: boolean
 
     /** Tooltip will show when the target element is focused */
-    showOnFocus: boolean
+    showOnFocus?: boolean
 
     /** Delay in ms before showing the tooltip after the show event */
-    showDelay: number
+    showDelay?: number
 
     /**
      * Delay in ms before hiding the tooltip after the hide event.
      * Hide will be cancelled if you will hover the tooltip when `showOnHover` is `true`.
      * This is useful, when you want to copy text from the tooltip or click a link in it.
      */
-    hideDelay: number
+    hideDelay?: number
 
     /** Component for hide and show animation */
-    Animation: AppearAnimation
+    Animation?: AppearAnimation
 }
 
 const Tooltip = (props: TooltipProps) => {
