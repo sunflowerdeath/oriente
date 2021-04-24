@@ -1,6 +1,6 @@
 ---
 imports:
-    '{ MenuListExample, MenuExample }': './MenuExample'
+    '{ MenuListExample, MenuExample, ScrollMenuExample }': './MenuExample'
     'Tooltip': '../../core/Tooltip'
 ---
 
@@ -34,6 +34,15 @@ import { Menu } from 'oriente'
 
 ```@render
 <MenuExample />
+```
+
+## Scroll
+
+Menu automatically constrains its height when it does not fit into the viewport.
+Also, you can set your own `maxHeight` for the menu.
+
+```@render
+<ScrollMenuExample />
 ```
 
 ## Menu Props

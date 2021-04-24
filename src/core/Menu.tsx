@@ -4,6 +4,7 @@ import React, {
     useContext,
     useCallback,
     useEffect,
+    useRef,
     forwardRef
 } from 'react'
 // @ts-ignore
@@ -19,6 +20,7 @@ import {
     Descendants
 } from '../utils/descendants'
 import mergeRefs from '../utils/mergeRefs'
+import useViewport from '../utils/useViewport'
 import {
     initialTapState,
     TapState,
@@ -29,7 +31,7 @@ import Popup from './Popup'
 import useControlledState from '../utils/useControlledState'
 import useAnimatedValue from '../utils/useAnimatedValue'
 
-import { oppositeSides } from './PopupController'
+import { oppositeSides, defaultPlacement } from './PopupController'
 import { AppearAnimation, SlideAnimation } from './animations'
 import { Layer } from './layers'
 
@@ -40,23 +42,26 @@ export interface MenuRenderProps {
 }
 
 export interface MenuProps {
-    /* Content of the dropdown menu */
+    /** Content of the dropdown menu */
     menu: (props: MenuRenderProps) => React.ReactNode
 
-    /* Trigger element that menu will be attached to */
+    /** Trigger element that menu will be attached to */
     children: (ref: any, props: MenuRenderProps) => React.ReactNode
 
-    /* Placement of the menu relative to the target */
-    placement: PopupPlacement
+    /** Placement of the menu relative to the target */
+    placement?: PopupPlacement
 
-    /* Function that is called when `<MenuItem>` is selected */
+    /** Function that is called when `<MenuItem>` is selected */
     onSelect?: (value?: string) => void
 
-    /* Whether the menu should close when an item is selected */
+    /** Whether the menu should close when an item is selected */
     closeOnSelect?: boolean
 
-    /* Component for hide and show animation */
+    /** Component for hide and show animation */
     Animation: AppearAnimation
+
+    /** Maximum height of the list, in px. */
+    maxHeight?: number
 }
 
 export interface MenuListProps extends FloralProps {
@@ -68,11 +73,18 @@ export interface MenuListProps extends FloralProps {
 }
 
 export interface MenuItemProps {
+    /** Value of the item that will be passed to the `onSelect()` handler of the Menu */
+    value?: string
+
+    /**
+     * Handler that is called when the item is selected by clicking on it or pressing
+     * `Enter` key
+     */
+    onSelect?: () => void
+
     isDisabled?: boolean
     onHover?: () => void
     onBlur?: () => void
-    onSelect?: () => void
-    value?: string
     children: React.ReactNode | ((isSelected: boolean) => React.ReactNode)
 }
 
@@ -233,7 +245,7 @@ const MenuList = forwardRef((props: MenuListProps, ref) => {
     )
 })
 
-const menuStyles = {
+const menuStyles = (props: MenuProps, isOpen: boolean) => ({
     overlay: {
         background: 'transparent',
         position: 'fixed',
@@ -241,12 +253,14 @@ const menuStyles = {
         left: 0,
         width: '100%',
         height: '100%',
-        userSelect: 'none'
+        userSelect: 'none',
+        pointerEvents: isOpen ? 'all' : 'none'
     },
     list: {
-        background: 'white'
+        background: 'white',
+        overflowY: 'auto'
     }
-}
+})
 
 const Menu = (props: MenuProps) => {
     const {
@@ -255,11 +269,12 @@ const Menu = (props: MenuProps) => {
         children,
         Animation,
         closeOnSelect,
-        onSelect
+        onSelect,
+        maxHeight
     } = props
-    const styles = useStyles(menuStyles, [props])
     const [isOpen, setIsOpen] = useControlledState(props, 'isOpen', false)
     const [side, setSide] = useState('top')
+    const styles = useStyles(menuStyles, [props, isOpen])
     const open = useCallback(() => setIsOpen(true), [])
     const close = useCallback(() => setIsOpen(false), [])
     useKey('Escape', close)
@@ -273,6 +288,36 @@ const Menu = (props: MenuProps) => {
     const [openValue, isRest] = useAnimatedValue(isOpen ? 1 : 0)
     const isActive = isOpen || !isRest
     const renderProps = { isOpen, open, close }
+
+    const triggerRef = useRef(null)
+    const listRef = useRef(null)
+    const viewport = useViewport()
+    const [contrainedMaxHeight, setConstrainedMaxHeight] = useState(0)
+    useEffect(() => {
+        let availableHeight = viewport.height - 2 * (placement?.padding || 0)
+        if (maxHeight !== undefined) {
+            availableHeight = Math.min(availableHeight, maxHeight)
+        }
+        setConstrainedMaxHeight(availableHeight)
+    }, [isOpen, maxHeight, placement, viewport.height])
+
+    const popup = (ref) => (
+        <Animation openValue={openValue} side={oppositeSides[side]}>
+            <FocusLock>
+                <MenuList
+                    style={{
+                        ...styles.list,
+                        maxHeight: contrainedMaxHeight
+                    }}
+                    ref={ref}
+                    onSelect={menuListOnSelect}
+                >
+                    {menu(renderProps)}
+                </MenuList>
+            </FocusLock>
+        </Animation>
+    )
+
     return (
         <>
             <Layer type="popup" isActive={isActive}>
@@ -286,19 +331,7 @@ const Menu = (props: MenuProps) => {
                 placement={placement}
                 isActive={isActive}
                 onChangeSide={setSide}
-                popup={(ref) => (
-                    <Animation openValue={openValue} side={oppositeSides[side]}>
-                        <FocusLock>
-                            <MenuList
-                                style={styles.list}
-                                ref={ref}
-                                onSelect={menuListOnSelect}
-                            >
-                                {menu(renderProps)}
-                            </MenuList>
-                        </FocusLock>
-                    </Animation>
-                )}
+                popup={popup}
             >
                 {(ref) => children(ref, renderProps)}
             </Popup>
@@ -308,7 +341,8 @@ const Menu = (props: MenuProps) => {
 
 Menu.defaultProps = {
     closeOnSelect: true,
-    Animation: SlideAnimation
+    Animation: SlideAnimation,
+    placement: { ...defaultPlacement, constrain: true, padding: 16 }
 }
 
 export { Menu, MenuList, MenuItem, MenuContext }

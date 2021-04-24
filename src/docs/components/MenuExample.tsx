@@ -1,6 +1,7 @@
 import React, { useContext, useState, forwardRef } from 'react'
 // @ts-ignore
 import { extendComponentStyles } from 'floral'
+import { range } from 'lodash'
 
 import { Menu, MenuList, MenuItem, MenuContext } from '../../core/Menu'
 import { Tooltip } from '../../core/Tooltip'
@@ -15,11 +16,7 @@ const exampleItemStyles = ({ isDisabled }, { isSelected }) => ({
 })
 
 const ExampleMenuItem = forwardRef((props: any, ref) => (
-    <MenuItem
-        ref={ref}
-        {...props}
-        styles={[exampleItemStyles, props.styles]}
-    />
+    <MenuItem ref={ref} {...props} styles={[exampleItemStyles, props.styles]} />
 ))
 
 const MenuListExample = () => (
@@ -85,4 +82,46 @@ const MenuExample = () => {
     )
 }
 
-export { MenuListExample, MenuExample }
+const hz = {
+    cursor: 'default',
+    height: 40,
+    background: '#444',
+    padding: 8,
+    boxSizing: 'border-box',
+    marginRight: 8,
+    display: 'inline-block'
+}
+
+const ScrollMenuExample = () => {
+    let [maxHeight, setMaxHeight] = useState(false)
+    let menu = () =>
+        range(1, 50).map((i) => (
+            <ExampleMenuItem value="one">Item {i}</ExampleMenuItem>
+        ))
+
+    return (
+        <>
+            <Menu
+                onSelect={(value) => console.log(`Menu onSelect: ${value}`)}
+                menu={menu}
+                maxHeight={maxHeight ? 250 : undefined}
+            >
+                {(ref, { open }) => (
+                    <div ref={ref} onClick={open} style={hz}>
+                        Open menu
+                    </div>
+                )}
+            </Menu>{' '}
+            <label>
+                <input
+                    type="checkbox"
+                    value={maxHeight}
+                    onChange={() => setMaxHeight((v) => !v)}
+                />{' '}
+                maxHeight = 250
+            </label>
+        </>
+    )
+}
+
+export { MenuListExample, MenuExample, ScrollMenuExample }

@@ -55,7 +55,7 @@ const getViewportBounds = (viewport: ViewportMeasurements) => ({
     bottom: viewport.scrollTop + viewport.height
 })
 
-const defaultPlacement: PopupPlacement = {
+export const defaultPlacement: PopupPlacement = {
     side: 'bottom',
     align: 'start',
     offset: 0,
@@ -146,21 +146,23 @@ const fitsViewport = (
     )
 }
 
-/* TODO
-const constrainPosition = (position, measurements, padding) => {
+const constrainPosition = (
+    position: Position,
+    measurements: PopupMeasurements,
+    padding: number
+) => {
     const { bounds, popup } = measurements
     const res = { ...position }
     if (res.left < bounds.left + padding) res.left = bounds.left + padding
     if (res.top < bounds.top + padding) res.top = bounds.top + padding
     if (res.left + popup.width > bounds.right - padding) {
-        res.left = bounds.right - element.width - padding
+        res.left = bounds.right - popup.width - padding
     }
-    if (res.top + element.height > bounds.bottom - padding) {
-        res.top = bounds.bottom - element.height - padding
+    if (res.top + popup.height > bounds.bottom - padding) {
+        res.top = bounds.bottom - popup.height - padding
     }
     return res
 }
-*/
 
 const getPopupPosition = (
     measurements: PopupMeasurements,
@@ -176,7 +178,7 @@ const getPopupPosition = (
         position = calcPosition(measurements, config)
         if (fitsViewport(position, measurements, padding)) break
     }
-    // if (constrain) position = constrainPosition(position, measurements, padding)
+    if (constrain) position = constrainPosition(position!, measurements, padding)
     return { position: position!, config: config! }
 }
 
