@@ -1,7 +1,7 @@
 ---
 imports:
-    '{ TooltipExample, ControlledTooltipExample }': './TooltipExample.js'
-    '{ TooltipArrow }': '../../core/Tooltip.tsx'
+    '{ TooltipExample, ControlledTooltipExample, TooltipAnimationExample }': './TooltipExample'
+    '{ TooltipArrow }': '../../core/Tooltip'
 ---
 
 # Tooltip
@@ -10,7 +10,7 @@ Tooltip appears near element when a user interacts with an element.
 
 ## Usage
 
-```js
+```jsx
 import { Tooltip } from 'oriente'
 
 <Tooltip tooltip="Content of the Tooltip">
@@ -78,6 +78,17 @@ import { Tooltip } from 'oriente'
 
 ```jsx
 <Tooltip ... showOnTap={true}>...</Tooltip>
+```
+
+## Animation
+
+```@render
+<TooltipAnimationExample />
+```
+
+```jsx
+<Tooltip ... Animation={SlideAnimation}>...</Tooltip>
+<Tooltip ... Animation={ScaleAnimation}>...</Tooltip>
 ```
 
 ## Controlled

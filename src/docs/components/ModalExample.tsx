@@ -54,6 +54,8 @@ const ModalAnimationExample = () => {
 
     return (
         <>
+            <button onClick={() => setIsOpen(true)}>Open modal</button>
+            {' '}
             {Object.keys(items).map((value) => (
                 <label>
                     <input
@@ -64,7 +66,6 @@ const ModalAnimationExample = () => {
                     {value}
                 </label>
             ))}
-            <button onClick={() => setIsOpen(true)}>Open modal</button>
             <ExampleModal
                 isOpen={isOpen}
                 onClose={() => setIsOpen(false)}

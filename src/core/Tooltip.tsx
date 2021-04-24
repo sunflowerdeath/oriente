@@ -264,7 +264,7 @@ const Tooltip = (props: TooltipProps) => {
                 </Taply>
             </div>
         ),
-        [tooltip, side, context]
+        [tooltip, side, context, Animation]
     )
 
     const target = (popupRef) =>

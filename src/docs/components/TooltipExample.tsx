@@ -1,8 +1,13 @@
 import React, { useState } from 'react'
 
 import { Tooltip, TooltipArrow } from '../../core/Tooltip'
+import { SlideAnimation, ScaleAnimation } from '../../core/animations'
 
-const TooltipExample = ({ children = 'target', tooltip="Tooltip!", ...restProps }) => {
+const TooltipExample = ({
+    children = 'target',
+    tooltip = 'Tooltip!',
+    ...restProps
+}) => {
     let [active, setActive] = useState(false)
     let style = {
         padding: '8px 12px',
@@ -48,4 +53,28 @@ const ControlledTooltipExample = () => {
     )
 }
 
-export { ControlledTooltipExample, TooltipExample }
+const TooltipAnimationExample = () => {
+    const [animation, setAnimation] = useState('slide')
+    const items = {
+        slide: SlideAnimation,
+        scale: ScaleAnimation
+    }
+
+    return (
+        <>
+            <TooltipExample Animation={items[animation]} />{' '}
+            {Object.keys(items).map((value) => (
+                <label>
+                    <input
+                        type="checkbox"
+                        onChange={() => setAnimation(value)}
+                        checked={animation === value}
+                    />
+                    {value}
+                </label>
+            ))}
+        </>
+    )
+}
+
+export { TooltipExample, ControlledTooltipExample, TooltipAnimationExample }
