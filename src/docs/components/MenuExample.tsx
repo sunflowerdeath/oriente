@@ -60,8 +60,11 @@ const MenuExample = () => {
             >
                 Item 1
             </ExampleMenuItem>
-            <TooltipMenuItem value="two" isDisabled>
-                Disabled item 2
+            <TooltipMenuItem value="disabled-1" isDisabled>
+                Disabled item
+            </TooltipMenuItem>
+            <TooltipMenuItem value="disabled-1" isDisabled>
+                Disabled item
             </TooltipMenuItem>
             <TooltipMenuItem value="three">Item 3</TooltipMenuItem>
             <ExampleMenuItem value="four">Item 4</ExampleMenuItem>

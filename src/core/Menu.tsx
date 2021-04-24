@@ -133,6 +133,7 @@ const MenuItem = forwardRef((props: MenuItemProps, ref) => {
             onTap={() => menuOnSelect(index)}
             isDisabled={isDisabled}
             isFocusable={false}
+            shouldSetAttributes={false}
         >
             <div style={styles.root} ref={mergeRefs(ref, descendantRef)}>
                 {typeof children === 'function'
@@ -274,7 +275,7 @@ const Menu = (props: MenuProps) => {
     const renderProps = { isOpen, open, close }
     return (
         <>
-            <Layer type="popup" isActive={isOpen}>
+            <Layer type="popup" isActive={isActive}>
                 <div
                     style={styles.overlay}
                     onClick={close}

@@ -271,7 +271,11 @@ const Tooltip = (props: TooltipProps) => {
         typeof children === 'function' ? (
             children({ onChangeTapState: setTapState, onTap, popupRef })
         ) : (
-            <Taply onChangeTapState={setTapState} onTap={onTap}>
+            <Taply
+                onChangeTapState={setTapState}
+                onTap={onTap}
+                shouldSetAttributes={false}
+            >
                 {(taplyState, taplyRef) =>
                     cloneElement(children, {
                         ref: mergeRefs(children.ref, popupRef, taplyRef)

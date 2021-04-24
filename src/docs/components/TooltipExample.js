@@ -13,6 +13,7 @@ const TooltipExample = ({ children = 'target', tooltip="Tooltip!", ...restProps 
     return (
         <Tooltip tooltip={tooltip} style={style} {...restProps}>
             <div
+                tabIndex={0}
                 style={{
                     cursor: 'default',
                     height: 40,

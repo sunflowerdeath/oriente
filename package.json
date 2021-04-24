@@ -22,7 +22,7 @@
         "react-spring": "^8.0.27",
         "react-use": "^17.2.1",
         "shallow-equal": "^1.2.1",
-        "taply": "^0.3.1"
+        "taply": "^0.4.0"
     },
     "devDependencies": {
         "@babel/preset-typescript": "^7.12.7",
