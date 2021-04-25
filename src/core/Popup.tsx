@@ -81,7 +81,9 @@ const Popup = forwardRef((props: PopupProps, ref) => {
     let mergedRef = mergeRefs(ref, setTargetElem)
     return (
         <>
-            <Layer type="popup" isActive={isActive}>{memoizedPopup}</Layer>
+            <Layer type="popup" isActive={isActive}>
+                {memoizedPopup}
+            </Layer>
             {typeof children === 'function'
                 ? children(mergedRef)
                 : cloneElementWithRef(children, { ref: mergedRef })}

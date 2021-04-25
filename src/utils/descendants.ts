@@ -29,11 +29,7 @@ const useDescendants = <T>() => {
             )
             const newItem = { element, ...props }
             if (index === -1) return [...prevItems, newItem]
-            return [
-                ...prevItems.slice(0, index),
-                newItem,
-                ...prevItems.slice(index)
-            ]
+            return [...prevItems.slice(0, index), newItem, ...prevItems.slice(index)]
         })
     }, [])
     const unregister = useCallback((element) => {

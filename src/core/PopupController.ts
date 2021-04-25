@@ -26,8 +26,6 @@ export interface PopupOptions {
     onChangeSide?: (side: PopupSide) => void
 }
 
-// Internal types
-
 interface Position {
     left: number
     top: number
@@ -71,10 +69,7 @@ export const oppositeSides: { [key in PopupSide]: PopupSide } = {
     bottom: 'top'
 }
 
-const calcPosition = (
-    measurements: PopupMeasurements,
-    config: PlacementConfig
-) => {
+const calcPosition = (measurements: PopupMeasurements, config: PlacementConfig) => {
     const { popup, target, bounds } = measurements
     const { side, align, offset } = config
     let top = 0
@@ -164,14 +159,10 @@ const constrainPosition = (
     return res
 }
 
-const getPopupPosition = (
-    measurements: PopupMeasurements,
-    placement: PopupPlacement
-) => {
-    // let { viewport, popup, target } = measurements
+const getPopupPosition = (measurements: PopupMeasurements, placement: PopupPlacement) => {
     let { side, align, offset, flip, constrain, padding } = placement
     let configs = getFlipConfigs(flip, { side, align, offset })
-    // TODO select position that fits most
+    // TODO select position that fits most?
     let position: Position, config: any
     for (const i in configs) {
         config = configs[i]
@@ -255,10 +246,7 @@ class PopupController {
             target: this.targetRect,
             bounds: getViewportBounds(this.viewport)
         }
-        const { config, position } = getPopupPosition(
-            measurements,
-            this.placement
-        )
+        const { config, position } = getPopupPosition(measurements, this.placement)
         this.setPosition(position)
         if (this.onChangeSide) this.onChangeSide(config.side)
     }

@@ -43,9 +43,7 @@ interface ToastConroller {
     close: (id: number) => void
 }
 
-const ToastContainerContext = createContext<ToastConroller | undefined>(
-    undefined
-)
+const ToastContainerContext = createContext<ToastConroller | undefined>(undefined)
 
 interface ToastState {
     id: number
@@ -70,9 +68,7 @@ const Toast = (props: ToastProps) => {
     const styles = useStyles(toastStyle, [props])
     return (
         <div style={styles.root}>
-            <ToastContext.Provider
-                value={{ close: () => onClose && onClose() }}
-            >
+            <ToastContext.Provider value={{ close: () => onClose && onClose() }}>
                 {children}
             </ToastContext.Provider>
         </div>
@@ -137,9 +133,7 @@ const getContainerStyle = (placement: ToastPlacement) => {
         pointerEvents: 'none',
         boxSizing: 'border-box'
     }
-    style.justifyContent = topPlacements.includes(placement)
-        ? 'flex-start'
-        : 'flex-end'
+    style.justifyContent = topPlacements.includes(placement) ? 'flex-start' : 'flex-end'
     if (placement === 'top-left' || placement === 'bottom-left') {
         style.alignItems = 'flex-start'
     } else if (placement === 'top-right' || placement === 'bottom-right') {
@@ -202,9 +196,7 @@ const ToastContainer = ({ children }: ToastContainerProps) => {
 const ToastCloseButton = (props: ToastCloseButtonProps) => {
     const context = useContext(ToastContext)
     if (!context) {
-        throw new Error(
-            'You can use <ToastCloseButton> only inside <Toast> component'
-        )
+        throw new Error('You can use <ToastCloseButton> only inside <Toast> component')
     }
     return <CloseButton {...props} onTap={context.close} />
 }
@@ -212,9 +204,7 @@ const ToastCloseButton = (props: ToastCloseButtonProps) => {
 const useToast = () => {
     const context = useContext(ToastContainerContext)
     if (!context) {
-        throw new Error(
-            'You can call `useToast()` only inside <ToastContainer>'
-        )
+        throw new Error('You can call useToast() only inside <ToastContainer>')
     }
     return context
 }

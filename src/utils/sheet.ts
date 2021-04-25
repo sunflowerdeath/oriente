@@ -13,13 +13,12 @@ const createStyleElem = (css: string) => {
     document.head.appendChild(style)
 }
 
-const sheet = ({
-    classNames,
-    css
-}: {
+interface SheetOptions {
     classNames: string[]
     css: (map: { [key: string]: string }) => string
-}) => {
+}
+
+const sheet = ({ classNames, css }: SheetOptions) => {
     const map = makeClassNamesMap(classNames)
     createStyleElem(css(map))
     return map

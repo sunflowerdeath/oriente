@@ -10,15 +10,8 @@ interface AppearAnimationProps extends React.HTMLProps<HTMLDivElement> {
 export type AppearAnimation = (props: AppearAnimationProps) => React.ReactNode
 
 const FadeAnimation = forwardRef<HTMLDivElement>(
-    (
-        { children, openValue, style, ...restProps }: AppearAnimationProps,
-        ref
-    ) => (
-        <animated.div
-            ref={ref}
-            style={{ ...style, opacity: openValue }}
-            {...restProps}
-        >
+    ({ children, openValue, style, ...restProps }: AppearAnimationProps, ref) => (
+        <animated.div ref={ref} style={{ ...style, opacity: openValue }} {...restProps}>
             {children}
         </animated.div>
     )

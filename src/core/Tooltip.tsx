@@ -17,14 +17,9 @@ import mergeRefs from '../utils/mergeRefs'
 import useControlledState from '../utils/useControlledState'
 import useAnimatedValue from '../utils/useAnimatedValue'
 import { AppearAnimation, SlideAnimation } from './animations'
-import { oppositeSides, PopupSide, PopupAlign } from './PopupController'
+import { oppositeSides, defaultPlacement, PopupSide, PopupAlign } from './PopupController'
 
-import {
-    FloralProps,
-    TapState,
-    initialTapState,
-    PopupPlacement
-} from '../types'
+import { FloralProps, TapState, initialTapState, PopupPlacement } from '../types'
 
 import Popup from './Popup'
 
@@ -55,9 +50,9 @@ const tooltipArrowStyles = (
     { width, height, margin, color }: TooltipArrowProps,
     { side, align }: TooltipContextProps
 ) => {
-    let root: React.CSSProperties = { position: 'absolute' }
+    const root: React.CSSProperties = { position: 'absolute' }
 
-    let triangle: React.CSSProperties = {
+    const triangle: React.CSSProperties = {
         width: '100%',
         height: '100%',
         position: 'absolute',
@@ -72,8 +67,7 @@ const tooltipArrowStyles = (
     else if (side === 'left') root.left = 0
     else if (side === 'right') root.top = 0
 
-    let translateAcross =
-        side === 'left' || side === 'bottom' ? '-100%' : '100%'
+    let translateAcross = side === 'left' || side === 'bottom' ? '-100%' : '100%'
     let translateAlong
     if (align === 'start') translateAcross = '0'
     else if (align === 'center') translateAlong = '-50%'
@@ -99,14 +93,12 @@ const tooltipArrowStyles = (
 }
 
 const TooltipArrow = (props: TooltipArrowProps) => {
-    let context = useContext(TooltipContext)
+    const context = useContext(TooltipContext)
     if (!context) {
-        throw new Error(
-            'You can use <TooltipArrow> only inside <Tooltip> component'
-        )
+        throw new Error('You can use <TooltipArrow> only inside <Tooltip> component')
     }
-    let styles = useStyles(tooltipArrowStyles, [props, context])
-    let { width, height, margin, ...restProps } = props
+    const styles = useStyles(tooltipArrowStyles, [props, context])
+    const { width, height, margin, ...restProps } = props
     return (
         <div {...restProps} style={styles.root}>
             <svg
@@ -184,9 +176,7 @@ const Tooltip = (props: TooltipProps) => {
     const [isOpen, setIsOpen] = useControlledState(props, 'isOpen', false)
     const styles = useStyles(null, [props, { isOpen }])
     const [tapState, setTapState] = useState<TapState>(initialTapState)
-    const [tooltipTapState, setTooltipTapState] = useState<TapState>(
-        initialTapState
-    )
+    const [tooltipTapState, setTooltipTapState] = useState<TapState>(initialTapState)
     const timer = useRef<number>()
     const [openValue, isRest] = useAnimatedValue(isOpen ? 1 : 0)
     const [side, setSide] = useState<PopupSide>('top')
@@ -243,10 +233,11 @@ const Tooltip = (props: TooltipProps) => {
         if (showOnTap) setIsOpen((val) => !val)
     }, [])
 
-    const context = useMemo(() => ({ side, align: placement.align }), [
-        side,
-        placement.align
-    ])
+    // TODO get actual side (can be flipped?)
+    const context = useMemo(
+        () => ({ side, align: placement?.align || defaultPlacement.align }),
+        [side, placement?.align]
+    )
 
     const popup = useCallback(
         (ref) => (

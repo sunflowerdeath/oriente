@@ -39,19 +39,13 @@ const TextInput = forwardRef((props, ref) => {
     let [isFocused, setIsFocused] = useState(false)
     let styles = useStyles(inputStyles, [props, isFocused])
 
-    let [currentRows, setCurrentRows] = useState(
-        getRowsNumber(value, rows, maxRows)
-    )
+    let [currentRows, setCurrentRows] = useState(getRowsNumber(value, rows, maxRows))
     useEffect(() => {
         setCurrentRows(getRowsNumber(value, rows, maxRows))
     }, [value, rows, maxRows])
 
     let inputRef = useRef()
-    useImperativeHandle(
-        ref,
-        () => ({ focus: () => inputRef.current.focus() }),
-        []
-    )
+    useImperativeHandle(ref, () => ({ focus: () => inputRef.current.focus() }), [])
 
     let elem = as || (isMultiline ? 'textarea' : 'input')
     let elemProps = {

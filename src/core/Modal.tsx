@@ -19,14 +19,6 @@ interface ModalContextType {
 
 const ModalContext = createContext<ModalContextType | undefined>(undefined)
 
-/*
-Example usage:
-
-<Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-    <ModalCloseButton />
-</Modal>
-*/
-
 interface ModalProps extends FloralProps {
     /** Content of the modal */
     children: (close: () => void) => React.ReactNode | React.ReactNode
@@ -152,9 +144,7 @@ const ModalCloseButton = (props: ModalCloseButtonProps) => {
     const { children } = props
     const context = useContext(ModalContext)
     if (!context) {
-        throw new Error(
-            'You can use <ModalCloseButton> only inside <Modal> component'
-        )
+        throw new Error('You can use <ModalCloseButton> only inside <Modal> component')
     }
     return <CloseButton onTap={context.close}>{children}</CloseButton>
 }

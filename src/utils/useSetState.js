@@ -5,6 +5,6 @@ import useLatest from './useLatest'
 
 const useSetState = (initialState = {}) => {
     const [state, setState] = useState(initialState)
-	const getState = useLatest(state)
-	return [getState, newState => setState({ ...getState(), ...newState })]
+    const getState = useLatest(state)
+    return [getState, (newState) => setState({ ...getState(), ...newState })]
 }

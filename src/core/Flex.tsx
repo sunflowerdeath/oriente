@@ -9,8 +9,7 @@ const css = sheet({
     classNames: ['row', 'col', 'wrapper'],
     css: (map) => `
         .${map.row} > .${map.wrapper} > * + * { margin-left: var(--flex-gap) }
-        .${map.col} > .${map.wrapper} > * + * { margin-top: var(--flex-gap) }
-    `
+        .${map.col} > .${map.wrapper} > * + * { margin-top: var(--flex-gap) }`
 })
 
 type FlexAlign = 'normal' | 'start' | 'end' | 'center' | 'stretch' | 'baseline'
@@ -24,12 +23,10 @@ type FlexJustify =
     | 'space-around'
     | 'space-evenly'
 
-interface FlexProps
-    extends FloralProps,
-        Omit<React.HTMLProps<HTMLDivElement>, 'wrap'> {
+interface FlexProps extends FloralProps, Omit<React.HTMLProps<HTMLDivElement>, 'wrap'> {
     /** Flex direction */
     dir?: 'row' | 'col'
-    
+
     /** Flex wrap */
     wrap?: boolean
 
@@ -80,8 +77,7 @@ let flexStyles = ({ dir, wrap, align, justify, gap }: FlexProps) => ({
     }
 })
 
-const cx = (...classes: (string | undefined)[]) =>
-    classes.filter((c) => !!c).join(' ')
+const cx = (...classes: (string | undefined)[]) => classes.filter((c) => !!c).join(' ')
 
 const Flex = (props: FlexProps) => {
     let { dir, wrap, align, justify, gap, style, ...restProps } = props
