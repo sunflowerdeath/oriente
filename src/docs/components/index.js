@@ -4,6 +4,7 @@ import TooltipStory from './tooltip.md'
 import MenuStory from './menu.md'
 import ModalStory from './modal.md'
 import ToastsStory from './toasts.md'
+import FlexStory from './flex.md'
 
 const componentsSection = {
     name: 'Components',
@@ -31,6 +32,10 @@ const componentsSection = {
         toasts: {
             name: 'Toasts',
             markdown: ToastsStory
+        },
+        flex: {
+            name: 'Flex',
+            markdown: FlexStory
         }
     }
 }
