@@ -7,6 +7,8 @@ import {
     ToastPlacement
 } from '../../core/toasts'
 
+import buttonStyle from './buttonStyle'
+
 const toastStyle = {
     color: 'white',
     background: '#16a085',
@@ -27,7 +29,7 @@ const ToastExample = ({ placement }: { placement?: ToastPlacement }) => {
             style: toastStyle,
             placement
         })
-    return <button onClick={showToast}>Show toast</button>
+    return <div style={buttonStyle} onClick={showToast}>Show toast</div>
 }
 
 const ToastPlacementExample = () => {

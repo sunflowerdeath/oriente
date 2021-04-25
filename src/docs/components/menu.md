@@ -17,9 +17,7 @@ import { Menu } from 'oriente'
     onSelect={(value) => console.log(`Selected: ${value}`)}
     menu={() => (
         <>
-            <Tooltip tooltip="Tooltip">
             <MenuItem value="one">First item</MenuItem>
-            </Tooltip>
             <MenuItem value="one" isDisabled={true}>Disabled item</MenuItem>
         </>
     )}

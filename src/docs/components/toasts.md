@@ -37,9 +37,9 @@ toast.show({
 <ToastPlacementExample />
 ```
 
-## Props
+## API
 
-**useToast()**
+**`useToast()`**
 
 React hook that returns `ToastController`.
 This hook should be called inside `<ToastContainer>` component.

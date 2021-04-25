@@ -5,6 +5,8 @@ import { extendComponentStyles } from 'floral'
 import { Modal, ModalCloseButton } from '../../core/Modal'
 import { FadeAnimation, SlideAnimation } from '../../core/animations'
 
+import buttonStyle from './buttonStyle'
+
 const exampleModalStyles = () => ({
     container: {
         paddingTop: 100,
@@ -26,7 +28,9 @@ const ModalExample = ({
     const [isOpen, setIsOpen] = useState(false)
     return (
         <>
-            <button onClick={() => setIsOpen(true)}>Open modal</button>
+            <div style={buttonStyle} onClick={() => setIsOpen(true)}>
+                Open modal
+            </div>
             <ExampleModal
                 {...rest}
                 isOpen={isOpen}
@@ -54,8 +58,9 @@ const ModalAnimationExample = () => {
 
     return (
         <>
-            <button onClick={() => setIsOpen(true)}>Open modal</button>
-            {' '}
+            <div style={buttonStyle} onClick={() => setIsOpen(true)}>
+                Open modal
+            </div>{' '}
             {Object.keys(items).map((value) => (
                 <label>
                     <input

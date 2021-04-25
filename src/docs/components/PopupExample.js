@@ -3,6 +3,8 @@ import React, { useState, useCallback } from 'react'
 import Popup from '../../core/Popup'
 import { Layer } from '../../core/layers'
 
+import buttonStyle from './buttonStyle'
+
 const PopupExample = () => {
     const [active, setActive] = useState(false)
     const popup = useCallback((ref) => (
@@ -21,7 +23,7 @@ const PopupExample = () => {
     return (
         <Popup isActive={active} popup={popup}>
             <div
-                style={{ width: 150, height: 40, background: '#444' }}
+                style={buttonStyle}
                 onClick={() => setActive((val) => !val)}
             >
                 Target

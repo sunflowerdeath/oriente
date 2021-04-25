@@ -17,8 +17,8 @@ Popup positions an element relative to the target element.
 
 ```@source
 file: ./PopupExample.js
-from: 6
-to: 31
+from: 8
+to: 33
 lang: jsx
 ```
 

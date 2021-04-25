@@ -6,6 +6,8 @@ import { range } from 'lodash'
 import { Menu, MenuList, MenuItem, MenuContext } from '../../core/Menu'
 import { Tooltip } from '../../core/Tooltip'
 
+import buttonStyle from './buttonStyle'
+
 const exampleItemStyles = ({ isDisabled }, { isSelected }) => ({
     root: {
         color: isDisabled ? '#999' : '#333',
@@ -74,22 +76,12 @@ const MenuExample = () => {
             menu={menu}
         >
             {(ref, { open }) => (
-                <div ref={ref} onClick={open}>
+                <div ref={ref} onClick={open} style={buttonStyle}>
                     Open menu
                 </div>
             )}
         </Menu>
     )
-}
-
-const hz = {
-    cursor: 'default',
-    height: 40,
-    background: '#444',
-    padding: 8,
-    boxSizing: 'border-box',
-    marginRight: 8,
-    display: 'inline-block'
 }
 
 const ScrollMenuExample = () => {
@@ -107,7 +99,7 @@ const ScrollMenuExample = () => {
                 maxHeight={maxHeight ? 250 : undefined}
             >
                 {(ref, { open }) => (
-                    <div ref={ref} onClick={open} style={hz}>
+                    <div ref={ref} onClick={open} style={buttonStyle}>
                         Open menu
                     </div>
                 )}

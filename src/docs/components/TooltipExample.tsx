@@ -3,6 +3,8 @@ import React, { useState } from 'react'
 import { Tooltip, TooltipArrow } from '../../core/Tooltip'
 import { SlideAnimation, ScaleAnimation } from '../../core/animations'
 
+import buttonStyle from './buttonStyle'
+
 const TooltipExample = ({
     children = 'target',
     tooltip = 'Tooltip!',
@@ -19,15 +21,7 @@ const TooltipExample = ({
         <Tooltip tooltip={tooltip} style={style} {...restProps}>
             <div
                 tabIndex={0}
-                style={{
-                    cursor: 'default',
-                    height: 40,
-                    background: '#444',
-                    padding: 8,
-                    boxSizing: 'border-box',
-                    marginRight: 8,
-                    display: 'inline-block'
-                }}
+                style={buttonStyle}
                 onClick={() => setActive((val) => !val)}
             >
                 {children}
