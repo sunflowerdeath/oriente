@@ -1,11 +1,21 @@
 import React, { useState, useEffect } from 'react'
-import { useSpring } from 'react-spring'
+import { useSpring, SpringConfig } from 'react-spring'
 
-const useAnimatedValue = (to: any) => {
-    let [isRest, setIsRest] = useState(false)
-    let [props, set] = useSpring(() => ({
+import configs from './springConfigs'
+
+interface AnimatedValueProps {
+    config?: SpringConfig
+}
+
+const useAnimatedValue = (
+    to: any,
+    { config = configs.stiff }: AnimatedValueProps = {}
+) => {
+    const [isRest, setIsRest] = useState(false)
+    const [props, set] = useSpring(() => ({
         value: to,
-        onRest: () => setIsRest(true)
+        onRest: () => setIsRest(true),
+        config
     }))
     useEffect(() => {
         setIsRest(false)

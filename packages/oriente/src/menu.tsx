@@ -13,26 +13,19 @@ import Taply from 'taply'
 import { useStyles } from 'floral'
 import FocusLock from 'react-focus-lock'
 import { useKey } from 'react-use'
+import { SpringConfig } from 'react-spring'
 
-import {
-    initialTapState,
-    TapState,
-    FloralProps,
-    PopupPlacement
-} from './types'
+import { initialTapState, TapState, FloralProps, PopupPlacement } from './types'
 import { Popup } from './popup'
 import { oppositeSides, defaultPlacement } from './PopupController'
-import { AppearAnimation, SlideAnimation } from './animations'
 import { Layer } from './layers'
-import {
-    useDescendant,
-    useDescendants,
-    Descendants
-} from './utils/descendants'
+import { useDescendant, useDescendants, Descendants } from './utils/descendants'
 import mergeRefs from './utils/mergeRefs'
 import useViewport from './utils/useViewport'
 import useControlledState from './utils/useControlledState'
+import { AppearAnimation, SlideAnimation } from './animations'
 import useAnimatedValue from './utils/useAnimatedValue'
+import configs from './utils/springConfigs'
 
 export interface MenuRenderProps {
     isOpen: boolean
@@ -61,6 +54,9 @@ export interface MenuProps {
 
     /** Maximum height of the list, in px. */
     maxHeight?: number
+
+    /** Config for `react-spring` animation */
+    springConfig?: SpringConfig
 }
 
 export interface MenuListProps extends FloralProps {
@@ -147,9 +143,7 @@ const MenuItem = forwardRef((props: MenuItemProps, ref) => {
             shouldSetAttributes={false}
         >
             <div style={styles.root} ref={mergeRefs(ref, descendantRef)}>
-                {typeof children === 'function'
-                    ? children(isSelected)
-                    : children}
+                {typeof children === 'function' ? children(isSelected) : children}
             </div>
         </Taply>
     )
@@ -171,9 +165,7 @@ const MenuList = forwardRef((props: MenuListProps, ref) => {
     const [selectedIndex, setSelectedIndex] = useState(-1)
     const select = useCallback(
         (index: number) => {
-            let { onSelect: itemOnSelect, value } = descendants.items[
-                index
-            ].props
+            let { onSelect: itemOnSelect, value } = descendants.items[index].props
             if (itemOnSelect) itemOnSelect()
             if (onSelect && value !== undefined) onSelect(value)
         },
@@ -202,19 +194,13 @@ const MenuList = forwardRef((props: MenuListProps, ref) => {
             const handlers = {
                 ArrowDown: () => {
                     let nextIndex = mapIndex(
-                        getNextIndex(
-                            selectableIndex,
-                            selectableDescendants.length
-                        )
+                        getNextIndex(selectableIndex, selectableDescendants.length)
                     )
                     setSelectedIndex(nextIndex)
                 },
                 ArrowUp: () => {
                     let prevIndex = mapIndex(
-                        getPrevIndex(
-                            selectableIndex,
-                            selectableDescendants.length
-                        )
+                        getPrevIndex(selectableIndex, selectableDescendants.length)
                     )
                     setSelectedIndex(prevIndex)
                 },
@@ -237,9 +223,7 @@ const MenuList = forwardRef((props: MenuListProps, ref) => {
 
     return (
         <div style={styles.root} onKeyDown={onKeyDown} tabIndex={0} ref={ref}>
-            <MenuContext.Provider value={context}>
-                {children}
-            </MenuContext.Provider>
+            <MenuContext.Provider value={context}>{children}</MenuContext.Provider>
         </div>
     )
 })
@@ -266,10 +250,11 @@ const Menu = (props: MenuProps) => {
         placement,
         menu,
         children,
-        Animation,
         closeOnSelect,
         onSelect,
-        maxHeight
+        maxHeight,
+        Animation,
+        springConfig
     } = props
     const [isOpen, setIsOpen] = useControlledState(props, 'isOpen', false)
     const [side, setSide] = useState('top')
@@ -284,7 +269,7 @@ const Menu = (props: MenuProps) => {
         },
         [onSelect, closeOnSelect]
     )
-    const [openValue, isRest] = useAnimatedValue(isOpen ? 1 : 0)
+    const [openValue, isRest] = useAnimatedValue(isOpen ? 1 : 0, { config: springConfig })
     const isActive = isOpen || !isRest
     const renderProps = { isOpen, open, close }
 
@@ -340,8 +325,9 @@ const Menu = (props: MenuProps) => {
 
 Menu.defaultProps = {
     closeOnSelect: true,
+    placement: { ...defaultPlacement, constrain: true, padding: 16 },
     Animation: SlideAnimation,
-    placement: { ...defaultPlacement, constrain: true, padding: 16 }
+    springConfig: configs.stiff
 }
 
 export { Menu, MenuList, MenuItem }

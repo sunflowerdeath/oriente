@@ -12,10 +12,12 @@ import React, {
 import { useStyles } from 'floral'
 // @ts-ignore
 import Taply from 'taply'
+import { SpringConfig } from 'react-spring'
 
 import mergeRefs from './utils/mergeRefs'
 import useControlledState from './utils/useControlledState'
 import useAnimatedValue from './utils/useAnimatedValue'
+import configs from './utils/springConfigs'
 import { AppearAnimation, SlideAnimation } from './animations'
 import { oppositeSides, defaultPlacement, PopupSide, PopupAlign } from './PopupController'
 import { FloralProps, TapState, initialTapState, PopupPlacement } from './types'
@@ -155,6 +157,9 @@ interface TooltipProps extends FloralProps {
 
     /** Component for hide and show animation */
     Animation?: AppearAnimation
+
+    /** Config for `react-spring` animation */
+    springConfig?: SpringConfig
 }
 
 const Tooltip = (props: TooltipProps) => {
@@ -167,7 +172,8 @@ const Tooltip = (props: TooltipProps) => {
         hideDelay,
         tooltip,
         children,
-        Animation
+        Animation,
+        springConfig
     } = props
 
     const state = useRef('closed')
@@ -176,7 +182,7 @@ const Tooltip = (props: TooltipProps) => {
     const [tapState, setTapState] = useState<TapState>(initialTapState)
     const [tooltipTapState, setTooltipTapState] = useState<TapState>(initialTapState)
     const timer = useRef<number>()
-    const [openValue, isRest] = useAnimatedValue(isOpen ? 1 : 0)
+    const [openValue, isRest] = useAnimatedValue(isOpen ? 1 : 0, { config: springConfig })
     const [side, setSide] = useState<PopupSide>('top')
 
     /*
@@ -296,7 +302,8 @@ Tooltip.defaultProps = {
         align: 'center',
         offset: 8
     },
-    Animation: SlideAnimation
+    Animation: SlideAnimation,
+    springConfig: configs.stiff
 }
 
 export { TooltipArrow, Tooltip }

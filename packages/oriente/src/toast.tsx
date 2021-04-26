@@ -4,8 +4,9 @@ import Taply from 'taply'
 // @ts-ignore
 import { useStyles } from 'floral'
 import { mapValues } from 'lodash'
-import { animated, useTransition } from 'react-spring'
+import { animated, useTransition, SpringConfig } from 'react-spring'
 
+import configs from './utils/springConfigs'
 import { FloralProps } from './types'
 import { Layer } from './layers'
 import { AppearAnimation, CollapseAnimation } from './animations'
@@ -21,6 +22,7 @@ export type ToastPlacement =
 
 export interface ToastContainerProps {
     children: React.ReactNode
+    springConfig?: SpringConfig
 }
 
 export interface ToastProps extends FloralProps {
@@ -78,16 +80,18 @@ interface ToastListProps {
     toasts: ToastState[]
     placement: ToastPlacement
     close: (id: number) => void
+    springConfig?: SpringConfig
 }
 
-const ToastList = ({ toasts, placement, close }: ToastListProps) => {
+const ToastList = ({ toasts, placement, close, springConfig }: ToastListProps) => {
     // @ts-ignore
     let transitions = useTransition(toasts, (toast) => toast.id, {
         initial: { slide: 0, height: 1, opacity: 0 },
         from: { slide: 0, height: 1, opacity: 0 },
         enter: { slide: 1, height: 1, opacity: 1 },
         leave: { slide: 1, height: 0, opacity: 0 },
-        unique: true
+        unique: true,
+        config: springConfig
     })
     const renderToast = ({
         item,
@@ -143,7 +147,7 @@ const getContainerStyle = (placement: ToastPlacement) => {
     return style
 }
 
-const ToastContainer = ({ children }: ToastContainerProps) => {
+const ToastContainer = ({ children, springConfig }: ToastContainerProps) => {
     const idRef = useRef(0)
     const [toasts, setToasts] = useState<ToastsState>({
         top: [],
@@ -184,12 +188,17 @@ const ToastContainer = ({ children }: ToastContainerProps) => {
                             toasts={toasts}
                             placement={placement as ToastPlacement}
                             close={close}
+                            springConfig={springConfig}
                         />
                     </div>
                 ))}
             </Layer>
         </>
     )
+}
+
+ToastContainer.defaultProps = {
+    springConfig: configs.stiffer
 }
 
 const ToastCloseButton = (props: ToastCloseButtonProps) => {

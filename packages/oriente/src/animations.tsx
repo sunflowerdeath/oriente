@@ -69,14 +69,7 @@ interface ScaleAnimationProps extends AppearAnimationProps {
 }
 
 const ScaleAnimation = forwardRef((props: ScaleAnimationProps, ref) => {
-    const {
-        children,
-        openValue,
-        side = 'center',
-        initialScale = 0.5,
-        style,
-        ...restProps
-    } = props
+    const { children, openValue, side, initialScale, style, ...restProps } = props
     const resStyle = {
         ...style,
         opacity: openValue,
@@ -91,6 +84,11 @@ const ScaleAnimation = forwardRef((props: ScaleAnimationProps, ref) => {
         </animated.div>
     )
 })
+
+ScaleAnimation.defaultProps = {
+    side: 'center',
+    initialScale: 0.66
+}
 
 ScaleAnimation.displayName = 'ScaleAnimation'
 

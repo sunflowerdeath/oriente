@@ -6,11 +6,13 @@ import { useStyles } from 'floral'
 import FocusLock from 'react-focus-lock'
 import { useKey, useClickAway } from 'react-use'
 import { RemoveScroll } from 'react-remove-scroll'
+import { SpringConfig } from 'react-spring'
 
 import { Layer } from './layers'
 import CloseButton from './CloseButton'
 import { AppearAnimation, FadeAnimation } from './animations'
 import useAnimatedValue from './utils/useAnimatedValue'
+import configs from './utils/springConfigs'
 import { FloralProps } from './types'
 
 interface ModalContextType {
@@ -46,6 +48,9 @@ interface ModalProps extends FloralProps {
 
     /** Component for hide and show animation */
     Animation?: AppearAnimation
+
+    /** Config for `react-spring` animation */
+    springConfig?: SpringConfig
 }
 
 const modalStyles = (props: ModalProps, { isOpen }: { isOpen: boolean }) => {
@@ -86,13 +91,14 @@ const Modal = (props: ModalProps) => {
     const {
         isOpen,
         children,
-        Animation,
         closeOnOverlayClick,
         closeOnEsc,
-        onClose
+        onClose,
+        Animation,
+        springConfig
     } = props
     const styles = useStyles(modalStyles, [props, { isOpen }])
-    const [openValue, isRest] = useAnimatedValue(isOpen ? 1 : 0)
+    const [openValue, isRest] = useAnimatedValue(isOpen ? 1 : 0, { config: springConfig })
     const context = useMemo(() => ({ close: onClose }), [])
     const isActive = isOpen || !isRest
     useKey('Escape', () => {
@@ -131,9 +137,10 @@ const Modal = (props: ModalProps) => {
 }
 
 Modal.defaultProps = {
-    Animation: FadeAnimation,
     closeOnEsc: true,
-    width: 800
+    width: 800,
+    Animation: FadeAnimation,
+    springConfig: configs.normal
 }
 
 interface ModalCloseButtonProps extends FloralProps {
