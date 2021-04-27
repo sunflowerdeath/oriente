@@ -39,12 +39,12 @@ export interface ToastOptions extends ToastProps {
     placement?: ToastPlacement
 }
 
-interface ToastConroller {
+interface ToastController {
     show: (options: ToastOptions) => number
     close: (id: number) => void
 }
 
-const ToastContainerContext = createContext<ToastConroller | undefined>(undefined)
+const ToastContainerContext = createContext<ToastController | undefined>(undefined)
 
 interface ToastState {
     id: number
@@ -85,7 +85,7 @@ interface ToastListProps {
 
 const ToastList = ({ toasts, placement, close, springConfig }: ToastListProps) => {
     // @ts-ignore
-    let transitions = useTransition(toasts, (toast) => toast.id, {
+    const transitions = useTransition(toasts, (toast) => toast.id, {
         initial: { slide: 0, height: 1, opacity: 0 },
         from: { slide: 0, height: 1, opacity: 0 },
         enter: { slide: 1, height: 1, opacity: 1 },

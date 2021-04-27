@@ -5,13 +5,6 @@ import { useStyles } from 'floral'
 import { FloralProps } from './types'
 import sheet from './utils/sheet'
 
-const css = sheet({
-    classNames: ['row', 'col', 'wrapper'],
-    css: (map) => `
-        .${map.row} > .${map.wrapper} > * + * { margin-left: var(--flex-gap) }
-        .${map.col} > .${map.wrapper} > * + * { margin-top: var(--flex-gap) }`
-})
-
 export type FlexAlign = 'normal' | 'start' | 'end' | 'center' | 'stretch' | 'baseline'
 
 export type FlexJustify =
@@ -45,6 +38,13 @@ export interface FlexProps
 
     className?: string
 }
+
+const css = sheet({
+    classNames: ['row', 'col', 'wrapper'],
+    css: (map) => `
+        .${map.row} > .${map.wrapper} > * + * { margin-left: var(--flex-gap) }
+        .${map.col} > .${map.wrapper} > * + * { margin-top: var(--flex-gap) }`
+})
 
 const justifyMap: { [key in FlexJustify]?: string } = {
     end: 'flex-end',
@@ -83,14 +83,24 @@ const flexStyles = ({ dir, wrap, align, justify, gap }: FlexProps) => ({
 const cx = (...classes: (string | undefined)[]) => classes.filter((c) => !!c).join(' ')
 
 const Flex = (props: FlexProps) => {
-    let { dir, wrap, align, justify, gap, style, ...restProps } = props
-    let { className, children, ...elemProps } = restProps // omit floral
-    let styles = useStyles(flexStyles, [props])
+    const {
+        dir,
+        wrap,
+        align,
+        justify,
+        gap,
+        style,
+        styles: _,
+        className,
+        children,
+        ...restProps
+    } = props
+    const styles = useStyles(flexStyles, [props])
     return (
         <div
             style={styles.root}
             className={cx(dir === 'row' ? css.row : css.col, className)}
-            {...elemProps}
+            {...restProps}
         >
             <div className={css.wrapper} style={styles.wrapper}>
                 {children}
