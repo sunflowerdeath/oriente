@@ -5,7 +5,7 @@ imports:
 
 # Modal
 
-Modal
+Modal displays content in the window above the page.
 
 ## Example
 
@@ -50,7 +50,7 @@ allowMarkdown: true
 component: Modal
 ```
 
-** ModalCloseButton Props
+## ModalCloseButton Props
 
 ```@propsdoc
 file: ../../../oriente/src/modal.tsx

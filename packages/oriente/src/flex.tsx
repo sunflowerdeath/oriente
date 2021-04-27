@@ -24,6 +24,8 @@ type FlexJustify =
     | 'space-evenly'
 
 interface FlexProps extends FloralProps, Omit<React.HTMLProps<HTMLDivElement>, 'wrap'> {
+    children: React.ReactNode
+
     /** Flex direction */
     dir?: 'row' | 'col'
 
@@ -40,7 +42,6 @@ interface FlexProps extends FloralProps, Omit<React.HTMLProps<HTMLDivElement>, '
     gap?: string | number
 
     className?: string
-    children: React.ReactNode
 }
 
 const justifyMap: { [key in FlexJustify]?: string } = {
