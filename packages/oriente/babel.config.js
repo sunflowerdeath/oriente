@@ -8,6 +8,6 @@ module.exports = {
     ],
     plugins: [
         require('@babel/plugin-proposal-class-properties').default,
-        require('@babel/plugin-transform-runtime').default,
+        require('@babel/plugin-transform-runtime').default
     ]
 }

@@ -42,5 +42,4 @@ const observeViewport = (cb: ViewportObserverCallback) => ({
     }
 })
 
-export default observeViewport
-export { measureViewport }
+export { observeViewport, measureViewport }

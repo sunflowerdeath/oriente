@@ -1,10 +1,7 @@
 import observeRect from '@reach/observe-rect'
 
-import observeViewport, {
-    measureViewport,
-    ViewportMeasurements,
-    ViewportObserver
-} from './utils/observeViewport'
+import { observeViewport, measureViewport } from './utils/viewport'
+import type { ViewportMeasurements, ViewportObserver } from './utils/viewport'
 
 export type PopupSide = 'left' | 'top' | 'right' | 'bottom'
 
