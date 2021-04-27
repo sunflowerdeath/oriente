@@ -14,5 +14,5 @@
         "allowJs": true,
         "lib": ["es6", "es7", "dom", "esnext"]
     },
-    "include": ["src/**/*.ts*"]
+    "include": ["src/**/*.ts*", "types"]
 }

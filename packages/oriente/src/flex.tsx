@@ -1,8 +1,7 @@
 import React from 'react'
-//@ts-ignore
-import { useStyles } from 'floral'
+import { useStyles, FloralProps, FloralStyles } from 'floral'
 
-import { FloralProps } from './types'
+// import { FloralProps } from './types'
 import sheet from './utils/sheet'
 
 export type FlexAlign = 'normal' | 'start' | 'end' | 'center' | 'stretch' | 'baseline'
@@ -16,9 +15,7 @@ export type FlexJustify =
     | 'space-around'
     | 'space-evenly'
 
-export interface FlexProps
-    extends FloralProps,
-        Omit<React.HTMLProps<HTMLDivElement>, 'wrap'> {
+interface OwnFlexProps {
     children: React.ReactNode
 
     /** Flex direction */
@@ -39,6 +36,11 @@ export interface FlexProps
     className?: string
 }
 
+export interface FlexProps
+    extends OwnFlexProps,
+        FloralProps<OwnFlexProps>,
+        Omit<React.HTMLProps<HTMLDivElement>, 'wrap' | 'dir' | 'children' | 'style'> {}
+
 const css = sheet({
     classNames: ['row', 'col', 'wrapper'],
     css: (map) => `
@@ -51,11 +53,11 @@ const justifyMap: { [key in FlexJustify]?: string } = {
     start: 'flex-start'
 }
 
-const flexStyles = ({ dir, wrap, align, justify, gap }: FlexProps) => ({
+const flexStyles = ({ dir, wrap, align, justify, gap }: FlexProps): FloralStyles => ({
     root: {
         display: 'flex',
         flexDirection: dir === 'col' ? 'column' : 'row',
-        flexWrap: wrap ? 'wrap' : 'no-wrap',
+        flexWrap: wrap ? 'wrap' : 'nowrap',
         alignItems: align,
         justifyContent: justifyMap[justify!] || justify
     },
@@ -77,7 +79,7 @@ const flexStyles = ({ dir, wrap, align, justify, gap }: FlexProps) => ({
     wrapper: {
         display: 'contents',
         '--flex-gap': gap
-    }
+    } as React.CSSProperties
 })
 
 const cx = (...classes: (string | undefined)[]) => classes.filter((c) => !!c).join(' ')
