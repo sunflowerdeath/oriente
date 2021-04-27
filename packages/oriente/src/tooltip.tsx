@@ -23,14 +23,43 @@ import { oppositeSides, defaultPlacement, PopupSide, PopupAlign } from './PopupC
 import { FloralProps, TapState, initialTapState, PopupPlacement } from './types'
 import { Popup } from './popup'
 
-interface TooltipContextProps {
-    side: PopupSide
-    align: PopupAlign
+export interface TooltipProps extends FloralProps {
+    /** Content of the tooltip */
+    tooltip: React.ReactNode
+
+    /** Target element for the tooltip */
+    children: React.ReactElement<any>
+
+    /** Placement of the tooltip relative to the target */
+    placement?: Partial<PopupPlacement>
+
+    /** Tooltip will show and hide on tap on the target element */
+    showOnTap?: boolean
+
+    /** Tooltip will show when the target element is hovered */
+    showOnHover?: boolean
+
+    /** Tooltip will show when the target element is focused */
+    showOnFocus?: boolean
+
+    /** Delay in ms before showing the tooltip after the show event */
+    showDelay?: number
+
+    /**
+     * Delay in ms before hiding the tooltip after the hide event.
+     * Hide will be cancelled if you will hover the tooltip when `showOnHover` is `true`.
+     * This is useful, when you want to copy text from the tooltip or click a link in it.
+     */
+    hideDelay?: number
+
+    /** Component for hide and show animation */
+    Animation?: AppearAnimation
+
+    /** Config for `react-spring` animation */
+    springConfig?: SpringConfig
 }
 
-const TooltipContext = createContext<TooltipContextProps | undefined>(undefined)
-
-interface TooltipArrowProps
+export interface TooltipArrowProps
     extends Omit<React.HTMLProps<HTMLDivElement>, 'style'>,
         FloralProps {
     /** Width of the arrow, for the orientation like this: "^" */
@@ -45,6 +74,13 @@ interface TooltipArrowProps
     /** Color of the arrow */
     color: string
 }
+
+interface TooltipContextProps {
+    side: PopupSide
+    align: PopupAlign
+}
+
+const TooltipContext = createContext<TooltipContextProps | undefined>(undefined)
 
 const tooltipArrowStyles = (
     { width, height, margin, color }: TooltipArrowProps,
@@ -126,41 +162,6 @@ TooltipArrow.defaultProps = {
     color: 'white'
 }
 
-interface TooltipProps extends FloralProps {
-    /** Content of the tooltip */
-    tooltip: React.ReactNode
-
-    /** Target element for the tooltip */
-    children: React.ReactElement<any>
-
-    /** Placement of the tooltip relative to the target */
-    placement?: Partial<PopupPlacement>
-
-    /** Tooltip will show and hide on tap on the target element */
-    showOnTap?: boolean
-
-    /** Tooltip will show when the target element is hovered */
-    showOnHover?: boolean
-
-    /** Tooltip will show when the target element is focused */
-    showOnFocus?: boolean
-
-    /** Delay in ms before showing the tooltip after the show event */
-    showDelay?: number
-
-    /**
-     * Delay in ms before hiding the tooltip after the hide event.
-     * Hide will be cancelled if you will hover the tooltip when `showOnHover` is `true`.
-     * This is useful, when you want to copy text from the tooltip or click a link in it.
-     */
-    hideDelay?: number
-
-    /** Component for hide and show animation */
-    Animation?: AppearAnimation
-
-    /** Config for `react-spring` animation */
-    springConfig?: SpringConfig
-}
 
 const Tooltip = (props: TooltipProps) => {
     const {

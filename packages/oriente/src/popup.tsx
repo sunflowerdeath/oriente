@@ -7,7 +7,7 @@ import PopupController, { PopupPlacement, PopupSide } from './PopupController'
 import cloneElementWithRef from './utils/cloneElementWithRef'
 import mergeRefs from './utils/mergeRefs'
 
-interface PopupProps {
+export interface PopupProps {
     /** Controls visibility of the popup. */
     isActive: boolean
 

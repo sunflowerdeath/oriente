@@ -8,7 +8,6 @@ import { FloralProps } from './types'
 
 const closeButtonStyles = {
     root: {
-        cursor: 'pointer',
         position: 'absolute',
         top: '1rem',
         right: '1rem',
@@ -16,7 +15,8 @@ const closeButtonStyles = {
         height: '1rem',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        cursor: 'pointer'
     }
 }
 

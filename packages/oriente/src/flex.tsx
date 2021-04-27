@@ -12,9 +12,9 @@ const css = sheet({
         .${map.col} > .${map.wrapper} > * + * { margin-top: var(--flex-gap) }`
 })
 
-type FlexAlign = 'normal' | 'start' | 'end' | 'center' | 'stretch' | 'baseline'
+export type FlexAlign = 'normal' | 'start' | 'end' | 'center' | 'stretch' | 'baseline'
 
-type FlexJustify =
+export type FlexJustify =
     | 'normal'
     | 'start'
     | 'end'
@@ -23,7 +23,9 @@ type FlexJustify =
     | 'space-around'
     | 'space-evenly'
 
-interface FlexProps extends FloralProps, Omit<React.HTMLProps<HTMLDivElement>, 'wrap'> {
+export interface FlexProps
+    extends FloralProps,
+        Omit<React.HTMLProps<HTMLDivElement>, 'wrap'> {
     children: React.ReactNode
 
     /** Flex direction */
@@ -49,7 +51,7 @@ const justifyMap: { [key in FlexJustify]?: string } = {
     start: 'flex-start'
 }
 
-let flexStyles = ({ dir, wrap, align, justify, gap }: FlexProps) => ({
+const flexStyles = ({ dir, wrap, align, justify, gap }: FlexProps) => ({
     root: {
         display: 'flex',
         flexDirection: dir === 'col' ? 'column' : 'row',

@@ -1,7 +1,6 @@
 import { useState, useMemo, useEffect } from 'react'
 
-import { observeViewport, measureViewport } from './viewport'
-import type { ViewportMeasurements } from './viewport'
+import { observeViewport, measureViewport, ViewportMeasurements } from './viewport'
 
 const useViewport = () => {
     const [viewport, setViewport] = useState<ViewportMeasurements>(measureViewport)

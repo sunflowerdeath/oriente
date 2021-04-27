@@ -15,13 +15,7 @@ import useAnimatedValue from './utils/useAnimatedValue'
 import configs from './utils/springConfigs'
 import { FloralProps } from './types'
 
-interface ModalContextType {
-    close: () => void
-}
-
-const ModalContext = createContext<ModalContextType | undefined>(undefined)
-
-interface ModalProps extends FloralProps {
+export interface ModalProps extends FloralProps {
     /** Content of the modal */
     children: (close: () => void) => React.ReactNode | React.ReactNode
 
@@ -52,6 +46,16 @@ interface ModalProps extends FloralProps {
     /** Config for `react-spring` animation */
     springConfig?: SpringConfig
 }
+
+export interface ModalCloseButtonProps extends FloralProps {
+    children?: React.ReactNode
+}
+
+interface ModalContextProps {
+    close: () => void
+}
+
+const ModalContext = createContext<ModalContextProps | undefined>(undefined)
 
 const modalStyles = (props: ModalProps, { isOpen }: { isOpen: boolean }) => {
     const container = {
@@ -141,10 +145,6 @@ Modal.defaultProps = {
     width: 800,
     Animation: FadeAnimation,
     springConfig: configs.normal
-}
-
-interface ModalCloseButtonProps extends FloralProps {
-    children?: React.ReactNode
 }
 
 const ModalCloseButton = (props: ModalCloseButtonProps) => {

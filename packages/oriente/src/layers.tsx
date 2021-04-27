@@ -10,9 +10,9 @@ import React, {
 
 const LAYER_TYPES = ['initial', 'popup', 'fixed', 'modal', 'global']
 
-type LayerType = 'initial' | 'popup' | 'fixed' | 'modal' | 'global'
+export type LayerType = 'initial' | 'popup' | 'fixed' | 'modal' | 'global'
 
-interface LayerProps {
+export interface LayerProps {
     /** Controls the visibility of the layer. */
     isActive: boolean
 
@@ -27,6 +27,10 @@ interface LayerProps {
     /**
      * Content of the layer
      */
+    children: React.ReactNode
+}
+
+export interface StackProps {
     children: React.ReactNode
 }
 
@@ -134,10 +138,6 @@ const updateLayer = (setLayers: LayersSetState, id: number, props: LayerProps) =
 
 const removeLayer = (setLayers: LayersSetState, id: number) =>
     setLayers((prevLayers) => prevLayers.filter((layer) => id !== layer.id))
-
-interface StackProps {
-    children: React.ReactNode
-}
 
 const Stack = ({ children }: StackProps) => {
     const [layers, setLayers] = useState<LayerInfo[]>([])
