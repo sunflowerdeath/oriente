@@ -1,12 +1,9 @@
 import React, { useMemo, createContext, useContext } from 'react'
 // @ts-ignore
 import Taply from 'taply'
-// @ts-ignore
-import { useStyles } from 'floral'
+import { useStyles, FloralProps, FloralStyles } from 'floral'
 
-import { FloralProps } from './types'
-
-const closeButtonStyles = {
+const closeButtonStyles: FloralStyles = {
     root: {
         position: 'absolute',
         top: '1rem',
@@ -20,7 +17,7 @@ const closeButtonStyles = {
     }
 }
 
-interface CloseButtonProps extends FloralProps {
+interface CloseButtonProps extends FloralProps<CloseButtonProps> {
     children: React.ReactNode
     onTap: () => void
 }

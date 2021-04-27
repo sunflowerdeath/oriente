@@ -8,8 +8,7 @@ import React, {
     createContext,
     useContext
 } from 'react'
-// @ts-ignore
-import { useStyles } from 'floral'
+import { useStyles, FloralProps, FloralStyles } from 'floral'
 // @ts-ignore
 import Taply from 'taply'
 import { SpringConfig } from 'react-spring'
@@ -19,11 +18,17 @@ import useControlledState from './utils/useControlledState'
 import useAnimatedValue from './utils/useAnimatedValue'
 import configs from './utils/springConfigs'
 import { AppearAnimation, SlideAnimation } from './animations'
-import { oppositeSides, defaultPlacement, PopupSide, PopupAlign } from './PopupController'
-import { FloralProps, TapState, initialTapState, PopupPlacement } from './types'
+import {
+    oppositeSides,
+    defaultPlacement,
+    PopupSide,
+    PopupAlign,
+    PopupPlacement
+} from './PopupController'
+import { TapState, initialTapState } from './types'
 import { Popup } from './popup'
 
-export interface TooltipProps extends FloralProps {
+export interface TooltipProps extends FloralProps<TooltipProps> {
     /** Content of the tooltip */
     tooltip: React.ReactNode
 
@@ -60,8 +65,8 @@ export interface TooltipProps extends FloralProps {
 }
 
 export interface TooltipArrowProps
-    extends Omit<React.HTMLProps<HTMLDivElement>, 'style'>,
-        FloralProps {
+    extends FloralProps<TooltipArrowProps>,
+        React.HTMLProps<HTMLDivElement> {
     /** Width of the arrow, for the orientation like this: "^" */
     width: number | string
 
@@ -162,7 +167,6 @@ TooltipArrow.defaultProps = {
     color: 'white'
 }
 
-
 const Tooltip = (props: TooltipProps) => {
     const {
         placement,
@@ -179,7 +183,7 @@ const Tooltip = (props: TooltipProps) => {
 
     const state = useRef('closed')
     const [isOpen, setIsOpen] = useControlledState(props, 'isOpen', false)
-    const styles = useStyles(null, [props, { isOpen }])
+    const styles = useStyles(undefined, [props, { isOpen }])
     const [tapState, setTapState] = useState<TapState>(initialTapState)
     const [tooltipTapState, setTooltipTapState] = useState<TapState>(initialTapState)
     const timer = useRef<number>()

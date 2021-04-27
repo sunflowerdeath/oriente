@@ -9,15 +9,14 @@ import React, {
 } from 'react'
 // @ts-ignore
 import Taply from 'taply'
-// @ts-ignore
-import { useStyles } from 'floral'
+import { useStyles, FloralProps, FloralStyles } from 'floral'
 import FocusLock from 'react-focus-lock'
 import { useKey } from 'react-use'
 import { SpringConfig } from 'react-spring'
 
-import { initialTapState, TapState, FloralProps, PopupPlacement } from './types'
+import { initialTapState, TapState } from './types'
 import { Popup } from './popup'
-import { oppositeSides, defaultPlacement } from './PopupController'
+import { oppositeSides, defaultPlacement, PopupPlacement } from './PopupController'
 import { Layer } from './layers'
 import { useDescendant, useDescendants, Descendants } from './utils/descendants'
 import mergeRefs from './utils/mergeRefs'
@@ -33,7 +32,7 @@ export interface MenuRenderProps {
     close: () => void
 }
 
-export interface MenuProps {
+export interface MenuProps extends FloralProps<MenuProps> {
     /** Content of the dropdown menu */
     menu: (props: MenuRenderProps) => React.ReactNode
 
@@ -59,7 +58,7 @@ export interface MenuProps {
     springConfig?: SpringConfig
 }
 
-export interface MenuListProps extends FloralProps {
+export interface MenuListProps extends FloralProps<MenuListProps> {
     children: React.ReactNode
     onFocus?: () => void
     onBlur?: () => void
@@ -67,7 +66,7 @@ export interface MenuListProps extends FloralProps {
     // TODO autoSelectFirstItem
 }
 
-export interface MenuItemProps {
+export interface MenuItemProps extends FloralProps<MenuItemProps> {
     /** Value of the item that will be passed to the `onSelect()` handler of the Menu */
     value?: string
 
@@ -228,7 +227,7 @@ const MenuList = forwardRef((props: MenuListProps, ref) => {
     )
 })
 
-const menuStyles = (props: MenuProps, isOpen: boolean) => ({
+const menuStyles = (props: MenuProps, isOpen: boolean): FloralStyles => ({
     overlay: {
         background: 'transparent',
         position: 'fixed',

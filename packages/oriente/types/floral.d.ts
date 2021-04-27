@@ -13,7 +13,7 @@ declare module 'floral' {
     }
 
     export function useStyles<P>(
-        styles: FloralStylesDeclaration<P>,
+        styles: FloralStylesDeclaration<P> | undefined,
         deps: [P, ...any[]]
     ): FloralStyles
 }

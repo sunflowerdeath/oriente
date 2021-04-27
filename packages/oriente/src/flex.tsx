@@ -1,7 +1,6 @@
 import React from 'react'
 import { useStyles, FloralProps, FloralStyles } from 'floral'
 
-// import { FloralProps } from './types'
 import sheet from './utils/sheet'
 
 export type FlexAlign = 'normal' | 'start' | 'end' | 'center' | 'stretch' | 'baseline'
@@ -15,7 +14,9 @@ export type FlexJustify =
     | 'space-around'
     | 'space-evenly'
 
-interface OwnFlexProps {
+export interface FlexProps
+    extends FloralProps<FlexProps>,
+        Omit<React.HTMLProps<HTMLDivElement>, keyof 'dir' | 'wrap'> {
     children: React.ReactNode
 
     /** Flex direction */
@@ -35,11 +36,6 @@ interface OwnFlexProps {
 
     className?: string
 }
-
-export interface FlexProps
-    extends OwnFlexProps,
-        FloralProps<OwnFlexProps>,
-        Omit<React.HTMLProps<HTMLDivElement>, 'wrap' | 'dir' | 'children' | 'style'> {}
 
 const css = sheet({
     classNames: ['row', 'col', 'wrapper'],

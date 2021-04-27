@@ -1,8 +1,7 @@
 import React, { useMemo, createContext, useContext, useRef } from 'react'
 // @ts-ignore
 import Taply from 'taply'
-// @ts-ignore
-import { useStyles } from 'floral'
+import { useStyles, FloralProps, FloralStyles } from 'floral'
 import FocusLock from 'react-focus-lock'
 import { useKey, useClickAway } from 'react-use'
 import { RemoveScroll } from 'react-remove-scroll'
@@ -13,9 +12,8 @@ import CloseButton from './CloseButton'
 import { AppearAnimation, FadeAnimation } from './animations'
 import useAnimatedValue from './utils/useAnimatedValue'
 import configs from './utils/springConfigs'
-import { FloralProps } from './types'
 
-export interface ModalProps extends FloralProps {
+export interface ModalProps extends FloralProps<ModalProps> {
     /** Content of the modal */
     children: (close: () => void) => React.ReactNode | React.ReactNode
 
@@ -47,7 +45,7 @@ export interface ModalProps extends FloralProps {
     springConfig?: SpringConfig
 }
 
-export interface ModalCloseButtonProps extends FloralProps {
+export interface ModalCloseButtonProps extends FloralProps<ModalCloseButtonProps> {
     children?: React.ReactNode
 }
 
@@ -57,8 +55,11 @@ interface ModalContextProps {
 
 const ModalContext = createContext<ModalContextProps | undefined>(undefined)
 
-const modalStyles = (props: ModalProps, { isOpen }: { isOpen: boolean }) => {
-    const container = {
+const modalStyles = (
+    props: ModalProps,
+    { isOpen }: { isOpen: boolean }
+): FloralStyles => {
+    const container: React.CSSProperties = {
         position: 'fixed',
         width: '100%',
         height: '100%',
@@ -71,14 +72,14 @@ const modalStyles = (props: ModalProps, { isOpen }: { isOpen: boolean }) => {
         overflowY: 'auto',
         pointerEvents: isOpen ? 'all' : 'none'
     }
-    const window = {
+    const window: React.CSSProperties = {
         position: 'relative',
         background: 'white',
         maxWidth: '100%',
         width: props.width,
         pointerEvents: 'all'
     }
-    const overlay = {
+    const overlay: React.CSSProperties = {
         background: 'rgba(0,0,0,.5)',
         userSelect: 'none',
         pointerEvents: isOpen ? 'all' : 'none',
