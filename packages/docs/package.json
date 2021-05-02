@@ -1,6 +1,6 @@
 {
     "name": "oriente-docs",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "Docs for Oriente",
     "private": true,
     "scripts": {
@@ -11,7 +11,7 @@
     "license": "Unlicense",
     "dependencies": {
         "minibook": "^0.9.2",
-        "oriente": "^0.0.2",
+        "oriente": "^0.0.3",
         "react-draggable": "^4.4.3"
     },
     "devDependencies": {
