@@ -8,6 +8,8 @@ import { OrienteProvider } from 'oriente'
 import componentsSection from './components'
 import GettingStartedStory from './getting-started.md'
 
+const isProduction = process.env.NODE_ENV === 'production'
+
 const sections = {
     'getting-started': {
         name: 'Getting Started',
@@ -26,6 +28,7 @@ ReactDOM.render(
             }
             items={sections}
             theme={dark}
+            basename={isProduction ? '/oriente/' : ''}
         />
     </OrienteProvider>,
     document.querySelector('#root')
