@@ -5,8 +5,8 @@
     "main": "lib/index.js",
     "scripts": {
         "test": "karma start",
-        "build": "gnoll lib",
-        "watch": "gnoll lib --watch"
+        "build": "babel src --extensions '.ts,.tsx' --out-dir lib --source-maps inline --copy-files",
+        "watch": "babel src --extensions '.ts,.tsx' --out-dir lib --source-maps inline --copy-files --watch"
     },
     "author": "sunflowerdeath",
     "license": "Unlicense",
@@ -29,8 +29,7 @@
         "karma-chrome-launcher": "^3.1.0",
         "karma-mocha": "^2.0.1",
         "karma-webpack": "^4.0.2",
-        "mocha": "^8.2.0",
-        "react-test-renderer": "^17.0.1"
+        "mocha": "^8.2.0"
     },
     "peerDependecies": {
         "react": "^16.8.0",

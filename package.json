@@ -11,41 +11,30 @@
         "build-docs": "gnoll build --config docs.webpack.config.js --no-html --assets-caching",
         "lint": "eslint ./src"
     },
+    "workspaces": [
+        "packages/**"
+    ],
     "author": "sunflowerdeath",
     "license": "Unlicense",
     "dependencies": {
-        "@reach/observe-rect": "^1.2.0",
-        "@reach/rect": "^0.11.2",
-        "lodash": "^4.17.21",
-        "prop-types": "^15.7.2",
-        "react-focus-lock": "^2.5.0",
-        "react-remove-scroll": "^2.4.1",
-        "react-spring": "^8.0.27",
-        "react-use": "^17.2.1",
-        "shallow-equal": "^1.2.1",
-        "taply": "^0.4.0"
-    },
-    "devDependencies": {
-        "@babel/preset-typescript": "^7.12.7",
+        "@babel/cli": "^7.13.16",
+        "@babel/core": "^7.14.0",
+        "@babel/preset-env": "^7.14.0",
+        "@babel/preset-react": "^7.13.13",
+        "@babel/preset-typescript": "^7.13.0",
         "@types/lodash": "^4.14.168",
         "@types/react": "^17.0.0",
         "@typescript-eslint/parser": "^4.13.0",
-        "babel-plugin-transform-class-properties": "^6.24.1",
         "eslint": "^7.17.0",
         "eslint-import-resolver-webpack": "^0.13.0",
         "eslint-plugin-import": "^2.22.1",
         "eslint-plugin-prettier": "^3.3.1",
         "eslint-plugin-react": "^7.22.0",
-        "gnoll": "^0.7.0",
         "lerna": "^4.0.0",
         "prettier": "^2.2.1",
         "react": "^16.8.0",
         "react-dom": "^16.8.0",
         "typescript": "^4.2",
         "webpack-merge": "^5.7.3"
-    },
-    "peerDependecies": {
-        "react": "^16.8.0",
-        "react-dom": "^16.8.0"
     }
 }

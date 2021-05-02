@@ -4,18 +4,23 @@
     "description": "Docs for Oriente",
     "private": true,
     "scripts": {
-        "start": "gnoll start --no-html",
-        "build": "gnoll build --no-html --assets-caching"
+        "start": "webpack serve",
+        "build": "NODE_ENV=production webpack"
     },
     "author": "sunflowerdeath",
     "license": "Unlicense",
     "dependencies": {
-        "oriente": "*",
         "minibook": "^0.9.2",
+        "oriente": "*",
         "react-draggable": "^4.4.3"
     },
     "devDependencies": {
-        "minimark-loader": "^0.9.0"
+        "babel-loader": "^8.2.2",
+        "html-webpack-plugin": "^5.3.1",
+        "minimark-loader": "^0.9.0",
+        "webpack": "^5.36.2",
+        "webpack-cli": "^4.6.0",
+        "webpack-dev-server": "^3.11.2"
     },
     "peerDependecies": {
         "react": "^16.8.0",
