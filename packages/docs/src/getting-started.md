@@ -1,5 +1,7 @@
 # Oriente
 
+![npm](https://img.shields.io/npm/v/oriente?color=%23880e4f&style=flat-square)&nbsp;&nbsp;&nbsp;![GitHub](https://img.shields.io/github/package-json/v/sunflowerdeath/oriente?color=%23880e4f&label=github&style=flat-square)
+
 Oriente is a React UI library.
 
 Its goal is to provide simple, composable and customizable components.

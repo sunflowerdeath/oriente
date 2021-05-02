@@ -1,3 +1,5 @@
+export { default as OrienteProvider } from './OrienteProvider'
+
 export {
     FadeAnimation,
     SlideAnimation,

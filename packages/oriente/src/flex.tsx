@@ -74,7 +74,7 @@ const flexStyles = ({ dir, wrap, align, justify, gap }: FlexProps): FloralStyles
     */
     wrapper: {
         display: 'contents',
-        '--flex-gap': gap
+        '--flex-gap': typeof gap === 'number' ? `${gap}px` : gap
     } as React.CSSProperties
 })
 

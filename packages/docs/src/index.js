@@ -3,7 +3,7 @@ import React from 'react'
 import MiniBook from 'minibook'
 import { dark } from 'minibook/lib/themes'
 
-import { Stack, ToastContainer } from 'oriente'
+import { OrienteProvider } from 'oriente'
 
 import componentsSection from './components'
 import GettingStartedStory from './getting-started.md'
@@ -17,18 +17,16 @@ const sections = {
 }
 
 ReactDOM.render(
-    <Stack>
-        <ToastContainer>
-            <MiniBook
-                title={
-                    <span style={{ color: '#f06292' }}>
-                        <span style={{ fontWeight: 'normal' }}>☀</span> Oriente
-                    </span>
-                }
-                items={sections}
-                theme={dark}
-            />
-        </ToastContainer>
-    </Stack>,
+    <OrienteProvider>
+        <MiniBook
+            title={
+                <div style={{ color: '#f06292' }}>
+                    <span style={{ fontWeight: 'normal' }}>☀</span> Oriente
+                </div>
+            }
+            items={sections}
+            theme={dark}
+        />
+    </OrienteProvider>,
     document.querySelector('#root')
 )
