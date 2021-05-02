@@ -34,5 +34,10 @@
     "peerDependecies": {
         "react": "^16.8.0",
         "react-dom": "^16.8.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/sunflowerdeath/oriente.git",
+        "directory": "packages/oriente"
     }
 }
