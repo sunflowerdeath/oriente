@@ -6,6 +6,8 @@ import ModalStory from './modal.md'
 import ToastsStory from './toasts.md'
 import FlexStory from './flex.md'
 
+import FormsStory from './forms.md'
+
 const componentsSection = {
     name: 'Components',
     items: {
@@ -36,6 +38,10 @@ const componentsSection = {
         flex: {
             name: 'Flex',
             markdown: FlexStory
+        },
+        forms: {
+            name: 'Forms',
+            markdown: FormsStory
         }
     }
 }

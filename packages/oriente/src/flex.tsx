@@ -1,7 +1,7 @@
 import React from 'react'
 import { useStyles, FloralProps, FloralStyles } from 'floral'
 
-import sheet from './utils/sheet'
+import stylesheet from './utils/stylesheet'
 
 export type FlexAlign = 'normal' | 'start' | 'end' | 'center' | 'stretch' | 'baseline'
 
@@ -37,11 +37,11 @@ export interface FlexProps
     className?: string
 }
 
-const css = sheet({
+const css = stylesheet({
     classNames: ['row', 'col', 'wrapper'],
-    css: (map) => `
-        .${map.row} > .${map.wrapper} > * + * { margin-left: var(--flex-gap) }
-        .${map.col} > .${map.wrapper} > * + * { margin-top: var(--flex-gap) }`
+    css: (c) =>
+        `.${c.row} > .${c.wrapper} > * + * { margin-left: var(--flex-gap) }
+        .${c.col} > .${c.wrapper} > * + * { margin-top: var(--flex-gap) }`
 })
 
 const justifyMap: { [key in FlexJustify]?: string } = {

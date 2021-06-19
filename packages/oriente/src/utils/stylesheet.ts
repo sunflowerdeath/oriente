@@ -1,10 +1,10 @@
 import { times, random, fromPairs } from 'lodash'
 
-const uniqClassName = (c: string) =>
-    c + '-' + times(4, () => random(35).toString(36)).join('')
+const uniqClassName = (name: string) =>
+    name + '-' + times(4, () => random(35).toString(36)).join('')
 
 const makeClassNamesMap = (classes: string[]) =>
-    fromPairs(classes.map((c) => [c, uniqClassName(c)]))
+    fromPairs(classes.map((name) => [name, uniqClassName(name)]))
 
 const createStyleElem = (css: string) => {
     const style = document.createElement('style')
@@ -13,15 +13,15 @@ const createStyleElem = (css: string) => {
     document.head.appendChild(style)
 }
 
-interface SheetOptions {
+interface StyleSheetOptions {
     classNames: string[]
     css: (map: { [key: string]: string }) => string
 }
 
-const sheet = ({ classNames, css }: SheetOptions) => {
+const stylesheet = ({ classNames, css }: StyleSheetOptions) => {
     const map = makeClassNamesMap(classNames)
     createStyleElem(css(map))
     return map
 }
 
-export default sheet
+export default stylesheet
