@@ -1,14 +1,13 @@
+import { useStyles } from 'floral'
 import React, {
     forwardRef,
-    useState,
     useEffect,
     useImperativeHandle,
-    useRef
+    useRef,
+    useState
 } from 'react'
-import { useStyles } from 'floral'
 // @ts-ignore
 import Taply from 'taply'
-
 import mergeRefs from './utils/mergeRefs'
 
 interface BaseInputProps<T = string> {
@@ -56,7 +55,9 @@ const TextInput = forwardRef((props: TextInputProps, ref) => {
     const [isFocused, setIsFocused] = useState(false)
     const styles = useStyles(textInputStyles, [props, isFocused])
 
-    const [currentLines, setCurrentLines] = useState(getLinesNumber(value, lines, maxLines))
+    const [currentLines, setCurrentLines] = useState(
+        getLinesNumber(value, lines, maxLines)
+    )
     useEffect(() => {
         setCurrentLines(getLinesNumber(value, lines, maxLines))
     }, [value, lines, maxLines])
@@ -176,6 +177,35 @@ const Switch = (props: SwitchProps) => {
                 <div style={styles.label}>{label}</div>
             </div>
         </Taply>
+    )
+}
+
+interface CheckboxProps extends BaseInputProps {
+    isIndeterminate?: boolean
+    label?: React.ReactNode
+}
+
+const checkboxStyles = (props: CheckboxProps) => {
+    const root = {
+        display: 'flex',
+        alignItems: 'center'
+    }
+    const box = {
+        border: '1px solid #ccc',
+        borderRadius: 3,
+        marginRight: '.25rem'
+    }
+    return { root, box }
+}
+
+const Checkbox = (props: CheckboxProps) => {
+    const styles = useStyles(checkboxStyles, [props])
+    const { label } = props
+    return (
+        <div style={styles.root}>
+            <div style={styles.box} />
+            {label}
+        </div>
     )
 }
 

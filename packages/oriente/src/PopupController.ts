@@ -1,7 +1,6 @@
 import observeRect from '@reach/observe-rect'
-
-import { observeViewport, measureViewport } from './utils/viewport'
 import type { ViewportMeasurements, ViewportObserver } from './utils/viewport'
+import { measureViewport, observeViewport } from './utils/viewport'
 
 export type PopupSide = 'left' | 'top' | 'right' | 'bottom'
 
@@ -159,12 +158,16 @@ const constrainPosition = (
 const getPopupPosition = (measurements: PopupMeasurements, placement: PopupPlacement) => {
     let { side, align, offset, flip, constrain, padding } = placement
     let configs = getFlipConfigs(flip, { side, align, offset })
-    // TODO select position that fits most?
-    let position: Position, config: any
+    let position: Position | undefined
+    let config: any
     for (const i in configs) {
         config = configs[i]
-        position = calcPosition(measurements, config)
-        if (fitsViewport(position, measurements, padding)) break
+        let option = calcPosition(measurements, config)
+        // Pick first one, then try to find one that fits
+        if (position === undefined || fitsViewport(option, measurements, padding)) {
+            position = option
+            break
+        }
     }
     if (constrain) position = constrainPosition(position!, measurements, padding)
     return { position: position!, config: config! }
