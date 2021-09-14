@@ -1,30 +1,29 @@
+import { FloralProps, FloralStyles, useStyles } from 'floral'
 import React, {
-    useState,
     createContext,
-    useContext,
+    forwardRef,
     useCallback,
+    useContext,
     useEffect,
     useRef,
-    forwardRef
+    useState
 } from 'react'
+import FocusLock from 'react-focus-lock'
+import { SpringConfig } from 'react-spring'
+import { useKey } from 'react-use'
 // @ts-ignore
 import Taply from 'taply'
-import { useStyles, FloralProps, FloralStyles } from 'floral'
-import FocusLock from 'react-focus-lock'
-import { useKey } from 'react-use'
-import { SpringConfig } from 'react-spring'
-
-import { initialTapState, TapState } from './types'
-import { Popup } from './popup'
-import { oppositeSides, defaultPlacement, PopupPlacement } from './PopupController'
-import { Layer } from './layers'
 import { AppearAnimation, SlideAnimation } from './animations'
-import { useDescendant, useDescendants, Descendants } from './utils/descendants'
+import { Layer } from './layers'
+import { Popup } from './popup'
+import { defaultPlacement, oppositeSides, PopupPlacement } from './PopupController'
+import { initialTapState } from './types'
+import { Descendants, useDescendant, useDescendants } from './utils/descendants'
 import mergeRefs from './utils/mergeRefs'
-import useViewport from './utils/useViewport'
-import useControlledState from './utils/useControlledState'
-import useAnimatedValue from './utils/useAnimatedValue'
 import configs from './utils/springConfigs'
+import useAnimatedValue from './utils/useAnimatedValue'
+import useControlledState from './utils/useControlledState'
+import useViewport from './utils/useViewport'
 
 export interface MenuRenderProps {
     isOpen: boolean
@@ -303,13 +302,15 @@ const Menu = (props: MenuProps) => {
 
     return (
         <>
-            <Layer type="popup" isActive={isActive}>
-                <div
-                    style={styles.overlay}
-                    onClick={close}
-                    onDragStart={(e) => e.preventDefault()}
-                />
-            </Layer>
+            {isActive && (
+                <Layer type="popup" isActive={true}>
+                    <div
+                        style={styles.overlay}
+                        onClick={close}
+                        onDragStart={(e) => e.preventDefault()}
+                    />
+                </Layer>
+            )}
             <Popup
                 placement={placement}
                 isActive={isActive}
