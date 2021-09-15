@@ -18,7 +18,7 @@ import { Layer } from './layers'
 import { Popup } from './popup'
 import { defaultPlacement, oppositeSides, PopupPlacement } from './PopupController'
 import { initialTapState } from './types'
-import { Descendants, useDescendant, useDescendants } from './utils/descendants'
+import { DescendantsManager, useDescendant, useDescendants } from './utils/descendants'
 import mergeRefs from './utils/mergeRefs'
 import configs from './utils/springConfigs'
 import useAnimatedValue from './utils/useAnimatedValue'
@@ -94,7 +94,7 @@ interface MenuDescendantProps {
 }
 
 interface MenuContextProps {
-    descendants: Descendants<MenuDescendantProps>
+    descendants: DescendantsManager<MenuDescendantProps>
     selectedIndex: number
     setSelectedIndex: (index: number) => void
     onSelect: (index: number) => void
@@ -180,9 +180,18 @@ const MenuList = forwardRef((props: MenuListProps, ref) => {
     const { children, onSelect, autoSelectFirstItem } = props
 
     const descendants = useDescendants<MenuDescendantProps>()
-    const [selectedIndex, setSelectedIndex] = useState(() =>
-        autoSelectFirstItem ? 0 : -1
-    )
+    const [selectedIndex, setSelectedIndex] = useState(-1)
+
+    useEffect(() => {
+        if (autoSelectFirstItem) {
+            setTimeout(() =>
+                setSelectedIndex(
+                    descendants.items.findIndex((item) => !item.props.isDisabled)
+                )
+            )
+        }
+    }, [])
+
     const select = useCallback(
         (index: number) => {
             let { onSelect: itemOnSelect, value } = descendants.items[index].props
@@ -205,7 +214,7 @@ const MenuList = forwardRef((props: MenuListProps, ref) => {
             const selectableDescendants = descendants.items.filter(
                 (item) => !item.props.isDisabled
             )
-            const mapIndex = (index: number) =>
+            const mapIndexFromSelectable = (index: number) =>
                 descendants.items.findIndex(
                     (item) => item === selectableDescendants[index]
                 )
@@ -219,19 +228,20 @@ const MenuList = forwardRef((props: MenuListProps, ref) => {
             }
             const handlers = {
                 ArrowDown: () => {
-                    let nextIndex = mapIndex(
+                    let nextIndex = mapIndexFromSelectable(
                         getNextIndex(selectableIndex, selectableDescendants.length)
                     )
                     selectItem(nextIndex)
                 },
                 ArrowUp: () => {
-                    let prevIndex = mapIndex(
+                    let prevIndex = mapIndexFromSelectable(
                         getPrevIndex(selectableIndex, selectableDescendants.length)
                     )
                     selectItem(prevIndex)
                 },
-                Home: () => selectItem(mapIndex(0)),
-                End: () => selectItem(mapIndex(selectableDescendants.length - 1)),
+                Home: () => selectItem(mapIndexFromSelectable(0)),
+                End: () =>
+                    selectItem(mapIndexFromSelectable(selectableDescendants.length - 1)),
                 Enter: () => select(selectedIndex)
             }
             const handler = handlers[event.key]
@@ -240,7 +250,7 @@ const MenuList = forwardRef((props: MenuListProps, ref) => {
                 handler(event)
             }
         },
-        [descendants]
+        [selectedIndex]
     )
 
     return (

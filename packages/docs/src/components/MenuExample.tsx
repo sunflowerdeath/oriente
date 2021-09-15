@@ -49,15 +49,15 @@ interface MenuExampleProps extends React.ComponentProps<Menu> {
 const MenuExample = ({ children = 'Open menu', ...restProps }: MenuExampleProps) => {
     let menu = () => (
         <>
+            <TooltipMenuItem value="disabled-1" isDisabled>
+                Disabled item
+            </TooltipMenuItem>
             <ExampleMenuItem
                 value="one"
                 onSelect={() => console.log(`MenuItem onSelect`)}
             >
                 Item 1
             </ExampleMenuItem>
-            <TooltipMenuItem value="disabled-1" isDisabled>
-                Disabled item
-            </TooltipMenuItem>
             <TooltipMenuItem value="disabled-1" isDisabled>
                 Disabled item
             </TooltipMenuItem>

@@ -1,5 +1,5 @@
-import { useRef, useLayoutEffect, useCallback, useState } from 'react'
-
+import { useLayoutEffect, useMemo, useRef } from 'react'
+import mergeRefs from './mergeRefs'
 import useForceUpdate from './useForceUpdate'
 
 const isPreceding = (a: Node, b: Node) =>
@@ -10,54 +10,51 @@ export interface Descendant<T> {
     props: T
 }
 
-export interface Descendants<T> {
-    items: Descendant<T>[]
-    register: (desc: Descendant<T>) => void
-    unregister: (element: HTMLElement) => void
+class DescendantsManager<T> {
+    items: Descendant<T>[] = []
+
+    register({ element, ...props }: Descendant<T>) {
+        if (!element) return
+
+        // already registered
+        if (this.items.find((item) => item.element === element)) return
+
+        const index = this.items.findIndex((item) => isPreceding(element, item.element))
+        const newItem = { element, ...props }
+        if (index === -1) {
+            this.items.push(newItem)
+        } else {
+            this.items.splice(index, 0, newItem)
+        }
+    }
+
+    unregister(element: HTMLElement) {
+        const index = this.items.findIndex((item) => item.element === element)
+        if (index !== -1) this.items.splice(index, 1)
+    }
 }
 
 const useDescendants = <T>() => {
-    const [items, setItems] = useState<Descendant<T>[]>([])
-    const register = useCallback(({ element, ...props }) => {
-        if (!element) return
-        setItems((prevItems) => {
-            if (prevItems.find((item) => item.element === element)) {
-                return prevItems
-            }
-            const index = prevItems.findIndex((item) =>
-                isPreceding(element, item.element)
-            )
-            const newItem = { element, ...props }
-            if (index === -1) return [...prevItems, newItem]
-            return [...prevItems.slice(0, index), newItem, ...prevItems.slice(index)]
-        })
-    }, [])
-    const unregister = useCallback((element) => {
-        setItems((items) => items.filter((item) => element !== item.element))
-    }, [])
-    return { items, register, unregister }
+    const descendants = useMemo(() => new DescendantsManager<T>(), [])
+    return descendants
 }
 
-const useDescendant = <T>(descendants: Descendants<T>, props: T) => {
+const useDescendant = <T>(descendants: DescendantsManager<T>, props: T) => {
     const forceUpdate = useForceUpdate()
     const ref = useRef<HTMLElement>()
-    const { register, unregister } = descendants
     const element = ref.current
+
     useLayoutEffect(() => {
-        if (element === undefined) {
-            // On first render there is no element
-            forceUpdate()
-        } else {
-            register({ element, props })
-        }
         return () => {
-            if (element) unregister(element)
+            if (ref.current) descendants.unregister(ref.current)
         }
-    }, [element, ...Object.values(props)])
+    }, [])
+
+    const callback = (element: any) => descendants.register({ element, props })
     const index = element
         ? descendants.items.findIndex((item) => element === item.element)
         : -1
-    return { ref, index }
+    return { ref: mergeRefs(ref, callback), index }
 }
 
-export { useDescendants, useDescendant }
+export { useDescendants, useDescendant, DescendantsManager }
