@@ -1,6 +1,6 @@
 ---
 imports:
-    '{ MenuListExample, MenuExample, ScrollMenuExample }': './MenuExample'
+    '{ MenuListExample, MenuExample, ScrollMenuExample, MatchWidthExample }': './MenuExample'
 ---
 
 # Menu
@@ -40,6 +40,12 @@ Also, you can set your own `maxHeight` for the menu.
 
 ```@render
 <ScrollMenuExample />
+```
+
+## Match width
+
+```@render
+<MatchWidthExample />
 ```
 
 ## Menu Props

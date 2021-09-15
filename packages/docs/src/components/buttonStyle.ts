@@ -4,7 +4,6 @@ const buttonStyle : React.CSSProperties = {
     background: '#444',
     padding: 8,
     boxSizing: 'border-box',
-    marginRight: 8,
     display: 'inline-block'
 }
 

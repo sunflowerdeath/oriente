@@ -1,10 +1,6 @@
-import React, { useContext, useState, forwardRef } from 'react'
-// @ts-ignore
-import { extendComponentStyles } from 'floral'
 import { range } from 'lodash'
-
-import { Menu, MenuList, MenuItem, Tooltip } from 'oriente'
-
+import { Menu, MenuItem, MenuList, Tooltip } from 'oriente'
+import React, { forwardRef, useState } from 'react'
 import buttonStyle from './buttonStyle'
 
 const exampleItemStyles = ({ isDisabled }, { isSelected }) => ({
@@ -22,10 +18,7 @@ const ExampleMenuItem = forwardRef((props: any, ref) => (
 
 const MenuListExample = () => (
     <MenuList onSelect={(value) => console.log(`Menu onSelect: ${value}`)}>
-        <ExampleMenuItem
-            value="one"
-            onSelect={() => console.log(`MenuItem onSelect`)}
-        >
+        <ExampleMenuItem value="one" onSelect={() => console.log(`MenuItem onSelect`)}>
             Item 1
         </ExampleMenuItem>
         <ExampleMenuItem value="two" isDisabled>
@@ -49,7 +42,11 @@ const TooltipMenuItem = (props: any) => {
     )
 }
 
-const MenuExample = () => {
+interface MenuExampleProps extends React.ComponentProps<Menu> {
+    children?: React.ReactNode
+}
+
+const MenuExample = ({ children = 'Open menu', ...restProps }: MenuExampleProps) => {
     let menu = () => (
         <>
             <ExampleMenuItem
@@ -73,10 +70,13 @@ const MenuExample = () => {
         <Menu
             onSelect={(value) => console.log(`Menu onSelect: ${value}`)}
             menu={menu}
+            {...restProps}
         >
             {(ref, { open }) => (
-                <div ref={ref} onClick={open} style={buttonStyle}>
-                    Open menu
+                <div ref={ref} style={{ display: 'inline-block' }}>
+                    <div onClick={open} style={buttonStyle}>
+                        {children}
+                    </div>
                 </div>
             )}
         </Menu>
@@ -86,9 +86,7 @@ const MenuExample = () => {
 const ScrollMenuExample = () => {
     let [maxHeight, setMaxHeight] = useState(false)
     let menu = () =>
-        range(1, 50).map((i) => (
-            <ExampleMenuItem value="one">Item {i}</ExampleMenuItem>
-        ))
+        range(1, 50).map((i) => <ExampleMenuItem value="one">Item {i}</ExampleMenuItem>)
 
     return (
         <>
@@ -115,4 +113,21 @@ const ScrollMenuExample = () => {
     )
 }
 
-export { MenuListExample, MenuExample, ScrollMenuExample }
+const MatchWidthExample = () => {
+    let [match, setMatch] = useState(false)
+    return (
+        <>
+            <MenuExample matchWidth={match}>Button with very long text</MenuExample>
+            <label>
+                <input
+                    type="checkbox"
+                    value={match}
+                    onChange={() => setMatch((v) => !v)}
+                />{' '}
+                matchWidth
+            </label>
+        </>
+    )
+}
+
+export { MenuListExample, MenuExample, ScrollMenuExample, MatchWidthExample }

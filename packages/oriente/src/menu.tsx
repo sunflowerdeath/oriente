@@ -10,7 +10,7 @@ import React, {
 } from 'react'
 import FocusLock from 'react-focus-lock'
 import { SpringConfig } from 'react-spring'
-import { useKey } from 'react-use'
+import { useKey, useMeasure } from 'react-use'
 // @ts-ignore
 import Taply from 'taply'
 import { AppearAnimation, SlideAnimation } from './animations'
@@ -55,6 +55,12 @@ export interface MenuProps extends FloralProps<MenuProps> {
 
     /** Config for `react-spring` animation */
     springConfig?: SpringConfig
+
+    /** Select first item on open */
+    autoSelectFirstItem?: boolean
+
+    /** Matches width of menu and trigger element */
+    matchWidth?: boolean
 }
 
 export interface MenuListProps extends FloralProps<MenuListProps> {
@@ -62,7 +68,7 @@ export interface MenuListProps extends FloralProps<MenuListProps> {
     onFocus?: () => void
     onBlur?: () => void
     onSelect?: (value?: string) => void
-    // TODO autoSelectFirstItem
+    autoSelectFirstItem: boolean
 }
 
 export interface MenuItemProps extends FloralProps<MenuItemProps> {
@@ -158,9 +164,12 @@ const menuListStyles = {
 }
 
 const MenuList = forwardRef((props: MenuListProps, ref) => {
-    const { children, onSelect } = props
+    const { children, onSelect, autoSelectFirstItem } = props
+
     const descendants = useDescendants<MenuDescendantProps>()
-    const [selectedIndex, setSelectedIndex] = useState(-1)
+    const [selectedIndex, setSelectedIndex] = useState(() =>
+        autoSelectFirstItem ? 0 : -1
+    )
     const select = useCallback(
         (index: number) => {
             let { onSelect: itemOnSelect, value } = descendants.items[index].props
@@ -182,13 +191,13 @@ const MenuList = forwardRef((props: MenuListProps, ref) => {
             const selectableDescendants = descendants.items.filter(
                 (item) => !item.props.isDisabled
             )
-            const selectableIndex = selectableDescendants.findIndex(
-                (item) => item === descendants.items[selectedIndex]
-            )
             const mapIndex = (index: number) =>
                 descendants.items.findIndex(
                     (item) => item === selectableDescendants[index]
                 )
+            const selectableIndex = selectableDescendants.findIndex(
+                (item) => item === descendants.items[selectedIndex]
+            )
             const handlers = {
                 ArrowDown: () => {
                     let nextIndex = mapIndex(
@@ -252,7 +261,9 @@ const Menu = (props: MenuProps) => {
         onSelect,
         maxHeight,
         Animation,
-        springConfig
+        springConfig,
+        autoSelectFirstItem,
+        matchWidth
     } = props
     const [isOpen, setIsOpen] = useControlledState(props, 'isOpen', false)
     const [side, setSide] = useState('top')
@@ -282,17 +293,20 @@ const Menu = (props: MenuProps) => {
         }
         setConstrainedMaxHeight(availableHeight)
     }, [isOpen, maxHeight, placement, viewport.height])
+    const [measureRef, { width }] = useMeasure()
 
     const popup = (ref) => (
         <Animation openValue={openValue} side={oppositeSides[side]}>
-            <FocusLock>
+            <FocusLock disabled={!isOpen}>
                 <MenuList
                     style={{
                         ...styles.list,
-                        maxHeight: contrainedMaxHeight
+                        maxHeight: contrainedMaxHeight,
+                        minWidth: matchWidth ? width : 'auto'
                     }}
                     ref={ref}
                     onSelect={menuListOnSelect}
+                    autoSelectFirstItem={autoSelectFirstItem!}
                 >
                     {menu(renderProps)}
                 </MenuList>
@@ -317,7 +331,7 @@ const Menu = (props: MenuProps) => {
                 onChangeSide={setSide}
                 popup={popup}
             >
-                {(ref) => children(ref, renderProps)}
+                {(ref) => children(mergeRefs(ref, measureRef), renderProps)}
             </Popup>
         </>
     )
@@ -327,7 +341,8 @@ Menu.defaultProps = {
     closeOnSelect: true,
     placement: { ...defaultPlacement, constrain: true, padding: 16 },
     Animation: SlideAnimation,
-    springConfig: configs.stiff
+    springConfig: configs.stiff,
+    autoSelectFirstItem: true
 }
 
 export { Menu, MenuList, MenuItem }
