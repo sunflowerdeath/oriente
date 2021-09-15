@@ -163,6 +163,19 @@ const menuListStyles = {
     root: { outline: 'none' }
 }
 
+const scrollIntoView = (item: HTMLElement) => {
+    const container = item.parentElement!
+    const itemRect = item.getBoundingClientRect()
+    const containerRect = container.getBoundingClientRect()
+    const scrollTop = container.scrollTop
+    const itemPos = itemRect.top - containerRect.top + scrollTop
+    if (itemPos < scrollTop) {
+        container.scrollTop = itemPos
+    } else if (itemPos > scrollTop + containerRect.height - itemRect.height) {
+        container.scrollTop = itemPos + itemRect.height - containerRect.height
+    }
+}
+
 const MenuList = forwardRef((props: MenuListProps, ref) => {
     const { children, onSelect, autoSelectFirstItem } = props
 
@@ -185,6 +198,7 @@ const MenuList = forwardRef((props: MenuListProps, ref) => {
         onSelect: select
     }
     const styles = useStyles(menuListStyles, [props])
+    const containerRef = useRef<HTMLElement>()
 
     const onKeyDown = useCallback(
         (event: React.KeyboardEvent) => {
@@ -198,25 +212,26 @@ const MenuList = forwardRef((props: MenuListProps, ref) => {
             const selectableIndex = selectableDescendants.findIndex(
                 (item) => item === descendants.items[selectedIndex]
             )
+            const selectItem = (index: number) => {
+                setSelectedIndex(index)
+                let item = descendants.items[index]?.element
+                scrollIntoView(item)
+            }
             const handlers = {
                 ArrowDown: () => {
                     let nextIndex = mapIndex(
                         getNextIndex(selectableIndex, selectableDescendants.length)
                     )
-                    setSelectedIndex(nextIndex)
+                    selectItem(nextIndex)
                 },
                 ArrowUp: () => {
                     let prevIndex = mapIndex(
                         getPrevIndex(selectableIndex, selectableDescendants.length)
                     )
-                    setSelectedIndex(prevIndex)
+                    selectItem(prevIndex)
                 },
-                Home: () => {
-                    setSelectedIndex(mapIndex(0))
-                },
-                End: () => {
-                    setSelectedIndex(mapIndex(selectableDescendants.length - 1))
-                },
+                Home: () => selectItem(mapIndex(0)),
+                End: () => selectItem(mapIndex(selectableDescendants.length - 1)),
                 Enter: () => select(selectedIndex)
             }
             const handler = handlers[event.key]
@@ -229,7 +244,12 @@ const MenuList = forwardRef((props: MenuListProps, ref) => {
     )
 
     return (
-        <div style={styles.root} onKeyDown={onKeyDown} tabIndex={0} ref={ref}>
+        <div
+            style={styles.root}
+            onKeyDown={onKeyDown}
+            tabIndex={0}
+            ref={mergeRefs(containerRef, ref)}
+        >
             <MenuContext.Provider value={context}>{children}</MenuContext.Provider>
         </div>
     )
