@@ -34,15 +34,15 @@ export interface PopupProps {
 }
 
 const Popup = forwardRef((props: PopupProps, ref) => {
-    let { children, popup, isActive, placement, onChangeSide } = props
+    const { children, popup, isActive, placement, onChangeSide } = props
 
-    let [targetElem, setTargetElem] = useState()
-    let [popupElem, setPopupElem] = useState()
-    let controllerRef = useRef()
+    const [targetElem, setTargetElem] = useState()
+    const [popupElem, setPopupElem] = useState()
+    const controllerRef = useRef()
 
     useLayoutEffect(() => {
         if (isActive && targetElem && popupElem) {
-            let options = {
+            const options = {
                 target: targetElem,
                 popup: popupElem,
                 placement,
@@ -67,7 +67,7 @@ const Popup = forwardRef((props: PopupProps, ref) => {
         }
     }, [targetElem, popupElem, isActive, placement, onChangeSide])
 
-    let memoizedPopup = useMemo(
+    const memoizedPopup = useMemo(
         () =>
             typeof popup === 'function'
                 ? popup(setPopupElem)
@@ -75,7 +75,7 @@ const Popup = forwardRef((props: PopupProps, ref) => {
         [popup]
     )
 
-    let mergedRef = mergeRefs(ref, setTargetElem)
+    const mergedRef = mergeRefs(ref, setTargetElem)
     return (
         <>
             {isActive && (

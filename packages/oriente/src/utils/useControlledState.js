@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { capitalize } from 'lodash'
+import capitalize from 'lodash/capitalize'
 
 const useControlledState = (props, name, defaultState) => {
     let initialState = props[`initial${capitalize(name)}`]

@@ -1,4 +1,3 @@
-import { FloralProps, FloralStyles, useStyles } from 'floral'
 import React, {
     createContext,
     forwardRef,
@@ -6,17 +5,25 @@ import React, {
     useContext,
     useEffect,
     useRef,
-    useState
+    useState,
+    useLayoutEffect
 } from 'react'
+import { FloralProps, FloralStyles, useStyles } from 'floral'
 import FocusLock from 'react-focus-lock'
 import { SpringConfig } from 'react-spring'
 import { useKey, useMeasure } from 'react-use'
 // @ts-ignore
 import Taply from 'taply'
+
 import { AppearAnimation, SlideAnimation } from './animations'
 import { Layer } from './layers'
 import { Popup } from './popup'
-import { defaultPlacement, oppositeSides, PopupPlacement } from './PopupController'
+import {
+    defaultPlacement,
+    oppositeSides,
+    PopupPlacement,
+    PopupSide
+} from './PopupController'
 import { initialTapState } from './types'
 import { DescendantsManager, useDescendant, useDescendants } from './utils/descendants'
 import mergeRefs from './utils/mergeRefs'
@@ -24,12 +31,6 @@ import configs from './utils/springConfigs'
 import useAnimatedValue from './utils/useAnimatedValue'
 import useControlledState from './utils/useControlledState'
 import useViewport from './utils/useViewport'
-
-export interface MenuRenderProps {
-    isOpen: boolean
-    open: () => void
-    close: () => void
-}
 
 export interface MenuProps extends FloralProps<MenuProps> {
     /** Content of the dropdown menu */
@@ -67,8 +68,10 @@ export interface MenuListProps extends FloralProps<MenuListProps> {
     children: React.ReactNode
     onFocus?: () => void
     onBlur?: () => void
+    onClose: () => void
     onSelect?: (value?: string) => void
     autoSelectFirstItem: boolean
+    closeOnSelect?: boolean
 }
 
 export interface MenuItemProps extends FloralProps<MenuItemProps> {
@@ -177,7 +180,7 @@ const scrollIntoView = (item: HTMLElement) => {
 }
 
 const MenuList = forwardRef((props: MenuListProps, ref) => {
-    const { children, onSelect, autoSelectFirstItem } = props
+    const { children, onSelect, autoSelectFirstItem, onClose, closeOnSelect } = props
 
     const descendants = useDescendants<MenuDescendantProps>()
     const [selectedIndex, setSelectedIndex] = useState(-1)
@@ -189,14 +192,18 @@ const MenuList = forwardRef((props: MenuListProps, ref) => {
                     descendants.items.findIndex((item) => !item.props.isDisabled)
                 )
             )
+            // TODO clear timeout just in case
         }
     }, [])
+
+    useKey('Escape', onClose)
 
     const select = useCallback(
         (index: number) => {
             let { onSelect: itemOnSelect, value } = descendants.items[index].props
             if (itemOnSelect) itemOnSelect()
             if (onSelect && value !== undefined) onSelect(value)
+            if (closeOnSelect) onClose()
         },
         [onSelect, descendants]
     )
@@ -226,7 +233,7 @@ const MenuList = forwardRef((props: MenuListProps, ref) => {
                 let item = descendants.items[index]?.element
                 scrollIntoView(item)
             }
-            const handlers = {
+            const handlers: { [key: string]: (e: React.KeyboardEvent) => void } = {
                 ArrowDown: () => {
                     let nextIndex = mapIndexFromSelectable(
                         getNextIndex(selectableIndex, selectableDescendants.length)
@@ -282,88 +289,132 @@ const menuStyles = (props: MenuProps, isOpen: boolean): FloralStyles => ({
     }
 })
 
-const Menu = (props: MenuProps) => {
-    const {
-        placement,
-        menu,
-        children,
-        closeOnSelect,
-        onSelect,
-        maxHeight,
-        Animation,
-        springConfig,
-        autoSelectFirstItem,
-        matchWidth
-    } = props
-    const [isOpen, setIsOpen] = useControlledState(props, 'isOpen', false)
-    const [side, setSide] = useState('top')
-    const styles = useStyles(menuStyles, [props, isOpen])
-    const open = useCallback(() => setIsOpen(true), [])
-    const close = useCallback(() => setIsOpen(false), [])
-    useKey('Escape', close)
-    const menuListOnSelect = useCallback(
-        (value?: string) => {
-            if (onSelect) onSelect(value)
-            if (closeOnSelect) close()
-        },
-        [onSelect, closeOnSelect]
-    )
-    const [openValue, isRest] = useAnimatedValue(isOpen ? 1 : 0, { config: springConfig })
-    const isActive = isOpen || !isRest
-    const renderProps = { isOpen, open, close }
+const useMeasureLazy = ({ isEnabled }: { isEnabled: boolean }) => {
+    const elemRef = useRef(null)
+    const setElem = (value) => {
+        elemRef.current = value
+    }
+    const [rect, setRect] = useState<DOMRect>({} as DOMRect)
+    useLayoutEffect(() => {
+        if (!isEnabled || !elemRef.current) return
+        let observer = new ResizeObserver((entries) => {
+            if (entries[0]) setRect(entries[0].contentRect)
+        })
+        observer.observe(elemRef.current)
+        return () => observer.disconnect()
+    }, [isEnabled])
+    return [setElem, rect]
+}
 
-    const triggerRef = useRef(null)
-    const listRef = useRef(null)
+interface MenuPopupProps {
+    renderProps: MenuRenderProps
+    menuProps: React.ComponentProps<typeof Menu>
+    styles: { [key: string]: React.CSSProperties }
+}
+
+const MenuPopup = forwardRef((props: MenuPopupProps, ref) => {
+    const { renderProps, menuProps, styles } = props
+    const { isOpen, isActive, open, close, openValue, side, triggerWidth } = renderProps
+    const {
+        maxHeight,
+        placement,
+        onSelect,
+        closeOnSelect,
+        matchWidth,
+        menu,
+        autoSelectFirstItem,
+        Animation
+    } = menuProps
+
     const viewport = useViewport()
     const [contrainedMaxHeight, setConstrainedMaxHeight] = useState(0)
-    useEffect(() => {
+    useLayoutEffect(() => {
+        if (!isOpen) return
         let availableHeight = viewport.height - 2 * (placement?.padding || 0)
         if (maxHeight !== undefined) {
             availableHeight = Math.min(availableHeight, maxHeight)
         }
         setConstrainedMaxHeight(availableHeight)
     }, [isOpen, maxHeight, placement, viewport.height])
-    const [measureRef, { width }] = useMeasure()
-
-    const popup = (ref) => (
-        <Animation openValue={openValue} side={oppositeSides[side]}>
-            <FocusLock disabled={!isOpen}>
-                <MenuList
-                    style={{
-                        ...styles.list,
-                        maxHeight: contrainedMaxHeight,
-                        minWidth: matchWidth ? width : 'auto'
-                    }}
-                    ref={ref}
-                    onSelect={menuListOnSelect}
-                    autoSelectFirstItem={autoSelectFirstItem!}
-                >
-                    {menu(renderProps)}
-                </MenuList>
-            </FocusLock>
-        </Animation>
-    )
 
     return (
         <>
-            {isActive && (
-                <Layer type="popup" isActive={true}>
-                    <div
-                        style={styles.overlay}
-                        onClick={close}
-                        onDragStart={(e) => e.preventDefault()}
-                    />
-                </Layer>
-            )}
-            <Popup
-                placement={placement}
-                isActive={isActive}
-                onChangeSide={setSide}
-                popup={popup}
-            >
-                {(ref) => children(mergeRefs(ref, measureRef), renderProps)}
-            </Popup>
+            <Layer type="popup" isActive={isActive}>
+                <div
+                    onClick={close}
+                    onDragStart={(e) => e.preventDefault()}
+                    style={styles.overlay}
+                />
+            </Layer>
+            <Animation openValue={openValue} side={oppositeSides[side]}>
+                <FocusLock disabled={!isOpen}>
+                    <MenuList
+                        style={{
+                            ...styles.list,
+                            maxHeight: contrainedMaxHeight,
+                            minWidth: matchWidth ? triggerWidth : 'auto'
+                        }}
+                        ref={ref}
+                        onSelect={onSelect}
+                        onClose={close}
+                        closeOnSelect={closeOnSelect}
+                        autoSelectFirstItem={autoSelectFirstItem!}
+                    >
+                        {menu(renderProps)}
+                    </MenuList>
+                </FocusLock>
+            </Animation>
         </>
+    )
+})
+
+export interface MenuRenderProps {
+    isOpen: boolean
+    isActive: boolean
+    open: () => void
+    close: () => void
+    side: PopupSide
+    triggerWidth: number
+}
+
+const Menu = (props: MenuProps) => {
+    const { children, placement, springConfig } = props
+    const [isOpen, setIsOpen] = useControlledState(props, 'isOpen', false)
+    const [openValue, isRest] = useAnimatedValue(isOpen ? 1 : 0, { config: springConfig })
+    const [side, setSide] = useState<PopupSide>('top')
+    const isActive = isOpen || !isRest
+    const styles = useStyles(menuStyles, [props, isOpen])
+    const open = useCallback(() => setIsOpen(true), [])
+    const close = useCallback(() => setIsOpen(false), [])
+    const [measureRef, { width }] = useMeasureLazy({ isEnabled: isActive })
+    const renderProps = {
+        isOpen,
+        isActive,
+        open,
+        close,
+        openValue,
+        side,
+        triggerWidth: width
+    }
+
+    const popup = (ref) => (
+        <MenuPopup
+            ref={ref}
+            renderProps={renderProps}
+            menuProps={props}
+            styles={styles}
+        />
+    )
+
+    return (
+        <Popup
+            placement={placement}
+            isActive={isActive}
+            onChangeSide={setSide}
+            popup={popup}
+        >
+            {(ref) => children(mergeRefs(ref, measureRef), renderProps)}
+        </Popup>
     )
 }
 

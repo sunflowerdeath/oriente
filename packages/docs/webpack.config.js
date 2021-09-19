@@ -1,5 +1,6 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 const isProduction = process.env.NODE_ENV === 'production'
 
@@ -52,7 +53,8 @@ module.exports = {
             filename: 'demo/popup.html',
             template: './src/index.html',
             chunks: ['popup-demo']
-        })
+        }),
+        // new BundleAnalyzerPlugin()
     ],
     optimization: {
         splitChunks: {

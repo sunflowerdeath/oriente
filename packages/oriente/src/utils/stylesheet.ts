@@ -1,4 +1,6 @@
-import { times, random, fromPairs } from 'lodash'
+import times from 'lodash/times'
+import random from 'lodash/random'
+import fromPairs from 'lodash/fromPairs'
 
 const uniqClassName = (name: string) =>
     name + '-' + times(4, () => random(35).toString(36)).join('')

@@ -3,7 +3,7 @@ import React, { useRef, useState, useContext, createContext } from 'react'
 import Taply from 'taply'
 // @ts-ignore
 import { useStyles } from 'floral'
-import { mapValues } from 'lodash'
+import mapValues from 'lodash/mapValues'
 import { animated, useTransition, SpringConfig } from 'react-spring'
 
 import configs from './utils/springConfigs'

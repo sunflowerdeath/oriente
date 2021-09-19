@@ -1,4 +1,4 @@
-import { range } from 'lodash'
+import range from 'lodash/range'
 import { Menu, MenuItem, MenuList, Tooltip } from 'oriente'
 import React, { forwardRef, useState } from 'react'
 import buttonStyle from './buttonStyle'
@@ -72,13 +72,15 @@ const MenuExample = ({ children = 'Open menu', ...restProps }: MenuExampleProps)
             menu={menu}
             {...restProps}
         >
-            {(ref, { open }) => (
-                <div ref={ref} style={{ display: 'inline-block' }}>
-                    <div onClick={open} style={buttonStyle}>
-                        {children}
+            {(ref, { open }) => {
+                return (
+                    <div ref={ref} style={{ display: 'inline-block' }}>
+                        <div onClick={open} style={buttonStyle}>
+                            {children}
+                        </div>
                     </div>
-                </div>
-            )}
+                )
+            }}
         </Menu>
     )
 }
@@ -130,4 +132,32 @@ const MatchWidthExample = () => {
     )
 }
 
-export { MenuListExample, MenuExample, ScrollMenuExample, MatchWidthExample }
+const MenuPerfTest = () => {
+    let [state, setState] = useState('A')
+    let items = []
+    for (let i = 0; i < 500; i++) {
+        items.push(
+            <MenuExample>
+                Menu {state} {i}
+            </MenuExample>
+        )
+    }
+    return (
+        <div>
+            <button onClick={() => setState((s) => (s === 'A' ? 'B' : 'A'))}>
+                Render
+            </button>
+            <br />
+            <br />
+            <div key={state}>{items}</div>
+        </div>
+    )
+}
+
+export {
+    MenuListExample,
+    MenuExample,
+    ScrollMenuExample,
+    MatchWidthExample,
+    MenuPerfTest
+}
