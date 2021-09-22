@@ -18,7 +18,7 @@
         "lodash": "^4.17.21",
         "react-focus-lock": "^2.5.0",
         "react-remove-scroll": "^2.4.1",
-        "react-spring": "^8.0.27",
+        "react-spring": "^9.0.0",
         "react-use": "^17.2.1",
         "shallow-equal": "^1.2.1",
         "taply": "^0.4.0"

@@ -28,7 +28,8 @@ ReactDOM.render(
             }
             items={sections}
             theme={dark}
-            basename={isProduction ? '/oriente/' : ''}
+            // basename={isProduction ? '/oriente/' : ''}
+            basename=""
         />
     </OrienteProvider>,
     document.querySelector('#root')

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useSpring, SpringConfig } from 'react-spring'
+import { useSpring, SpringConfig, AnimatedValue } from 'react-spring'
 
 import configs from './springConfigs'
 

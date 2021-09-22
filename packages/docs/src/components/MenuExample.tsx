@@ -137,7 +137,7 @@ const MenuPerfTest = () => {
     let items = []
     for (let i = 0; i < 500; i++) {
         items.push(
-            <MenuExample>
+            <MenuExample key={`${state}-${i}`}>
                 Menu {state} {i}
             </MenuExample>
         )

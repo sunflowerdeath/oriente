@@ -84,8 +84,8 @@ interface ToastListProps {
 }
 
 const ToastList = ({ toasts, placement, close, springConfig }: ToastListProps) => {
-    // @ts-ignore
-    const transitions = useTransition(toasts, (toast) => toast.id, {
+    const transitions = useTransition(toasts, {
+        keys: (toast) => toast.id,
         initial: { slide: 0, height: 1, opacity: 0 },
         from: { slide: 0, height: 1, opacity: 0 },
         enter: { slide: 1, height: 1, opacity: 1 },
@@ -93,24 +93,12 @@ const ToastList = ({ toasts, placement, close, springConfig }: ToastListProps) =
         unique: true,
         config: springConfig
     })
-    const renderToast = ({
-        item,
-        props,
-        key
-    }: {
-        item: ToastState
-        props: { [key: string]: any }
-        key: string
-    }) => (
-        <CollapseAnimation openValue={props.height} key={key}>
+    const renderToast = (props: { [key: string]: any }, item: ToastState) => (
+        <CollapseAnimation openValue={props.height} key={item.id}>
             <animated.div
                 style={{
-                    [topPlacements.includes(placement)
-                        ? 'marginTop'
-                        : 'marginBottom']: props.slide.interpolate(
-                        [0, 1],
-                        ['-100%', '0%']
-                    ),
+                    [topPlacements.includes(placement) ? 'marginTop' : 'marginBottom']:
+                        props.slide.interpolate([0, 1], ['-100%', '0%']),
                     opacity: props.opacity
                 }}
             >
@@ -118,7 +106,7 @@ const ToastList = ({ toasts, placement, close, springConfig }: ToastListProps) =
             </animated.div>
         </CollapseAnimation>
     )
-    return <>{transitions.map(renderToast)}</>
+    return <>{transitions(renderToast)}</>
 }
 
 const topPlacements = ['top', 'top-right', 'top-left']

@@ -10,7 +10,7 @@ import React, {
 } from 'react'
 import { FloralProps, FloralStyles, useStyles } from 'floral'
 import FocusLock from 'react-focus-lock'
-import { SpringConfig } from 'react-spring'
+import { SpringConfig, AnimatedValue, useSpring } from 'react-spring'
 import { useKey, useMeasure } from 'react-use'
 // @ts-ignore
 import Taply from 'taply'
@@ -290,8 +290,8 @@ const menuStyles = (props: MenuProps, isOpen: boolean): FloralStyles => ({
 })
 
 const useMeasureLazy = ({ isEnabled }: { isEnabled: boolean }) => {
-    const elemRef = useRef(null)
-    const setElem = (value) => {
+    const elemRef: React.MutableRefObject<Element | null> = useRef(null)
+    const setElem = (value: Element | null) => {
         elemRef.current = value
     }
     const [rect, setRect] = useState<DOMRect>({} as DOMRect)
@@ -375,6 +375,7 @@ export interface MenuRenderProps {
     close: () => void
     side: PopupSide
     triggerWidth: number
+    openValue: AnimatedValue<object>
 }
 
 const Menu = (props: MenuProps) => {
@@ -387,7 +388,7 @@ const Menu = (props: MenuProps) => {
     const open = useCallback(() => setIsOpen(true), [])
     const close = useCallback(() => setIsOpen(false), [])
     const [measureRef, { width }] = useMeasureLazy({ isEnabled: isActive })
-    const renderProps = {
+    const renderProps: MenuRenderProps = {
         isOpen,
         isActive,
         open,

@@ -5,11 +5,12 @@ import { useMeasure } from 'react-use'
 export interface AppearAnimationProps extends React.HTMLProps<HTMLDivElement> {
     openValue: any
     children: React.ReactNode
+    [key: string]: any
 }
 
-export type AppearAnimation = (props: AppearAnimationProps) => React.ReactNode
+export type AppearAnimation = (props: AppearAnimationProps) => React.ReactElement
 
-const FadeAnimation = forwardRef<HTMLDivElement>(
+const FadeAnimation = forwardRef<HTMLDivElement, AppearAnimationProps>(
     ({ children, openValue, style, ...restProps }: AppearAnimationProps, ref) => (
         <animated.div ref={ref} style={{ ...style, opacity: openValue }} {...restProps}>
             {children}
@@ -39,8 +40,8 @@ const SlideAnimation = forwardRef((props: SlideAnimationProps, ref) => {
         ...style,
         opacity: openValue,
         transform: openValue
-            .interpolate([0, 1], [distance * dir, 0])
-            .interpolate((v: number) => `translate${axis}(${v}px)`)
+            .to([0, 1], [distance * dir, 0])
+            .to((v: number) => `translate${axis}(${v}px)`)
     }
     return (
         <animated.div {...restProps} ref={ref} style={resStyle}>
@@ -73,7 +74,7 @@ const ScaleAnimation = forwardRef((props: ScaleAnimationProps, ref) => {
     const resStyle = {
         ...style,
         opacity: openValue,
-        transformOrigin: scaleOrigin[side],
+        transformOrigin: scaleOrigin[side!],
         transform: openValue
             .interpolate([0, 1], [initialScale, 1])
             .interpolate((v: number) => `scale(${v})`)

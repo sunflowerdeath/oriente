@@ -12,7 +12,8 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, './build'),
         filename: '[name].js',
-        publicPath: isProduction ? '/oriente' : '/'
+        // publicPath: isProduction ? '/oriente' : '/'
+        publicPath: '/'
     },
     mode: isProduction ? 'production' : 'development',
     module: {
