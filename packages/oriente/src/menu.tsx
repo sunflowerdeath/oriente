@@ -1,20 +1,19 @@
+import { FloralProps, FloralStyles, useStyles } from 'floral'
 import React, {
     createContext,
     forwardRef,
     useCallback,
     useContext,
     useEffect,
+    useLayoutEffect,
     useRef,
-    useState,
-    useLayoutEffect
+    useState
 } from 'react'
-import { FloralProps, FloralStyles, useStyles } from 'floral'
 import FocusLock from 'react-focus-lock'
-import { SpringConfig, AnimatedValue, useSpring } from 'react-spring'
-import { useKey, useMeasure } from 'react-use'
+import { AnimatedValue, SpringConfig } from 'react-spring'
+import { useKey } from 'react-use'
 // @ts-ignore
 import Taply from 'taply'
-
 import { AppearAnimation, SlideAnimation } from './animations'
 import { Layer } from './layers'
 import { Popup } from './popup'
@@ -338,33 +337,24 @@ const MenuPopup = forwardRef((props: MenuPopupProps, ref) => {
     }, [isOpen, maxHeight, placement, viewport.height])
 
     return (
-        <>
-            <Layer type="popup" isActive={isActive}>
-                <div
-                    onClick={close}
-                    onDragStart={(e) => e.preventDefault()}
-                    style={styles.overlay}
-                />
-            </Layer>
-            <Animation openValue={openValue} side={oppositeSides[side]}>
-                <FocusLock disabled={!isOpen}>
-                    <MenuList
-                        style={{
-                            ...styles.list,
-                            maxHeight: contrainedMaxHeight,
-                            minWidth: matchWidth ? triggerWidth : 'auto'
-                        }}
-                        ref={ref}
-                        onSelect={onSelect}
-                        onClose={close}
-                        closeOnSelect={closeOnSelect}
-                        autoSelectFirstItem={autoSelectFirstItem!}
-                    >
-                        {menu(renderProps)}
-                    </MenuList>
-                </FocusLock>
-            </Animation>
-        </>
+        <Animation openValue={openValue} side={oppositeSides[side]}>
+            <FocusLock disabled={!isOpen}>
+                <MenuList
+                    style={{
+                        ...styles.list,
+                        maxHeight: contrainedMaxHeight,
+                        minWidth: matchWidth ? triggerWidth : 'auto'
+                    }}
+                    ref={ref}
+                    onSelect={onSelect}
+                    onClose={close}
+                    closeOnSelect={closeOnSelect}
+                    autoSelectFirstItem={autoSelectFirstItem!}
+                >
+                    {menu(renderProps)}
+                </MenuList>
+            </FocusLock>
+        </Animation>
     )
 })
 
@@ -408,14 +398,25 @@ const Menu = (props: MenuProps) => {
     )
 
     return (
-        <Popup
-            placement={placement}
-            isActive={isActive}
-            onChangeSide={setSide}
-            popup={popup}
-        >
-            {(ref) => children(mergeRefs(ref, measureRef), renderProps)}
-        </Popup>
+        <>
+            {isActive && (
+                <Layer type="popup" isActive={true}>
+                    <div
+                        onClick={close}
+                        onDragStart={(e) => e.preventDefault()}
+                        style={styles.overlay}
+                    />
+                </Layer>
+            )}
+            <Popup
+                placement={placement}
+                isActive={isActive}
+                onChangeSide={setSide}
+                popup={popup}
+            >
+                {(ref) => children(mergeRefs(ref, measureRef), renderProps)}
+            </Popup>
+        </>
     )
 }
 
