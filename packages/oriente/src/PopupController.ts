@@ -160,13 +160,14 @@ const getPopupPosition = (measurements: PopupMeasurements, placement: PopupPlace
     let configs = getFlipConfigs(flip, { side, align, offset })
     let position: Position | undefined
     let config: any
-    for (const i in configs) {
+    for (let i in configs) {
         config = configs[i]
         let option = calcPosition(measurements, config)
-        // Pick first one, then try to find one that fits
-        if (position === undefined || fitsViewport(option, measurements, padding)) {
+        if (fitsViewport(option, measurements, padding)) {
             position = option
             break
+        } else if (position === undefined) {
+            position = option
         }
     }
     if (constrain) position = constrainPosition(position!, measurements, padding)
