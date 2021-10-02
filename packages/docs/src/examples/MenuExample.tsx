@@ -3,6 +3,7 @@ import { Menu, MenuItem, MenuList, Tooltip } from 'oriente'
 import React, { forwardRef, useState } from 'react'
 
 import buttonStyle from '../buttonStyle'
+import Button from '../Button'
 
 const exampleItemStyles = ({ isDisabled }, { isSelected }) => ({
     root: {
@@ -75,11 +76,9 @@ const MenuExample = ({ children = 'Open menu', ...restProps }: MenuExampleProps)
         >
             {(ref, { open }) => {
                 return (
-                    <div ref={ref} style={{ display: 'inline-block' }}>
-                        <div onClick={open} style={buttonStyle}>
-                            {children}
-                        </div>
-                    </div>
+                    <Button ref={ref} onTap={open}>
+                        {children}
+                    </Button>
                 )
             }}
         </Menu>

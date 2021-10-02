@@ -7,6 +7,8 @@ export {
     CollapseAnimation
 } from './animations'
 
+export { Button } from './button'
+
 export { Flex } from './flex'
 export type { FlexAlign, FlexJustify, FlexProps } from './flex'
 

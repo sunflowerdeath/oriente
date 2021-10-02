@@ -1,4 +1,3 @@
-import { FloralProps, FloralStyles, useStyles } from 'floral'
 import React, {
     createContext,
     forwardRef,
@@ -9,6 +8,7 @@ import React, {
     useRef,
     useState
 } from 'react'
+import { FloralProps, FloralStyles, useStyles } from 'floral'
 import FocusLock from 'react-focus-lock'
 import { AnimatedValue, SpringConfig } from 'react-spring'
 import { useKey } from 'react-use'
@@ -372,8 +372,12 @@ const Menu = (props: MenuProps) => {
     const [side, setSide] = useState<PopupSide>('top')
     const isActive = isOpen || !isRest
     const styles = useStyles(menuStyles, [props, isOpen])
+    const triggerRef = useRef<HTMLElement>(null)
     const open = useCallback(() => setIsOpen(true), [])
-    const close = useCallback(() => setIsOpen(false), [])
+    const close = useCallback(() => {
+        setIsOpen(false)
+        setTimeout(() => triggerRef.current?.focus?.())
+    }, [])
     const [measureRef, { width }] = useMeasureLazy({ isEnabled: isActive })
     const renderProps: MenuRenderProps = {
         isOpen,
@@ -411,7 +415,7 @@ const Menu = (props: MenuProps) => {
                 onChangeSide={setSide}
                 popup={popup}
             >
-                {(ref) => children(mergeRefs(ref, measureRef), renderProps)}
+                {(ref) => children(mergeRefs(ref, triggerRef, measureRef), renderProps)}
             </Popup>
         </>
     )
