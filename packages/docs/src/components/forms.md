@@ -1,6 +1,6 @@
 ---
 imports:
-    '{ TextInputExample, SwitchExample }': './InputExample'
+    '{ TextInputExample, SwitchExample }': '../examples/InputExample'
 ---
 
 # Forms

@@ -1,13 +1,8 @@
 import React, { useState } from 'react'
 
-import {
-    useToast,
-    ToastContainer,
-    ToastCloseButton,
-    ToastPlacement
-} from 'oriente'
+import { useToast, ToastContainer, ToastCloseButton, ToastPlacement } from 'oriente'
 
-import buttonStyle from './buttonStyle'
+import buttonStyle from '../buttonStyle'
 
 const toastStyle = {
     color: 'white',
@@ -29,7 +24,11 @@ const ToastExample = ({ placement }: { placement?: ToastPlacement }) => {
             style: toastStyle,
             placement
         })
-    return <div style={buttonStyle} onClick={showToast}>Show toast</div>
+    return (
+        <div style={buttonStyle} onClick={showToast}>
+            Show toast
+        </div>
+    )
 }
 
 const ToastPlacementExample = () => {

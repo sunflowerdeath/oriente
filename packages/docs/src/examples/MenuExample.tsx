@@ -1,7 +1,8 @@
 import range from 'lodash/range'
 import { Menu, MenuItem, MenuList, Tooltip } from 'oriente'
 import React, { forwardRef, useState } from 'react'
-import buttonStyle from './buttonStyle'
+
+import buttonStyle from '../buttonStyle'
 
 const exampleItemStyles = ({ isDisabled }, { isSelected }) => ({
     root: {

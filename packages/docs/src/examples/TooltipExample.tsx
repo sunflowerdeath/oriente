@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import { Tooltip, TooltipArrow, SlideAnimation, ScaleAnimation } from 'oriente'
 
-import buttonStyle from './buttonStyle'
+import buttonStyle from '../buttonStyle'
 
 const TooltipExample = ({
     children = 'target',

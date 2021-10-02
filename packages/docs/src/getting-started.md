@@ -1,6 +1,8 @@
 # Oriente
 
-![npm](https://img.shields.io/npm/v/oriente?color=%23880e4f&style=flat-square)&nbsp;&nbsp;&nbsp;![Github](https://img.shields.io/github/lerna-json/v/sunflowerdeath/oriente?color=%23880e4f&label=github&style=flat-square)
+[![npm](https://img.shields.io/npm/v/oriente?color=%23880e4f&style=flat-square)](https://www.npmjs.com/package/oriente)
+&nbsp;
+[![Github](https://img.shields.io/github/lerna-json/v/sunflowerdeath/oriente?color=%23880e4f&label=github&style=flat-square)](https://github.com/sunflowerdeath/oriente)
 
 Oriente is a React UI library.
 
@@ -19,7 +21,7 @@ E.g. all components that use layers require `<Stack>` component,
 and toasts require `<ToastContainer>`.
 
 ```js
-import { Stack, ToastProvider } from 'oriente'
+import { Stack, ToastContainer } from 'oriente'
 
 render(
     <Stack>
@@ -51,7 +53,7 @@ const modalStyles = {
         paddingBottom: 100
     },
     overlay: {
-        background: 'rgba(0,0,0,.5)',
+        background: 'rgba(0,0,0,.5)'
     },
     window: {
         background: '#2c3e50',
@@ -60,7 +62,7 @@ const modalStyles = {
     }
 }
 
-<Modal styles={modalStyles} />
+;<Modal styles={modalStyles} />
 ```
 
 ### Create new component with custom styles

@@ -1,6 +1,6 @@
 ---
 imports:
-    '{ ToastExample, ToastPlacementExample }': './ToastExample'
+    '{ ToastExample, ToastPlacementExample }': '../examples/ToastExample'
 ---
 
 # Toasts

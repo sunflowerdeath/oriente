@@ -3,13 +3,15 @@ import React, { useState } from 'react'
 import { TextInput, TextInputProps, Switch, SwitchProps } from 'oriente'
 
 const styles = (props: TextInputProps) => {
-    const root = {
+    const input = {
         background: '#444',
         color: 'white',
-        border: 'none',
         padding: 8
     }
-    return { root }
+    const replica = {
+        padding: 8
+    }
+    return { input, replica }
 }
 
 const TextInputExample = (props: TextInputProps) => {

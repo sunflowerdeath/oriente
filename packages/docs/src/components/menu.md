@@ -1,7 +1,6 @@
 ---
 imports:
-    '{ MenuListExample, MenuExample, ScrollMenuExample, MatchWidthExample }': './MenuExample'
-    '{ MenuPerfTest }': './MenuExample'
+    '{ MenuListExample, MenuExample, ScrollMenuExample, MatchWidthExample }': '../examples/MenuExample'
 ---
 
 # Menu
@@ -45,14 +44,10 @@ Also, you can set your own `maxHeight` for the menu.
 
 ## Match width
 
+If `true`, menu width will match the width of the button element.
+
 ```@render
 <MatchWidthExample />
-```
-
-## Test
-
-```@render
-<MenuPerfTest />
 ```
 
 ## Menu Props

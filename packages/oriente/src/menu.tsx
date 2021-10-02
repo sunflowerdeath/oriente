@@ -53,14 +53,14 @@ export interface MenuProps extends FloralProps<MenuProps> {
     /** Maximum height of the list, in px. */
     maxHeight?: number
 
-    /** Config for `react-spring` animation */
-    springConfig?: SpringConfig
-
     /** Select first item on open */
     autoSelectFirstItem?: boolean
 
-    /** Matches width of menu and trigger element */
+    /** If `true`, menu width will match the width of the button element. */
     matchWidth?: boolean
+
+    /** Config for `react-spring` animation */
+    springConfig?: SpringConfig
 }
 
 export interface MenuListProps extends FloralProps<MenuListProps> {
@@ -289,20 +289,17 @@ const menuStyles = (props: MenuProps, isOpen: boolean): FloralStyles => ({
 })
 
 const useMeasureLazy = ({ isEnabled }: { isEnabled: boolean }) => {
-    const elemRef: React.MutableRefObject<Element | null> = useRef(null)
-    const setElem = (value: Element | null) => {
-        elemRef.current = value
-    }
+    const ref: React.MutableRefObject<Element | null> = useRef(null)
     const [rect, setRect] = useState<DOMRect>({} as DOMRect)
     useLayoutEffect(() => {
-        if (!isEnabled || !elemRef.current) return
-        let observer = new ResizeObserver((entries) => {
+        if (!isEnabled || !ref.current) return
+        const observer = new ResizeObserver((entries) => {
             if (entries[0]) setRect(entries[0].contentRect)
         })
-        observer.observe(elemRef.current)
+        observer.observe(ref.current)
         return () => observer.disconnect()
     }, [isEnabled])
-    return [setElem, rect]
+    return [ref, rect]
 }
 
 interface MenuPopupProps {
@@ -328,13 +325,13 @@ const MenuPopup = forwardRef((props: MenuPopupProps, ref) => {
     const viewport = useViewport()
     const [contrainedMaxHeight, setConstrainedMaxHeight] = useState(0)
     useLayoutEffect(() => {
-        if (!isOpen) return
+        if (!isActive) return
         let availableHeight = viewport.height - 2 * (placement?.padding || 0)
         if (maxHeight !== undefined) {
             availableHeight = Math.min(availableHeight, maxHeight)
         }
         setConstrainedMaxHeight(availableHeight)
-    }, [isOpen, maxHeight, placement, viewport.height])
+    }, [isActive, maxHeight, placement, viewport.height])
 
     return (
         <Animation openValue={openValue} side={oppositeSides[side]}>

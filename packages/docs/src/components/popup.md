@@ -1,6 +1,6 @@
 ---
 imports:
-  'PopupExample': './PopupExample.js'
+    'PopupExample': '../examples/PopupExample'
 ---
 
 # Popup
@@ -16,7 +16,7 @@ Popup positions an element relative to the target element.
 ```
 
 ```@source
-file: ./PopupExample.js
+file: ../examples/PopupExample.tsx
 from: 8
 to: 33
 lang: jsx

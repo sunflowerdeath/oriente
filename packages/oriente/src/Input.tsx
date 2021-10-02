@@ -8,9 +8,10 @@ import React, {
 } from 'react'
 // @ts-ignore
 import Taply from 'taply'
+
 import mergeRefs from './utils/mergeRefs'
 
-interface BaseInputProps<T = string> {
+interface BaseInputProps<T> {
     value: T
     onChange?: (value: T) => void
     isDisabled?: boolean
@@ -18,24 +19,45 @@ interface BaseInputProps<T = string> {
     onBlur?: () => void
 }
 
-export interface TextInputProps extends BaseInputProps {
+export interface TextInputProps extends BaseInputProps<string> {
     isWide?: boolean
     isMultiline?: boolean
-    lines: number
-    maxLines: number
+    rows: number
+    maxRows: number
     as: any
-}
-
-const getLinesNumber = (value: string, lines: number, maxLines: number) => {
-    const matches = value.match(/\n/g)
-    const valueLines = matches ? matches.length + 1 : 1
-    return Math.min(Math.max(lines, valueLines), maxLines)
+    children?: React.ReactNode
 }
 
 const textInputStyles = (props: TextInputProps, isFocused: boolean) => {
-    const root: React.CSSProperties = {}
+    const root: React.CSSProperties = { display: 'grid' }
     if (props.isWide) root.width = '100%'
-    return { root }
+
+    const input: React.CSSProperties = {
+        background: 'transparent',
+        margin: 0,
+        border: 'none',
+        borderRadius: 0,
+        color: 'inherit',
+        font: 'inherit',
+        gridArea: '1 / 1 / 2 / 2',
+        width: '100%',
+        boxSizing: 'border-box',
+        resize: 'none',
+        cursor: props.isDisabled ? 'not-allowed' : 'text'
+    }
+
+    const lineHeight = 1.5
+    const { rows, maxRows } = props
+    const replica: React.CSSProperties = {
+        font: 'inherit',
+        whiteSpace: 'pre-wrap',
+        visibility: 'hidden',
+        gridArea: '1 / 1 / 2 / 2'
+    }
+    if (rows) replica.minHeight = `${rows * lineHeight}rem`
+    if (maxRows) replica.maxHeight = `${maxRows * lineHeight}rem`
+
+    return { root, input, replica }
 }
 
 const TextInput = forwardRef((props: TextInputProps, ref) => {
@@ -47,20 +69,13 @@ const TextInput = forwardRef((props: TextInputProps, ref) => {
         onFocus,
         onBlur,
         isMultiline,
-        lines,
-        maxLines,
+        rows,
+        maxRows,
         isWide,
         ...restProps
     } = props
     const [isFocused, setIsFocused] = useState(false)
     const styles = useStyles(textInputStyles, [props, isFocused])
-
-    const [currentLines, setCurrentLines] = useState(
-        getLinesNumber(value, lines, maxLines)
-    )
-    useEffect(() => {
-        setCurrentLines(getLinesNumber(value, lines, maxLines))
-    }, [value, lines, maxLines])
 
     const inputRef = useRef()
     useImperativeHandle(ref, () => ({ focus: () => inputRef.current?.focus() }), [])
@@ -79,16 +94,19 @@ const TextInput = forwardRef((props: TextInputProps, ref) => {
             setIsFocused(false)
             if (onBlur) onBlur()
         },
-        rows: currentLines,
         ...restProps, // TODO omit styles
-        style: styles.root
+        style: styles.input
     }
-    return React.createElement(elem, elemProps)
+    return (
+        <div style={styles.root}>
+            {React.createElement(elem, elemProps)}
+            {isMultiline && <div style={styles.replica}>{value} </div>}
+        </div>
+    )
 })
 
 TextInput.defaultProps = {
-    value: '',
-    lines: 1
+    value: ''
 }
 
 interface TextInputGroupProps {
@@ -107,11 +125,6 @@ const TextInputGroup = (props: TextInputGroupProps) => {
             {left && <div style={styles.left}>{left}</div>}
         </div>
     )
-}
-
-interface CheckboxProps {
-    label: React.ReactNode
-    isIndeterminate?: boolean
 }
 
 export interface SwitchProps extends BaseInputProps<boolean> {
@@ -180,7 +193,7 @@ const Switch = (props: SwitchProps) => {
     )
 }
 
-interface CheckboxProps extends BaseInputProps {
+interface CheckboxProps extends BaseInputProps<boolean> {
     isIndeterminate?: boolean
     label?: React.ReactNode
 }
@@ -190,12 +203,12 @@ const checkboxStyles = (props: CheckboxProps) => {
         display: 'flex',
         alignItems: 'center'
     }
-    const box = {
+    const icon = {
         border: '1px solid #ccc',
         borderRadius: 3,
         marginRight: '.25rem'
     }
-    return { root, box }
+    return { root, icon }
 }
 
 const Checkbox = (props: CheckboxProps) => {
@@ -203,20 +216,41 @@ const Checkbox = (props: CheckboxProps) => {
     const { label } = props
     return (
         <div style={styles.root}>
-            <div style={styles.box} />
+            <div style={styles.icon} />
             {label}
         </div>
     )
 }
 
-interface RadioGroupProps {
+interface RadioGroupProps extends BaseInputProps<string> {
     children: React.ReactNode
 }
 
 interface RadioButtonProps {
+    isDisabled: boolean
     label: React.ReactNode
+    value: string
+}
+
+const RadioGroup = (props: RadioGroupProps) => {
+    const { children } = props
+    const styles = useStyles(null, [props])
+    // const
+    return <div style={styles.root}>{children}</div>
+}
+
+const RadioButton = (props: RadioButtonProps) => {
+    const { label } = props
+    const styles = useStyles(null, [props])
+    // const
+    return (
+        <div style={styles.root}>
+            <div style={styles.icon} />
+            <div style={styles.label}>{label}</div>
+        </div>
+    )
 }
 
 interface SelectProps {}
 
-export { TextInput, TextInputGroup, Switch }
+export { TextInput, TextInputGroup, Switch, Checkbox, RadioGroup, RadioButton }

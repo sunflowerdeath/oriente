@@ -4,7 +4,7 @@ import { extendComponentStyles } from 'floral'
 
 import { Modal, ModalCloseButton, FadeAnimation, SlideAnimation } from 'oriente'
 
-import buttonStyle from './buttonStyle'
+import buttonStyle from '../buttonStyle'
 
 const exampleModalStyles = () => ({
     container: {
@@ -20,10 +20,7 @@ const exampleModalStyles = () => ({
 
 const ExampleModal = extendComponentStyles(Modal, exampleModalStyles)
 
-const ModalExample = ({
-    children,
-    ...rest
-}: React.ComponentProps<typeof Modal>) => {
+const ModalExample = ({ children, ...rest }: React.ComponentProps<typeof Modal>) => {
     const [isOpen, setIsOpen] = useState(false)
     return (
         <>

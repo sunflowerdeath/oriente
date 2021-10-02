@@ -1,6 +1,6 @@
 ---
 imports:
-    '{ ModalExample, ModalAnimationExample }': './ModalExample'
+    '{ ModalExample, ModalAnimationExample }': '../examples/ModalExample'
 ---
 
 # Modal

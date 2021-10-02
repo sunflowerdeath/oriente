@@ -1,6 +1,6 @@
 ---
 imports:
-    '{ TooltipExample, ControlledTooltipExample, TooltipAnimationExample }': './TooltipExample'
+    '{ TooltipExample, ControlledTooltipExample, TooltipAnimationExample }': '../examples/TooltipExample'
     '{ TooltipArrow }': 'oriente'
 ---
 

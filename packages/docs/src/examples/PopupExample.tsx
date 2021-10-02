@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react'
 
 import { Popup } from 'oriente'
 
-import buttonStyle from './buttonStyle'
+import buttonStyle from '../buttonStyle'
 
 const PopupExample = () => {
     const [active, setActive] = useState(false)
