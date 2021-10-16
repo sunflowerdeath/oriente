@@ -1,6 +1,7 @@
 ---
 imports:
     '{ MenuListExample, MenuExample, ScrollMenuExample, MatchWidthExample }': '../examples/MenuExample'
+    '{ MenuPerfTest }': '../examples/MenuExample'
 ---
 
 # Menu
@@ -48,6 +49,12 @@ If `true`, menu width will match the width of the button element.
 
 ```@render
 <MatchWidthExample />
+```
+
+## Perf test
+
+```@render
+<MenuPerfTest />
 ```
 
 ## Menu Props

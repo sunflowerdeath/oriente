@@ -30,6 +30,8 @@ import configs from './utils/springConfigs'
 import useAnimatedValue from './utils/useAnimatedValue'
 import useControlledState from './utils/useControlledState'
 import useViewport from './utils/useViewport'
+import scrollIntoView from './utils/scrollIntoView'
+import useMeasureLazy from './utils/useMeasureLazy'
 
 export interface MenuProps extends FloralProps<MenuProps> {
     /** Content of the dropdown menu */
@@ -165,19 +167,6 @@ const menuListStyles = {
     root: { outline: 'none' }
 }
 
-const scrollIntoView = (item: HTMLElement) => {
-    const container = item.parentElement!
-    const itemRect = item.getBoundingClientRect()
-    const containerRect = container.getBoundingClientRect()
-    const scrollTop = container.scrollTop
-    const itemPos = itemRect.top - containerRect.top + scrollTop
-    if (itemPos < scrollTop) {
-        container.scrollTop = itemPos
-    } else if (itemPos > scrollTop + containerRect.height - itemRect.height) {
-        container.scrollTop = itemPos + itemRect.height - containerRect.height
-    }
-}
-
 const MenuList = forwardRef((props: MenuListProps, ref) => {
     const { children, onSelect, autoSelectFirstItem, onClose, closeOnSelect } = props
 
@@ -288,20 +277,6 @@ const menuStyles = (props: MenuProps, isOpen: boolean): FloralStyles => ({
     }
 })
 
-const useMeasureLazy = ({ isEnabled }: { isEnabled: boolean }) => {
-    const ref: React.MutableRefObject<Element | null> = useRef(null)
-    const [rect, setRect] = useState<DOMRect>({} as DOMRect)
-    useLayoutEffect(() => {
-        if (!isEnabled || !ref.current) return
-        const observer = new ResizeObserver((entries) => {
-            if (entries[0]) setRect(entries[0].contentRect)
-        })
-        observer.observe(ref.current)
-        return () => observer.disconnect()
-    }, [isEnabled])
-    return [ref, rect]
-}
-
 interface MenuPopupProps {
     renderProps: MenuRenderProps
     menuProps: React.ComponentProps<typeof Menu>
@@ -366,7 +341,7 @@ export interface MenuRenderProps {
 }
 
 const Menu = (props: MenuProps) => {
-    const { children, placement, springConfig } = props
+    const { children, placement, springConfig, matchWidth } = props
     const [isOpen, setIsOpen] = useControlledState(props, 'isOpen', false)
     const [openValue, isRest] = useAnimatedValue(isOpen ? 1 : 0, { config: springConfig })
     const [side, setSide] = useState<PopupSide>('top')
@@ -378,7 +353,7 @@ const Menu = (props: MenuProps) => {
         setIsOpen(false)
         setTimeout(() => triggerRef.current?.focus?.())
     }, [])
-    const [measureRef, { width }] = useMeasureLazy({ isEnabled: isActive })
+    const [measureRef, { width }] = useMeasureLazy({ isEnabled: isActive && matchWidth })
     const renderProps: MenuRenderProps = {
         isOpen,
         isActive,
