@@ -1,7 +1,7 @@
 {
     "name": "oriente-docs",
     "version": "0.0.10",
-    "description": "Docs for Oriente",
+    "description": "Oriente docs",
     "private": true,
     "scripts": {
         "start": "webpack serve",
@@ -11,22 +11,22 @@
     "author": "sunflowerdeath",
     "license": "Unlicense",
     "dependencies": {
-        "minibook": "^0.9.2",
-        "oriente": "^0.0.10",
+        "lodash-es": "^4.17.21",
+        "minibook": "^0.10.0",
+        "minimark-renderer": "^0.10.0",
+        "oriente": "*",
         "react-draggable": "^4.4.3"
     },
     "devDependencies": {
-        "babel-loader": "^8.2.2",
+        "esbuild-loader": "^2.20.0",
         "html-webpack-plugin": "^5.3.1",
-        "minimark-loader": "^0.9.0",
+        "minimark-loader": "^0.10.0",
         "push-dir": "^0.4.1",
-        "webpack": "^5.36.2",
-        "webpack-bundle-analyzer": "^4.4.2",
-        "webpack-cli": "^4.6.0",
-        "webpack-dev-server": "^3.11.2"
+        "webpack": "^5.89.0",
+        "webpack-dev-server": "^4.15.1"
     },
     "peerDependecies": {
-        "react": "^16.8.0",
-        "react-dom": "^16.8.0"
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0"
     }
 }

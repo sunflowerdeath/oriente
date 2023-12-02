@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 import { TextInput, TextInputProps, Switch, SwitchProps } from 'oriente'
 

@@ -1,4 +1,4 @@
-import React, {
+import {
     useLayoutEffect,
     useMemo,
     useRef,
@@ -98,12 +98,18 @@ interface LayerInfo {
     props: LayerProps
 }
 
-type LayersSetState = (callback: (prevLayers: LayerInfo[]) => LayerInfo[]) => void
+type LayersSetState = (
+    callback: (prevLayers: LayerInfo[]) => LayerInfo[]
+) => void
 
 let id = 0
 const getNextId = () => id++
 
-const createLayer = (setLayers: LayersSetState, parentId: number, props: LayerProps) => {
+const createLayer = (
+    setLayers: LayersSetState,
+    parentId: number,
+    props: LayerProps
+) => {
     const newId = getNextId()
     setLayers((prevLayers) => {
         // Skip all layers until the parent layer
@@ -130,9 +136,15 @@ const createLayer = (setLayers: LayersSetState, parentId: number, props: LayerPr
     return newId
 }
 
-const updateLayer = (setLayers: LayersSetState, id: number, props: LayerProps) => {
+const updateLayer = (
+    setLayers: LayersSetState,
+    id: number,
+    props: LayerProps
+) => {
     setLayers((prevLayers) =>
-        prevLayers.map((layer) => (id === layer.id ? { ...layer, props } : layer))
+        prevLayers.map((layer) =>
+            id === layer.id ? { ...layer, props } : layer
+        )
     )
 }
 

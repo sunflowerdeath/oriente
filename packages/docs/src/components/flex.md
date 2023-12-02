@@ -19,20 +19,20 @@ import { Flex } from 'oriente'
 
 ## Example
 
-Row
+Col
 
 ```@render
-<Flex gap="1rem">
+<Flex dir="col" gap="1rem">
     <div style={{ width: 20, height: 20, background: '#d35400' }} />
     <div style={{ width: 20, height: 20, background: '#d35400' }} />
     <div style={{ width: 20, height: 20, background: '#d35400' }} />
 </Flex>
 ```
 
-Col
+Row
 
 ```@render
-<Flex dir="col" gap="1rem">
+<Flex dir="row" gap="1rem">
     <div style={{ width: 20, height: 20, background: '#d35400' }} />
     <div style={{ width: 20, height: 20, background: '#d35400' }} />
     <div style={{ width: 20, height: 20, background: '#d35400' }} />

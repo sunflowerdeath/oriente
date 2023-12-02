@@ -1,16 +1,11 @@
-import React, { useRef, useState, useContext, createContext } from 'react'
-// @ts-ignore
-import Taply from 'taply'
-// @ts-ignore
-import { useStyles } from 'floral'
-import mapValues from 'lodash/mapValues'
+import { useRef, useState, useContext, createContext } from 'react'
+import { mapValues } from 'lodash-es'
 import { animated, useTransition, SpringConfig } from 'react-spring'
 
 import configs from './utils/springConfigs'
-import { FloralProps } from './types'
+import { useStyles, StyleProps, StyleMap } from './styles'
 import { Layer } from './layers'
-import { AppearAnimation, CollapseAnimation } from './animations'
-import CloseButton from './CloseButton'
+import { CollapseAnimation } from './animation'
 
 export type ToastPlacement =
     | 'top'
@@ -25,26 +20,29 @@ export interface ToastContainerProps {
     springConfig?: SpringConfig
 }
 
-export interface ToastProps extends FloralProps {
+export interface ToastProps extends StyleProps<[ToastProps]> {
     children: React.ReactNode | ((close: () => void) => React.ReactNode)
     onClose?: () => void
 }
 
-export interface ToastCloseButtonProps extends FloralProps {
+export interface ToastCloseButtonProps
+    extends StyleProps<[ToastCloseButtonProps]> {
     children?: React.ReactNode
 }
 
-export interface ToastOptions extends ToastProps {
+export interface ShowToastOptions extends ToastProps {
     duration?: number
     placement?: ToastPlacement
 }
 
-interface ToastController {
-    show: (options: ToastOptions) => number
+export interface ToastController {
+    show: (options: ShowToastOptions) => number
     close: (id: number) => void
 }
 
-const ToastContainerContext = createContext<ToastController | undefined>(undefined)
+const ToastContainerContext = createContext<ToastController | undefined>(
+    undefined
+)
 
 interface ToastState {
     id: number
@@ -60,22 +58,6 @@ interface ToastContextProps {
 
 const ToastContext = createContext<ToastContextProps | undefined>(undefined)
 
-const toastStyle = {
-    root: { position: 'relative', pointerEvents: 'all' }
-}
-
-const Toast = (props: ToastProps) => {
-    const { children, onClose } = props
-    const styles = useStyles(toastStyle, [props])
-    return (
-        <div style={styles.root}>
-            <ToastContext.Provider value={{ close: () => onClose && onClose() }}>
-                {children}
-            </ToastContext.Provider>
-        </div>
-    )
-}
-
 interface ToastListProps {
     toasts: ToastState[]
     placement: ToastPlacement
@@ -83,7 +65,12 @@ interface ToastListProps {
     springConfig?: SpringConfig
 }
 
-const ToastList = ({ toasts, placement, close, springConfig }: ToastListProps) => {
+const ToastList = ({
+    toasts,
+    placement,
+    close,
+    springConfig
+}: ToastListProps) => {
     const transitions = useTransition(toasts, {
         keys: (toast) => toast.id,
         initial: { slide: 0, height: 1, opacity: 0 },
@@ -97,12 +84,22 @@ const ToastList = ({ toasts, placement, close, springConfig }: ToastListProps) =
         <CollapseAnimation openValue={props.height} key={item.id}>
             <animated.div
                 style={{
-                    [topPlacements.includes(placement) ? 'marginTop' : 'marginBottom']:
-                        props.slide.interpolate([0, 1], ['-100%', '0%']),
-                    opacity: props.opacity
+                    [topPlacements.includes(placement)
+                        ? 'marginTop'
+                        : 'marginBottom']: props.slide.interpolate(
+                        [0, 1],
+                        ['-100%', '0%']
+                    ),
+                    opacity: props.opacity,
+                    position: 'relative',
+                    pointerEvents: 'all'
                 }}
             >
-                <Toast {...item.props} onClose={() => close(item.id)} />
+                <ToastContext.Provider value={{ close: () => close(item.id) }}>
+                    {typeof item.props.children === 'function'
+                        ? item.props.children(() => close(item.id))
+                        : item.props.children}
+                </ToastContext.Provider>
             </animated.div>
         </CollapseAnimation>
     )
@@ -124,7 +121,9 @@ const getContainerStyle = (placement: ToastPlacement) => {
         pointerEvents: 'none',
         boxSizing: 'border-box'
     }
-    style.justifyContent = topPlacements.includes(placement) ? 'flex-start' : 'flex-end'
+    style.justifyContent = topPlacements.includes(placement)
+        ? 'flex-start'
+        : 'flex-end'
     if (placement === 'top-left' || placement === 'bottom-left') {
         style.alignItems = 'flex-start'
     } else if (placement === 'top-right' || placement === 'bottom-right') {
@@ -145,7 +144,7 @@ const ToastContainer = ({ children, springConfig }: ToastContainerProps) => {
         'bottom-right': [],
         'bottom-left': []
     })
-    const show = (options: ToastOptions) => {
+    const show = (options: ShowToastOptions) => {
         const { placement = 'top-right', duration = 3000, ...props } = options
         const id = idRef.current++
         const newToast = { id, props }
@@ -155,7 +154,7 @@ const ToastContainer = ({ children, springConfig }: ToastContainerProps) => {
                 : [...toasts[placement], newToast]
             return { ...toasts, [placement]: list }
         })
-        setTimeout(() => close(id), duration)
+        if (duration > 0) setTimeout(() => close(id), duration)
         return id
     }
     const close = (id: number) =>
@@ -189,14 +188,6 @@ ToastContainer.defaultProps = {
     springConfig: configs.stiffer
 }
 
-const ToastCloseButton = (props: ToastCloseButtonProps) => {
-    const context = useContext(ToastContext)
-    if (!context) {
-        throw new Error('You can use <ToastCloseButton> only inside <Toast> component')
-    }
-    return <CloseButton {...props} onTap={context.close} />
-}
-
 const useToast = () => {
     const context = useContext(ToastContainerContext)
     if (!context) {
@@ -205,4 +196,4 @@ const useToast = () => {
     return context
 }
 
-export { ToastContainer, ToastCloseButton, useToast }
+export { ToastContainer, useToast }

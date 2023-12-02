@@ -1,4 +1,4 @@
-import React, {
+import {
     createContext,
     forwardRef,
     useCallback,
@@ -8,13 +8,18 @@ import React, {
     useRef,
     useState
 } from 'react'
-import { FloralProps, FloralStyles, useStyles } from 'floral'
 import FocusLock from 'react-focus-lock'
+// @ts-ignore
 import { AnimatedValue, SpringConfig } from 'react-spring'
 import { useKey } from 'react-use'
-// @ts-ignore
-import Taply from 'taply'
-import { AppearAnimation, SlideAnimation } from './animations'
+
+import { useTaply, TapState, initialTapState } from './taply'
+import { StyleProps, StyleMap, useStyles } from './styles'
+import {
+    OpenAnimation,
+    AnimationFunction,
+    animationFunctions
+} from './animation'
 import { Layer } from './layers'
 import { Popup } from './popup'
 import {
@@ -23,8 +28,11 @@ import {
     PopupPlacement,
     PopupSide
 } from './PopupController'
-import { initialTapState } from './types'
-import { DescendantsManager, useDescendant, useDescendants } from './utils/descendants'
+import {
+    DescendantsManager,
+    useDescendant,
+    useDescendants
+} from './utils/descendants'
 import mergeRefs from './utils/mergeRefs'
 import configs from './utils/springConfigs'
 import useAnimatedValue from './utils/useAnimatedValue'
@@ -33,7 +41,7 @@ import useViewport from './utils/useViewport'
 import scrollIntoView from './utils/scrollIntoView'
 import useMeasureLazy from './utils/useMeasureLazy'
 
-export interface MenuProps extends FloralProps<MenuProps> {
+export interface MenuProps extends StyleProps<[MenuProps]> {
     /** Content of the dropdown menu */
     menu: (props: MenuRenderProps) => React.ReactNode
 
@@ -50,7 +58,7 @@ export interface MenuProps extends FloralProps<MenuProps> {
     closeOnSelect?: boolean
 
     /** Component for hide and show animation */
-    Animation: AppearAnimation
+    animation: AnimationFunction
 
     /** Maximum height of the list, in px. */
     maxHeight?: number
@@ -65,7 +73,7 @@ export interface MenuProps extends FloralProps<MenuProps> {
     springConfig?: SpringConfig
 }
 
-export interface MenuListProps extends FloralProps<MenuListProps> {
+export interface MenuListProps extends StyleProps<[MenuListProps]> {
     children: React.ReactNode
     onFocus?: () => void
     onBlur?: () => void
@@ -75,13 +83,14 @@ export interface MenuListProps extends FloralProps<MenuListProps> {
     closeOnSelect?: boolean
 }
 
-export interface MenuItemProps extends FloralProps<MenuItemProps> {
-    /** Value of the item that will be passed to the `onSelect()` handler of the Menu */
+export interface MenuItemProps extends StyleProps<[MenuItemProps]> {
+    /** Value of the item that will be passed to the `onSelect()` handler of
+     * the Menu */
     value?: string
 
     /**
-     * Handler that is called when the item is selected by clicking on it or pressing
-     * `Enter` key
+     * Handler that is called when the item is selected by clicking on it or
+     * pressing the `Enter` key
      */
     onSelect?: () => void
 
@@ -106,7 +115,7 @@ interface MenuContextProps {
 
 const MenuContext = createContext<MenuContextProps | undefined>(undefined)
 
-const MenuItem = forwardRef((props: MenuItemProps, ref) => {
+const MenuItem = forwardRef<HTMLElement, MenuItemProps>((props, ref) => {
     const { isDisabled, onSelect, value, children, onHover, onBlur } = props
     const menuContext = useContext(MenuContext)
     if (!menuContext) {
@@ -131,30 +140,30 @@ const MenuItem = forwardRef((props: MenuItemProps, ref) => {
             if (onBlur) onBlur()
         }
     }, [isSelected])
-    const [tapState, setTapState] = useState(initialTapState)
     const onChangeTapState = useCallback(
-        (tapState) => {
-            setTapState(tapState)
+        (tapState: TapState) => {
             if (tapState.isHovered) setSelectedIndex(index)
         },
         [index]
     )
     const styles = useStyles(undefined, [props, { isSelected }])
 
-    return (
-        <Taply
-            onChangeTapState={onChangeTapState}
-            tapState={tapState}
-            onTap={() => menuOnSelect(index)}
-            isDisabled={isDisabled}
-            isFocusable={false}
-            shouldSetAttributes={false}
+    const { tapState, render } = useTaply({
+        onChangeTapState,
+        onClick: () => menuOnSelect(index),
+        isDisabled,
+        isFocusable: false
+    })
+
+    return render((attrs, taplyRef) => (
+        <div
+            {...attrs}
+            style={styles.root}
+            ref={mergeRefs(ref, descendantRef, taplyRef)}
         >
-            <div style={styles.root} ref={mergeRefs(ref, descendantRef)}>
-                {typeof children === 'function' ? children(isSelected) : children}
-            </div>
-        </Taply>
-    )
+            {typeof children === 'function' ? children(isSelected) : children}
+        </div>
+    ))
 })
 
 const getNextIndex = (index: number, length: number) =>
@@ -168,7 +177,8 @@ const menuListStyles = {
 }
 
 const MenuList = forwardRef((props: MenuListProps, ref) => {
-    const { children, onSelect, autoSelectFirstItem, onClose, closeOnSelect } = props
+    const { children, onSelect, autoSelectFirstItem, onClose, closeOnSelect } =
+        props
 
     const descendants = useDescendants<MenuDescendantProps>()
     const [selectedIndex, setSelectedIndex] = useState(-1)
@@ -177,7 +187,9 @@ const MenuList = forwardRef((props: MenuListProps, ref) => {
         if (autoSelectFirstItem) {
             setTimeout(() =>
                 setSelectedIndex(
-                    descendants.items.findIndex((item) => !item.props.isDisabled)
+                    descendants.items.findIndex(
+                        (item) => !item.props.isDisabled
+                    )
                 )
             )
             // TODO clear timeout just in case
@@ -188,7 +200,8 @@ const MenuList = forwardRef((props: MenuListProps, ref) => {
 
     const select = useCallback(
         (index: number) => {
-            let { onSelect: itemOnSelect, value } = descendants.items[index].props
+            const { onSelect: itemOnSelect, value } =
+                descendants.items[index].props
             if (itemOnSelect) itemOnSelect()
             if (onSelect && value !== undefined) onSelect(value)
             if (closeOnSelect) onClose()
@@ -218,25 +231,35 @@ const MenuList = forwardRef((props: MenuListProps, ref) => {
             )
             const selectItem = (index: number) => {
                 setSelectedIndex(index)
-                let item = descendants.items[index]?.element
+                const item = descendants.items[index]?.element
                 scrollIntoView(item)
             }
-            const handlers: { [key: string]: (e: React.KeyboardEvent) => void } = {
+            const handlers: {
+                [key: string]: (e: React.KeyboardEvent) => void
+            } = {
                 ArrowDown: () => {
-                    let nextIndex = mapIndexFromSelectable(
-                        getNextIndex(selectableIndex, selectableDescendants.length)
+                    const nextIndex = mapIndexFromSelectable(
+                        getNextIndex(
+                            selectableIndex,
+                            selectableDescendants.length
+                        )
                     )
                     selectItem(nextIndex)
                 },
                 ArrowUp: () => {
-                    let prevIndex = mapIndexFromSelectable(
-                        getPrevIndex(selectableIndex, selectableDescendants.length)
+                    const prevIndex = mapIndexFromSelectable(
+                        getPrevIndex(
+                            selectableIndex,
+                            selectableDescendants.length
+                        )
                     )
                     selectItem(prevIndex)
                 },
                 Home: () => selectItem(mapIndexFromSelectable(0)),
                 End: () =>
-                    selectItem(mapIndexFromSelectable(selectableDescendants.length - 1)),
+                    selectItem(
+                        mapIndexFromSelectable(selectableDescendants.length - 1)
+                    ),
                 Enter: () => select(selectedIndex)
             }
             const handler = handlers[event.key]
@@ -255,12 +278,14 @@ const MenuList = forwardRef((props: MenuListProps, ref) => {
             tabIndex={0}
             ref={mergeRefs(containerRef, ref)}
         >
-            <MenuContext.Provider value={context}>{children}</MenuContext.Provider>
+            <MenuContext.Provider value={context}>
+                {children}
+            </MenuContext.Provider>
         </div>
     )
 })
 
-const menuStyles = (props: MenuProps, isOpen: boolean): FloralStyles => ({
+const menuStyles = (props: MenuProps, isOpen: boolean): StyleMap => ({
     overlay: {
         background: 'transparent',
         position: 'fixed',
@@ -285,7 +310,8 @@ interface MenuPopupProps {
 
 const MenuPopup = forwardRef((props: MenuPopupProps, ref) => {
     const { renderProps, menuProps, styles } = props
-    const { isOpen, isActive, open, close, openValue, side, triggerWidth } = renderProps
+    const { isOpen, isActive, open, close, openValue, side, triggerWidth } =
+        renderProps
     const {
         maxHeight,
         placement,
@@ -294,7 +320,7 @@ const MenuPopup = forwardRef((props: MenuPopupProps, ref) => {
         matchWidth,
         menu,
         autoSelectFirstItem,
-        Animation
+        animation
     } = menuProps
 
     const viewport = useViewport()
@@ -309,7 +335,11 @@ const MenuPopup = forwardRef((props: MenuPopupProps, ref) => {
     }, [isActive, maxHeight, placement, viewport.height])
 
     return (
-        <Animation openValue={openValue} side={oppositeSides[side]}>
+        <OpenAnimation
+            openValue={openValue}
+            animation={animation}
+            side={oppositeSides[side]}
+        >
             <FocusLock disabled={!isOpen}>
                 <MenuList
                     style={{
@@ -326,7 +356,7 @@ const MenuPopup = forwardRef((props: MenuPopupProps, ref) => {
                     {menu(renderProps)}
                 </MenuList>
             </FocusLock>
-        </Animation>
+        </OpenAnimation>
     )
 })
 
@@ -343,7 +373,9 @@ export interface MenuRenderProps {
 const Menu = (props: MenuProps) => {
     const { children, placement, springConfig, matchWidth } = props
     const [isOpen, setIsOpen] = useControlledState(props, 'isOpen', false)
-    const [openValue, isRest] = useAnimatedValue(isOpen ? 1 : 0, { config: springConfig })
+    const [openValue, isRest] = useAnimatedValue(isOpen ? 1 : 0, {
+        config: springConfig
+    })
     const [side, setSide] = useState<PopupSide>('top')
     const isActive = isOpen || !isRest
     const styles = useStyles(menuStyles, [props, isOpen])
@@ -353,7 +385,9 @@ const Menu = (props: MenuProps) => {
         setIsOpen(false)
         setTimeout(() => triggerRef.current?.focus?.())
     }, [])
-    const [measureRef, { width }] = useMeasureLazy({ isEnabled: isActive && matchWidth })
+    const [measureRef, { width }] = useMeasureLazy({
+        isEnabled: isActive && matchWidth
+    })
     const renderProps: MenuRenderProps = {
         isOpen,
         isActive,
@@ -364,7 +398,7 @@ const Menu = (props: MenuProps) => {
         triggerWidth: width
     }
 
-    const popup = (ref) => (
+    const popup = (ref: React.Ref<HTMLElement>) => (
         <MenuPopup
             ref={ref}
             renderProps={renderProps}
@@ -390,7 +424,12 @@ const Menu = (props: MenuProps) => {
                 onChangeSide={setSide}
                 popup={popup}
             >
-                {(ref) => children(mergeRefs(ref, triggerRef, measureRef), renderProps)}
+                {(ref) =>
+                    children(
+                        mergeRefs(ref, triggerRef, measureRef),
+                        renderProps
+                    )
+                }
             </Popup>
         </>
     )
@@ -399,7 +438,7 @@ const Menu = (props: MenuProps) => {
 Menu.defaultProps = {
     closeOnSelect: true,
     placement: { ...defaultPlacement, constrain: true, padding: 16 },
-    Animation: SlideAnimation,
+    animation: animationFunctions.slide,
     springConfig: configs.stiff,
     autoSelectFirstItem: true
 }

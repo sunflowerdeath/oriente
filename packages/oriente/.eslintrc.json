@@ -1,4 +1,5 @@
 {
+    "root": true,
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": 2021,
@@ -12,13 +13,11 @@
         "eslint:recommended",
         "plugin:@typescript-eslint/recommended",
         "plugin:import/errors",
-        "plugin:react/recommended"
+        "prettier"
     ],
-    "plugins": ["prettier", "@typescript-eslint"],
+    "plugins": ["@typescript-eslint"],
     "rules": {
-        "prettier/prettier": "error",
-        "no-unused-vars": "warn",
-        "react/prop-types": "warn"
+        "no-unused-vars": "warn"
     },
     "settings": {
         "import/resolver": "webpack"
@@ -27,3 +26,4 @@
         "browser": true
     }
 }
+

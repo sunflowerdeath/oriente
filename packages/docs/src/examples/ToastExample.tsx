@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 import { useToast, ToastContainer, ToastCloseButton, ToastPlacement } from 'oriente'
 

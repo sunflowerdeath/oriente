@@ -18,7 +18,7 @@ export interface PopupPlacement {
 export interface PopupOptions {
     target: HTMLElement
     popup: HTMLElement
-    placement: PopupPlacement
+    placement?: Partial<PopupPlacement>
     onChangeSide?: (side: PopupSide) => void
 }
 
@@ -114,7 +114,7 @@ const getFlipConfigs = (
 
     configs.push({ side: oppositeSides[side], align, offset })
     if (align !== 'center') {
-        let oppositeAlign: PopupAlign = align === 'start' ? 'end' : 'start'
+        const oppositeAlign: PopupAlign = align === 'start' ? 'end' : 'start'
         configs.push(
             { side, align: oppositeAlign, offset },
             { side: oppositeSides[side], align: oppositeAlign, offset }
@@ -156,13 +156,13 @@ const constrainPosition = (
 }
 
 const getPopupPosition = (measurements: PopupMeasurements, placement: PopupPlacement) => {
-    let { side, align, offset, flip, constrain, padding } = placement
-    let configs = getFlipConfigs(flip, { side, align, offset })
+    const { side, align, offset, flip, constrain, padding } = placement
+    const configs = getFlipConfigs(flip, { side, align, offset })
     let position: Position | undefined
     let config: any
-    for (let i in configs) {
+    for (const i in configs) {
         config = configs[i]
-        let option = calcPosition(measurements, config)
+        const option = calcPosition(measurements, config)
         if (fitsViewport(option, measurements, padding)) {
             position = option
             break
@@ -235,7 +235,7 @@ class PopupController {
             })
             this.popupObserver.observe()
         }
-        if (placement) Object.assign(this.placement, placement)
+        this.placement = { ...defaultPlacement, ...placement }
         this.disableUpdate = false
         this.updatePosition()
     }

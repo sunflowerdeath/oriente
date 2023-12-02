@@ -1,21 +1,23 @@
-import React, { useMemo, createContext, useContext, useRef } from 'react'
-// @ts-ignore
-import Taply from 'taply'
-import { useStyles, FloralProps, FloralStyles } from 'floral'
+import { useMemo, createContext, useRef, useState, useCallback } from 'react'
 import FocusLock from 'react-focus-lock'
 import { useKey, useClickAway } from 'react-use'
 import { RemoveScroll } from 'react-remove-scroll'
 import { SpringConfig } from 'react-spring'
 
+import { useStyles, StyleProps, StyleMap } from './styles'
 import { Layer } from './layers'
-import CloseButton from './CloseButton'
-import { AppearAnimation, FadeAnimation } from './animations'
-import useAnimatedValue from './utils/useAnimatedValue'
+// import CloseButton from "./CloseButton"
+import {
+    OpenAnimation,
+    AnimationFunction,
+    animationFunctions,
+    useAnimatedValue
+} from './animation'
 import configs from './utils/springConfigs'
 
-export interface ModalProps extends FloralProps<ModalProps> {
+export interface ModalProps extends StyleProps<[ModalProps]> {
     /** Content of the modal */
-    children: (close: () => void) => React.ReactNode | React.ReactNode
+    children: (close: () => void) => React.ReactNode
 
     /** Whether the modal is open */
     isOpen?: boolean
@@ -38,15 +40,11 @@ export interface ModalProps extends FloralProps<ModalProps> {
     /** CSS value for the width of the modal window */
     width?: string | number
 
-    /** Component for hide and show animation */
-    Animation?: AppearAnimation
+    /** Function for hide and show animation */
+    animation?: AnimationFunction
 
     /** Config for `react-spring` animation */
     springConfig?: SpringConfig
-}
-
-export interface ModalCloseButtonProps extends FloralProps<ModalCloseButtonProps> {
-    children?: React.ReactNode
 }
 
 interface ModalContextProps {
@@ -58,7 +56,7 @@ const ModalContext = createContext<ModalContextProps | undefined>(undefined)
 const modalStyles = (
     props: ModalProps,
     { isOpen }: { isOpen: boolean }
-): FloralStyles => {
+): StyleMap => {
     const container: React.CSSProperties = {
         position: 'fixed',
         width: '100%',
@@ -92,26 +90,37 @@ const modalStyles = (
     return { container, window, overlay }
 }
 
-const Modal = (props: ModalProps) => {
+const modalDefaultProps = {
+    closeOnEsc: true,
+    width: 800,
+    animation: animationFunctions.fade(),
+    springConfig: configs.stiffest,
+    isOpen: false
+}
+
+const Modal = (_props: ModalProps) => {
+    const props = _props as ModalProps & typeof modalDefaultProps
     const {
         isOpen,
         children,
         closeOnOverlayClick,
         closeOnEsc,
         onClose,
-        Animation,
+        animation,
         springConfig
     } = props
     const styles = useStyles(modalStyles, [props, { isOpen }])
-    const [openValue, isRest] = useAnimatedValue(isOpen ? 1 : 0, { config: springConfig })
+    const [openValue, isRest] = useAnimatedValue(isOpen ? 1 : 0, {
+        config: springConfig
+    })
     const context = useMemo(() => ({ close: onClose }), [])
     const isActive = isOpen || !isRest
     useKey('Escape', () => {
         if (closeOnEsc) onClose()
     })
     const windowRef = useRef(null)
-    useClickAway(windowRef, (e) => {
-        if (closeOnOverlayClick) onClose()
+    useClickAway(windowRef, (e: MouseEvent) => {
+        if (e.button === 0 && closeOnOverlayClick) onClose()
     })
     const modalChildren = useMemo(() => {
         if (isActive) {
@@ -119,21 +128,29 @@ const Modal = (props: ModalProps) => {
         } else {
             return null
         }
-    }, [children, isActive])
+    }, [children, onClose, isActive])
 
     return (
         <>
             <Layer type="modal" isActive={isActive}>
-                <FadeAnimation openValue={openValue} style={styles.overlay} />
+                <OpenAnimation
+                    animation={animationFunctions.fade()}
+                    openValue={openValue}
+                    style={styles.overlay}
+                />
                 <RemoveScroll>
                     <div style={styles.container}>
-                        <Animation openValue={openValue} style={styles.window}>
+                        <OpenAnimation
+                            animation={animation}
+                            openValue={openValue}
+                            style={styles.window}
+                        >
                             <div ref={windowRef}>
                                 <ModalContext.Provider value={context}>
                                     <FocusLock>{modalChildren}</FocusLock>
                                 </ModalContext.Provider>
                             </div>
-                        </Animation>
+                        </OpenAnimation>
                     </div>
                 </RemoveScroll>
             </Layer>
@@ -141,20 +158,55 @@ const Modal = (props: ModalProps) => {
     )
 }
 
-Modal.defaultProps = {
-    closeOnEsc: true,
-    width: 800,
-    Animation: FadeAnimation,
-    springConfig: configs.normal
+Modal.defaultProps = modalDefaultProps
+
+export interface UseModalProps
+    extends Omit<React.ComponentProps<typeof Modal>, 'isOpen'> {
+    Component: React.ComponentType<ModalProps>
 }
 
-const ModalCloseButton = (props: ModalCloseButtonProps) => {
-    const { children } = props
-    const context = useContext(ModalContext)
-    if (!context) {
-        throw new Error('You can use <ModalCloseButton> only inside <Modal> component')
-    }
-    return <CloseButton onTap={context.close}>{children}</CloseButton>
+export interface UseModal {
+    close: () => void
+    open: () => void
+    render: () => React.ReactNode
 }
 
-export { Modal, ModalCloseButton }
+const useModal = (props: UseModalProps): UseModal => {
+    const { Component, ...modalProps } = props
+    const [isOpen, setIsOpen] = useState(false)
+
+    const open = useCallback(() => setIsOpen(true), [])
+    const close = useCallback(() => setIsOpen(false), [])
+    const render = useCallback(
+        () => (
+            <Component
+                {...modalProps}
+                isOpen={isOpen}
+                onClose={() => {
+                    modalProps.onClose?.()
+                    close()
+                }}
+            />
+        ),
+        [isOpen, ...Object.values(modalProps)]
+    )
+    return { open, close, render }
+}
+
+// export interface ModalCloseButtonProps
+// extends StyleProps<[ModalCloseButtonProps]> {
+// children?: React.ReactNode
+// }
+
+// const ModalCloseButton = (props: ModalCloseButtonProps) => {
+// const { children } = props
+// const context = useContext(ModalContext)
+// if (!context) {
+// throw new Error(
+// "You can use <ModalCloseButton> only inside <Modal> component"
+// )
+// }
+// return <CloseButton onTap={context.close}>{children}</CloseButton>
+// }
+
+export { Modal, useModal } // , ModalCloseButton

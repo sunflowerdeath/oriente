@@ -1,7 +1,6 @@
-import ReactDOM from 'react-dom'
-import React from 'react'
-import MiniBook from 'minibook'
-import { dark } from 'minibook/lib/themes'
+import { createRoot } from 'react-dom/client'
+import { Minibook, themes } from 'minibook'
+// import { dark } from 'minibook/lib/themes'
 
 import { OrienteProvider } from 'oriente'
 
@@ -18,19 +17,20 @@ const sections = {
     components: componentsSection
 }
 
-ReactDOM.render(
+const root = createRoot(document.getElementById('root'))
+
+root.render(
     <OrienteProvider>
-        <MiniBook
+        <Minibook
             title={
                 <div style={{ color: '#f06292' }}>
                     <span style={{ fontWeight: 'normal' }}>☀</span> Oriente
                 </div>
             }
             items={sections}
-            theme={dark}
+            theme={themes.dark}
             // basename={isProduction ? '/oriente/' : ''}
             basename=""
         />
-    </OrienteProvider>,
-    document.querySelector('#root')
+    </OrienteProvider>
 )

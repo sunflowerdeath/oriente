@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useLayoutEffect } from 'react'
+//@ts-ignore
 import { useSpring, SpringConfig, AnimatedValue } from 'react-spring'
 
 import configs from './springConfigs'
@@ -18,7 +19,7 @@ const useAnimatedValue = (
         onRest: () => setIsRest(true),
         config
     }))
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (prevValue !== to) {
             setPrevValue(to)
             setIsRest(false)

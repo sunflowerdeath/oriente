@@ -1,4 +1,4 @@
-import React, { forwardRef, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { forwardRef, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Layer } from './layers'
 import PopupController, { PopupPlacement, PopupSide } from './PopupController'
 import cloneElementWithRef from './utils/cloneElementWithRef'
@@ -9,10 +9,10 @@ export interface PopupProps {
     isActive: boolean
 
     /** Target element, or a function that takes `ref` and returns an element. */
-    children: React.ReactNode | ((ref: any) => React.ReactNode)
+    children: React.ReactElement | ((ref: any) => React.ReactNode)
 
     /** Popup element, or a function that takes `ref` and returns an element. */
-    popup: React.ReactNode | ((ref: any) => React.ReactNode)
+    popup: React.ReactElement | ((ref: any) => React.ReactNode)
 
     /**
      * An object that configures placement of the popup with the following properties:
@@ -36,9 +36,9 @@ export interface PopupProps {
 const Popup = forwardRef((props: PopupProps, ref) => {
     const { children, popup, isActive, placement, onChangeSide } = props
 
-    const [targetElem, setTargetElem] = useState()
-    const [popupElem, setPopupElem] = useState()
-    const controllerRef = useRef()
+    const [targetElem, setTargetElem] = useState<HTMLElement>()
+    const [popupElem, setPopupElem] = useState<HTMLElement>()
+    const controllerRef = useRef<PopupController>()
 
     useLayoutEffect(() => {
         if (isActive && targetElem && popupElem) {

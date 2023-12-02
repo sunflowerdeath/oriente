@@ -52,7 +52,7 @@ component: Modal
 
 ## ModalCloseButton Props
 
-```@propsdoc
+```-@propsdoc
 file: ../../../oriente/src/modal.tsx
 allowMarkdown: true
 component: ModalCloseButton

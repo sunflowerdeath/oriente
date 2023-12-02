@@ -1,118 +1,67 @@
-import React from 'react'
-import { useStyles, FloralProps, FloralStyles } from 'floral'
+import { forwardRef } from 'react'
+import { omit } from 'lodash-es'
 
-import stylesheet from './utils/stylesheet'
+import { useStyles, StyleProps, StyleMap } from './styles'
 
-export type FlexAlign = 'normal' | 'start' | 'end' | 'center' | 'stretch' | 'baseline'
+const aliases: Record<string, string> = {
+    end: 'flex-end',
+    start: 'flex-start'
+}
 
-export type FlexJustify =
-    | 'normal'
-    | 'start'
-    | 'end'
-    | 'center'
-    | 'space-between'
-    | 'space-around'
-    | 'space-evenly'
+type DivProps = Omit<React.HTMLAttributes<HTMLDivElement>, 'style'>
 
-export interface FlexProps
-    extends FloralProps<FlexProps>,
-        Omit<React.HTMLProps<HTMLDivElement>, keyof 'dir' | 'wrap'> {
-    children: React.ReactNode
-
+export interface FlexProps extends DivProps, StyleProps<[FlexProps]> {
     /** Flex direction */
-    dir?: 'row' | 'col'
+    dir: 'col' | 'row'
+
+    /** Gap between elements */
+    gap?: string | number
 
     /** Flex wrap */
     wrap?: boolean
 
     /** Flex align */
-    align?: FlexAlign
+    align?: string
 
     /** Flex justify */
-    justify?: FlexJustify
+    justify?: string
 
-    /** Gap between elements */
-    gap?: string | number
-
-    className?: string
+    children: React.ReactNode
 }
 
-const css = stylesheet({
-    classNames: ['row', 'col', 'wrapper'],
-    css: (c) =>
-        `.${c.row} > .${c.wrapper} > * + * { margin-left: var(--flex-gap) }
-        .${c.col} > .${c.wrapper} > * + * { margin-top: var(--flex-gap) }`
-})
-
-const justifyMap: { [key in FlexJustify]?: string } = {
-    end: 'flex-end',
-    start: 'flex-start'
+const flexStyles = (props: FlexProps & typeof flexDefaultProps): StyleMap => {
+    const { dir, gap, align, justify, wrap } = props
+    return {
+        root: {
+            display: 'flex',
+            alignItems: align && (aliases[align] ?? align),
+            justifyContent: justify && (aliases[justify] ?? justify),
+            flexDirection: dir === 'col' ? 'column' : 'row',
+            gap,
+            flexWrap: wrap ? 'wrap' : 'nowrap'
+        }
+    }
 }
 
-const flexStyles = ({ dir, wrap, align, justify, gap }: FlexProps): FloralStyles => ({
-    root: {
-        display: 'flex',
-        flexDirection: dir === 'col' ? 'column' : 'row',
-        flexWrap: wrap ? 'wrap' : 'nowrap',
-        alignItems: align,
-        justifyContent: justifyMap[justify!] || justify
-    },
-    /*
-    Flex uses wrapper, so when flex is nested in flex it does not override gap:
-
-    Incorrect:
-    .flex { --gap: <value> }
-      <child> { margin-top: var(--gap); }
-      .flex { --gap: <new-value>; margin-top: var(--gap); } <- has invalid margin
-      
-    Correct:
-    .flex
-      .wrapper { --gap: <value> }
-      <child> { margin-top: var(--gap); }
-      .flex { margin-top: var(--gap); }
-        .wrapper { --gap: <new-value>; }
-    */
-    wrapper: {
-        display: 'contents',
-        '--flex-gap': typeof gap === 'number' ? `${gap}px` : gap
-    } as React.CSSProperties
-})
-
-const cx = (...classes: (string | undefined)[]) => classes.filter((c) => !!c).join(' ')
-
-const Flex = (props: FlexProps) => {
-    const {
-        dir,
-        wrap,
-        align,
-        justify,
-        gap,
-        style,
-        styles: _,
-        className,
-        children,
-        ...restProps
-    } = props
-    const styles = useStyles(flexStyles, [props])
-    return (
-        <div
-            style={styles.root}
-            className={cx(dir === 'row' ? css.row : css.col, className)}
-            {...restProps}
-        >
-            <div className={css.wrapper} style={styles.wrapper}>
-                {children}
-            </div>
-        </div>
-    )
-}
-
-Flex.defaultProps = {
-    dir: 'row',
+const flexDefaultProps = {
+    dir: 'col',
     wrap: false,
-    align: 'normal',
-    justify: 'normal',
-    gap: 0
+    align: 'start'
 }
 
-export { Flex }
+const Flex = forwardRef<HTMLDivElement, FlexProps>((inProps: FlexProps, ref) => {
+    const props = { ...flexDefaultProps, ...inProps }
+    const rest = omit(props, 'dir', 'gap', 'align', 'justify', 'wrap')
+    const styles = useStyles(flexStyles, [props])
+    return <div ref={ref} {...rest} style={styles.root} />
+})
+
+const Row = forwardRef<HTMLDivElement, Omit<FlexProps, 'dir'>>((props, ref) => (
+    <Flex ref={ref} {...props} dir="row" />
+))
+
+const Col = forwardRef<HTMLDivElement, Omit<FlexProps, 'dir'>>((props, ref) => (
+    <Flex ref={ref} {...props} dir="col" />
+))
+
+export { Flex, Row, Col }

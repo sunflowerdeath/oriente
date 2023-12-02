@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { Stack } from './layers'
 import { ToastContainer } from './toast'
 

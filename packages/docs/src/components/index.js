@@ -10,7 +10,7 @@ import FormsStory from './forms.md'
 
 const componentsSection = {
     name: 'Components',
-    items: {
+    stories: {
         layers: {
             name: 'Layers',
             markdown: LayersStory

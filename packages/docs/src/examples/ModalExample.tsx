@@ -1,8 +1,6 @@
-import React, { useState } from 'react'
-// @ts-ignore
-import { extendComponentStyles } from 'floral'
+import { useState } from 'react'
 
-import { Modal, ModalCloseButton, FadeAnimation, SlideAnimation } from 'oriente'
+import { Modal, FadeAnimation, SlideAnimation } from 'oriente'
 
 import buttonStyle from '../buttonStyle'
 
@@ -18,7 +16,9 @@ const exampleModalStyles = () => ({
     }
 })
 
-const ExampleModal = extendComponentStyles(Modal, exampleModalStyles)
+const ExampleModal = (props: React.ComponentProps<typeof Modal>) => {
+    return <Modal styles={exampleModalStyles} {...props} />
+}
 
 const ModalExample = ({ children, ...rest }: React.ComponentProps<typeof Modal>) => {
     const [isOpen, setIsOpen] = useState(false)
@@ -35,7 +35,6 @@ const ModalExample = ({ children, ...rest }: React.ComponentProps<typeof Modal>)
             >
                 {(close) => (
                     <>
-                        <ModalCloseButton />
                         {children(close)}
                     </>
                 )}
@@ -75,7 +74,6 @@ const ModalAnimationExample = () => {
             >
                 {(close) => (
                     <>
-                        <ModalCloseButton />
                         Modal
                         <br />
                         <br />

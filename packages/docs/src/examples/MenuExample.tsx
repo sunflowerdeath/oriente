@@ -1,6 +1,6 @@
-import range from 'lodash/range'
+import { forwardRef, useState } from 'react'
+import range from 'lodash-es/range'
 import { Menu, MenuItem, MenuList, Tooltip } from 'oriente'
-import React, { forwardRef, useState } from 'react'
 
 import buttonStyle from '../buttonStyle'
 import Button from '../Button'
@@ -20,7 +20,10 @@ const ExampleMenuItem = forwardRef((props: any, ref) => (
 
 const MenuListExample = () => (
     <MenuList onSelect={(value) => console.log(`Menu onSelect: ${value}`)}>
-        <ExampleMenuItem value="one" onSelect={() => console.log(`MenuItem onSelect`)}>
+        <ExampleMenuItem
+            value="one"
+            onSelect={() => console.log(`MenuItem onSelect`)}
+        >
             Item 1
         </ExampleMenuItem>
         <ExampleMenuItem value="two" isDisabled>
@@ -48,7 +51,10 @@ interface MenuExampleProps extends React.ComponentProps<Menu> {
     children?: React.ReactNode
 }
 
-const MenuExample = ({ children = 'Open menu', ...restProps }: MenuExampleProps) => {
+const MenuExample = ({
+    children = 'Open menu',
+    ...restProps
+}: MenuExampleProps) => {
     let menu = () => (
         <>
             <TooltipMenuItem value="disabled-1" isDisabled>
@@ -88,7 +94,9 @@ const MenuExample = ({ children = 'Open menu', ...restProps }: MenuExampleProps)
 const ScrollMenuExample = () => {
     let [maxHeight, setMaxHeight] = useState(false)
     let menu = () =>
-        range(1, 50).map((i) => <ExampleMenuItem value="one">Item {i}</ExampleMenuItem>)
+        range(1, 50).map((i) => (
+            <ExampleMenuItem value="one">Item {i}</ExampleMenuItem>
+        ))
 
     return (
         <>
@@ -119,7 +127,9 @@ const MatchWidthExample = () => {
     let [match, setMatch] = useState(false)
     return (
         <>
-            <MenuExample matchWidth={match}>Button with very long text</MenuExample>
+            <MenuExample matchWidth={match}>
+                Button with very long text
+            </MenuExample>
             <label>
                 <input
                     type="checkbox"

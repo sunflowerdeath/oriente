@@ -67,7 +67,7 @@ component: Menu
 
 ## MenuItem Props
 
-```@propsdoc
+```-@propsdoc
 file: ../../../oriente/src/menu.tsx
 allowMarkdown: true
 component: MenuItem

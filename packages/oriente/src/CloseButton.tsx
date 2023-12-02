@@ -1,39 +1,40 @@
-import React, { useMemo, createContext, useContext } from 'react'
-// @ts-ignore
-import Taply from 'taply'
-import { useStyles, FloralProps, FloralStyles } from 'floral'
+import React, { useMemo, createContext, useContext } from "react"
 
-const closeButtonStyles: FloralStyles = {
+import { useTaply } from "./taply"
+import { useStyles, StyleProps, StyleMap } from "./styles"
+
+const closeButtonStyles: StyleMap = {
     root: {
-        position: 'absolute',
-        top: '1rem',
-        right: '1rem',
-        width: '1rem',
-        height: '1rem',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        cursor: 'pointer'
-    }
+        position: "absolute",
+        top: "1rem",
+        right: "1rem",
+        width: "1rem",
+        height: "1rem",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        cursor: "pointer",
+    },
 }
 
-interface CloseButtonProps extends FloralProps<CloseButtonProps> {
+interface CloseButtonProps extends StyleProps<CloseButtonProps> {
     children: React.ReactNode
-    onTap: () => void
+    onClick: () => void
 }
 
 const CloseButton = (props: CloseButtonProps) => {
-    const { children, onTap } = props
-    const styles = useStyles(closeButtonStyles, [props])
-    return (
-        <Taply onTap={onTap}>
-            <div style={styles.root}>{children}</div>
-        </Taply>
-    )
+    const { children, onClick } = props
+    const { tapState, render } = useTaply({ onClick })
+    const styles = useStyles(closeButtonStyles, [props, tapState])
+    return render((attrs, ref) => (
+        <div style={styles.root} ref={ref} {...attrs}>
+            {children}
+        </div>
+    ))
 }
 
 CloseButton.defaultProps = {
-    children: '✕'
+    children: "✕",
 }
 
 export default CloseButton
