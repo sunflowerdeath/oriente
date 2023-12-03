@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { useToast, ToastContainer, ToastCloseButton, ToastPlacement } from 'oriente'
+import { useToast, ToastContainer, ToastPlacement } from 'oriente'
 
 import buttonStyle from '../buttonStyle'
 
@@ -12,16 +12,10 @@ const toastStyle = {
 }
 
 const ToastExample = ({ placement }: { placement?: ToastPlacement }) => {
-    let toast = useToast()
-    let showToast = () =>
+    const toast = useToast()
+    const showToast = () =>
         toast.show({
-            children: (
-                <>
-                    Toast
-                    <ToastCloseButton style={{ top: 4, right: 4 }} />
-                </>
-            ),
-            style: toastStyle,
+            children: <div style={toastStyle}>I'm a toast</div>,
             placement
         })
     return (

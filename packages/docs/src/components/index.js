@@ -1,3 +1,4 @@
+import TaplyStory from './taply.md'
 import LayersStory from './layers.md'
 import PopupStory from './popup.md'
 import TooltipStory from './tooltip.md'
@@ -6,11 +7,15 @@ import ModalStory from './modal.md'
 import ToastsStory from './toasts.md'
 import FlexStory from './flex.md'
 
-import FormsStory from './forms.md'
+// import FormsStory from './forms.md'
 
 const componentsSection = {
     name: 'Components',
     stories: {
+        taply: {
+            name: 'Taply',
+            markdown: TaplyStory
+        },
         layers: {
             name: 'Layers',
             markdown: LayersStory
@@ -39,10 +44,10 @@ const componentsSection = {
             name: 'Flex',
             markdown: FlexStory
         },
-        forms: {
-            name: 'Forms',
-            markdown: FormsStory
-        }
+        // forms: {
+            // name: 'Forms',
+            // markdown: FormsStory
+        // }
     }
 }
 

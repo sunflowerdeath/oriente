@@ -299,7 +299,7 @@ const Tooltip = (_props: TooltipProps) => {
                     </OpenAnimation>
                 </div>
             )),
-        [tooltip, side, context, Animation]
+        [tooltip, side, context, animation]
     )
 
     const target = (popupRef: React.Ref<HTMLElement>) =>

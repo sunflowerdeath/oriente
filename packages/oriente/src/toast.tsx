@@ -3,7 +3,6 @@ import { mapValues } from 'lodash-es'
 import { animated, useTransition, SpringConfig } from 'react-spring'
 
 import configs from './utils/springConfigs'
-import { useStyles, StyleProps, StyleMap } from './styles'
 import { Layer } from './layers'
 import { CollapseAnimation } from './animation'
 
@@ -20,14 +19,9 @@ export interface ToastContainerProps {
     springConfig?: SpringConfig
 }
 
-export interface ToastProps extends StyleProps<[ToastProps]> {
+export interface ToastProps {
     children: React.ReactNode | ((close: () => void) => React.ReactNode)
     onClose?: () => void
-}
-
-export interface ToastCloseButtonProps
-    extends StyleProps<[ToastCloseButtonProps]> {
-    children?: React.ReactNode
 }
 
 export interface ShowToastOptions extends ToastProps {

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { Modal, FadeAnimation, SlideAnimation } from 'oriente'
+import { Modal, animationFunctions } from 'oriente'
 
 import buttonStyle from '../buttonStyle'
 
@@ -20,7 +20,10 @@ const ExampleModal = (props: React.ComponentProps<typeof Modal>) => {
     return <Modal styles={exampleModalStyles} {...props} />
 }
 
-const ModalExample = ({ children, ...rest }: React.ComponentProps<typeof Modal>) => {
+const ModalExample = ({
+    children,
+    ...rest
+}: React.ComponentProps<typeof Modal>) => {
     const [isOpen, setIsOpen] = useState(false)
     return (
         <>
@@ -33,30 +36,30 @@ const ModalExample = ({ children, ...rest }: React.ComponentProps<typeof Modal>)
                 onClose={() => setIsOpen(false)}
                 closeOnOverlayClick={true}
             >
-                {(close) => (
-                    <>
-                        {children(close)}
-                    </>
-                )}
+                {(close) => <>{children(close)}</>}
             </ExampleModal>
         </>
+    )
+}
+
+const animations = {
+    fade: animationFunctions.fade(),
+    slide: animationFunctions.compose(
+        animationFunctions.fade(),
+        animationFunctions.slide({ side: 'top', distance: 50 })
     )
 }
 
 const ModalAnimationExample = () => {
     const [isOpen, setIsOpen] = useState(false)
     const [animation, setAnimation] = useState('fade')
-    const items = {
-        fade: FadeAnimation,
-        slide: (props) => <SlideAnimation side="top" distance={50} {...props} />
-    }
 
     return (
         <>
             <div style={buttonStyle} onClick={() => setIsOpen(true)}>
                 Open modal
             </div>{' '}
-            {Object.keys(items).map((value) => (
+            {Object.keys(animations).map((value) => (
                 <label>
                     <input
                         type="checkbox"
@@ -70,7 +73,7 @@ const ModalAnimationExample = () => {
                 isOpen={isOpen}
                 onClose={() => setIsOpen(false)}
                 closeOnOverlayClick={true}
-                Animation={items[animation]}
+                animation={animations[animation]}
             >
                 {(close) => (
                     <>

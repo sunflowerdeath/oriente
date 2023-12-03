@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { Tooltip, TooltipArrow, SlideAnimation, ScaleAnimation } from 'oriente'
+import { Tooltip, TooltipArrow, animationFunctions } from 'oriente'
 
 import buttonStyle from '../buttonStyle'
 
@@ -46,17 +46,18 @@ const ControlledTooltipExample = () => {
     )
 }
 
+const animations = {
+    slide: animationFunctions.compose(animationFunctions.slide(), animationFunctions.fade()),
+    scale: animationFunctions.scale()
+}
+
 const TooltipAnimationExample = () => {
     const [animation, setAnimation] = useState('slide')
-    const items = {
-        slide: SlideAnimation,
-        scale: ScaleAnimation
-    }
 
     return (
         <>
-            <TooltipExample Animation={items[animation]} />{' '}
-            {Object.keys(items).map((value) => (
+            <TooltipExample animation={animations[animation]} />{' '}
+            {Object.keys(animations).map((value) => (
                 <label>
                     <input
                         type="checkbox"
