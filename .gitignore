@@ -1,7 +1,8 @@
 node_modules
 package-lock.json
 packages/*/node_modules
+packages/*/package-lock.json
 packages/*/lib
 packages/*/build
-packages/*/package-lock.json
+packages/*/types
 .DS_Store
