@@ -93,7 +93,7 @@ const modalStyles = (
 const modalDefaultProps = {
     closeOnEsc: true,
     width: 800,
-    animation: animationFunctions.fade(),
+    animation: animationFunctions.fade,
     springConfig: configs.stiffest,
     isOpen: false
 }
@@ -134,14 +134,14 @@ const Modal = (_props: ModalProps) => {
         <>
             <Layer type="modal" isActive={isActive}>
                 <OpenAnimation
-                    animation={animationFunctions.fade()}
+                    fn={animationFunctions.fade}
                     openValue={openValue}
                     style={styles.overlay}
                 />
                 <RemoveScroll>
                     <div style={styles.container}>
                         <OpenAnimation
-                            animation={animation}
+                            fn={animation}
                             openValue={openValue}
                             style={styles.window}
                         >

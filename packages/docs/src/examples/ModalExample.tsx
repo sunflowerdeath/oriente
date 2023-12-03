@@ -1,5 +1,4 @@
 import { useState } from 'react'
-
 import { Modal, animationFunctions } from 'oriente'
 
 import buttonStyle from '../buttonStyle'
@@ -43,10 +42,10 @@ const ModalExample = ({
 }
 
 const animations = {
-    fade: animationFunctions.fade(),
+    fade: animationFunctions.fade,
     slide: animationFunctions.compose(
-        animationFunctions.fade(),
-        animationFunctions.slide({ side: 'top', distance: 50 })
+        [animationFunctions.fade, animationFunctions.slide],
+        { side: 'top', distance: 50 }
     )
 }
 

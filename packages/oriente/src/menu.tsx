@@ -337,8 +337,8 @@ const MenuPopup = forwardRef((props: MenuPopupProps, ref) => {
     return (
         <OpenAnimation
             openValue={openValue}
-            animation={animation}
-            side={oppositeSides[side]}
+            fn={animation}
+            props={{ side: oppositeSides[side] }}
         >
             <FocusLock disabled={!isOpen}>
                 <MenuList
@@ -351,7 +351,7 @@ const MenuPopup = forwardRef((props: MenuPopupProps, ref) => {
                     onSelect={onSelect}
                     onClose={close}
                     closeOnSelect={closeOnSelect}
-                    autoSelectFirstItem={autoSelectFirstItem!}
+                    autoSelectFirstItem={Boolean(autoSelectFirstItem)}
                 >
                     {menu(renderProps)}
                 </MenuList>
@@ -438,7 +438,7 @@ const Menu = (props: MenuProps) => {
 Menu.defaultProps = {
     closeOnSelect: true,
     placement: { ...defaultPlacement, constrain: true, padding: 16 },
-    animation: animationFunctions.slide,
+    animation: animationFunctions.compose([animationFunctions.slide, animationFunctions.fade]),
     springConfig: configs.stiff,
     autoSelectFirstItem: true
 }

@@ -23,7 +23,7 @@ const rules = [
                 loader: "esbuild-loader",
                 options: { loader: "tsx", jsx: "automatic" },
             },
-            // { loader: "ts-loader" },
+            { loader: "ts-loader" },
         ],
     },
 ]

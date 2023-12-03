@@ -2,42 +2,22 @@ import { useState, forwardRef, useEffect, useLayoutEffect, useRef } from 'react'
 import { useSpring, animated, SpringConfig, SpringValue } from 'react-spring'
 import { useMeasure } from 'react-use'
 
-export type AnimationFunction = (value: any) => object
+export type AnimationFunction = (value: any, props?: object) => object
 
 export interface FadeProps {
     initialOpacity?: number
 }
-
-const fade =
-    ({ initialOpacity = 0 }: FadeProps = {}): AnimationFunction =>
-    (value) => ({ opacity: value.to([0, 1], [initialOpacity, 1]) })
 
 export interface TranslateProps {
     vert?: number
     horiz?: number
 }
 
-const translate =
-    ({ vert = 0, horiz = 0 }: TranslateProps = {}): AnimationFunction =>
-    (value) => ({
-        translateX: value.to([0, 1], [horiz, 0]),
-        translateY: value.to([0, 1], [vert, 0])
-    })
-
 export type Side = 'top' | 'left' | 'bottom' | 'right'
 
 export interface SlideProps {
     side?: Side
     distance?: number
-}
-
-const slide = ({
-    side = 'top',
-    distance = 10
-}: SlideProps = {}): AnimationFunction => {
-    const axis = side === 'left' || side === 'right' ? 'horiz' : 'vert'
-    const dir = side === 'right' || side === 'bottom' ? 1 : -1
-    return translate({ [axis]: distance * dir })
 }
 
 const origins = {
@@ -59,32 +39,55 @@ export interface ScaleProps {
     origin?: keyof typeof origins
 }
 
-const scale =
-    ({ initialScale = 0, origin = 'center' }: ScaleProps = {}) =>
-    (value: any) => ({
-        transformOrigin: origins[origin],
-        transform: value
-            .interpolate([0, 1], [initialScale, 1])
-            .interpolate((v: number) => `scale(${v})`)
-    })
+const fade: AnimationFunction = (
+    value,
+    { initialOpacity = 0 }: FadeProps = {}
+) => {
+    return { opacity: value.to([0, 1], [initialOpacity, 1]) }
+}
+const translate: AnimationFunction = (
+    value,
+    { vert = 0, horiz = 0 }: TranslateProps = {}
+) => ({
+    translateX: value.to([0, 1], [horiz, 0]),
+    translateY: value.to([0, 1], [vert, 0])
+})
+
+const slide: AnimationFunction = (
+    value,
+    { side = 'top', distance = 10 }: SlideProps = {}
+) => {
+    const axis = side === 'left' || side === 'right' ? 'horiz' : 'vert'
+    const dir = side === 'right' || side === 'bottom' ? 1 : -1
+    return translate(value, { [axis]: distance * dir })
+}
+
+const scale: AnimationFunction = (
+    value,
+    { initialScale = 0, origin = 'center' }: ScaleProps = {}
+) => ({
+    transformOrigin: origins[origin],
+    transform: value
+        .interpolate([0, 1], [initialScale, 1])
+        .interpolate((v: number) => `scale(${v})`)
+})
 
 const compose =
-    (...fns: AnimationFunction[]) =>
+    (fns: AnimationFunction[], props?: object): AnimationFunction =>
     (value: any) => {
         const res = {}
-        fns.forEach((fn) => Object.assign(res, fn(value)))
+        fns.forEach((fn) => Object.assign(res, fn(value, props)))
         return res
     }
 
 const animationFunctions = { fade, translate, slide, scale, compose }
 
 const animationPresets = {
-    fade: fade(),
-    slideDown: compose(fade(), translate({ vert: -10 })),
-    slideUp: compose(fade(), translate({ vert: 10 })),
-    slideRight: compose(fade(), translate({ horiz: -20 })),
-    slideLeft: compose(fade(), translate({ horiz: 20 })),
-    scale: compose(fade(), scale({ initialScale: 0.66 }))
+    slideDown: compose([fade, translate], { vert: -10 }),
+    slideUp: compose([fade, translate], { vert: 10 }),
+    slideRight: compose([fade, translate], { horiz: -20 }),
+    slideLeft: compose([fade, translate], { horiz: 20 }),
+    scale: compose([fade, scale], { initialScale: 0.66 })
 }
 
 const springConfigs = {
@@ -120,14 +123,14 @@ const useAnimatedValue = (
 }
 
 interface AppearProps extends React.ComponentProps<typeof animated.div> {
-    animation?: AnimationFunction | AnimationFunction[]
+    animation?: AnimationFunction
     config?: SpringConfig
     children?: React.ReactNode
     delay?: number
 }
 
 const appearDefaultProps = {
-    animation: fade(),
+    animation: fade,
     delay: 0,
     config: springConfigs.normal
 }
@@ -148,10 +151,10 @@ const Appear = forwardRef<HTMLDivElement, AppearProps>(
                 if (timeoutRef.current) clearTimeout(timeoutRef.current)
             }
         }, [])
-        const animatedStyle = compose(animation)(spring.value)
+        const animatedStyle = animation(spring.value)
         return (
             <animated.div
-                ref={ref as any}
+                ref={ref}
                 style={{ ...style, ...animatedStyle }}
                 {...restProps}
             >
@@ -174,7 +177,6 @@ const CollapseAnimation = forwardRef<HTMLDivElement, CollapseAnimationProps>(
     (props: CollapseAnimationProps, ref) => {
         const { openValue, children, ...restProps } = props
         const [measureRef, { height }] =
-            // eslint-disable-next-line react-hooks/rules-of-hooks
             'ResizeObserver' in window ? useMeasure() : [null, { height: -1 }]
         const style: any = { overflowY: 'hidden', ...restProps.style }
         if ('ResizeObserver' in window) {
@@ -196,17 +198,18 @@ CollapseAnimation.displayName = 'Collapse'
 export interface OpenAnimationProps
     extends React.HTMLAttributes<HTMLDivElement> {
     openValue: SpringValue
-    animation: AnimationFunction
+    fn: AnimationFunction
+    props?: object
     children?: React.ReactNode
 }
 
 const OpenAnimation = forwardRef<HTMLDivElement, OpenAnimationProps>(
-    (props: OpenAnimationProps, ref) => {
-        const { children, openValue, animation, style, ...restProps } = props
+    (props, ref) => {
+        const { children, openValue, fn, style, ...restProps } = props
         return (
             <animated.div
                 ref={ref}
-                style={{ ...style, ...animation(openValue) }}
+                style={{ ...style, ...fn(openValue, props.props) }}
                 {...restProps}
             >
                 {children}

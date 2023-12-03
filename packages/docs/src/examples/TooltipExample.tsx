@@ -1,5 +1,4 @@
 import { useState } from 'react'
-
 import { Tooltip, TooltipArrow, animationFunctions } from 'oriente'
 
 import buttonStyle from '../buttonStyle'
@@ -47,8 +46,11 @@ const ControlledTooltipExample = () => {
 }
 
 const animations = {
-    slide: animationFunctions.compose(animationFunctions.slide(), animationFunctions.fade()),
-    scale: animationFunctions.scale()
+    slide: animationFunctions.compose([
+        animationFunctions.slide,
+        animationFunctions.fade
+    ]),
+    scale: animationFunctions.scale
 }
 
 const TooltipAnimationExample = () => {

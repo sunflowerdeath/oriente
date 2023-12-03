@@ -18,6 +18,7 @@
         "react-draggable": "^4.4.3"
     },
     "devDependencies": {
+        "@types/lodash-es": "^4.17.11",
         "esbuild-loader": "^2.20.0",
         "html-webpack-plugin": "^5.3.1",
         "minimark-loader": "^0.10.0",

@@ -6,29 +6,29 @@ import React, {
     useCallback,
     useMemo,
     createContext,
-    useContext,
-} from "react"
-import { SpringConfig } from "react-spring"
+    useContext
+} from 'react'
+import { SpringConfig } from 'react-spring'
 
-import { useStyles, StyleProps, StyleMap } from "./styles"
-import { useTaply, TapState, initialTapState } from "./taply"
-import mergeRefs from "./utils/mergeRefs"
-import useControlledState from "./utils/useControlledState"
-import configs from "./utils/springConfigs"
+import { useStyles, StyleProps, StyleMap } from './styles'
+import { useTaply, TapState, initialTapState } from './taply'
+import mergeRefs from './utils/mergeRefs'
+import useControlledState from './utils/useControlledState'
+import configs from './utils/springConfigs'
 import {
     OpenAnimation,
     AnimationFunction,
     animationFunctions,
-    useAnimatedValue,
-} from "./animation"
+    useAnimatedValue
+} from './animation'
 import {
     oppositeSides,
     defaultPlacement,
     PopupSide,
     PopupAlign,
-    PopupPlacement,
-} from "./PopupController"
-import { Popup } from "./popup"
+    PopupPlacement
+} from './PopupController'
+import { Popup } from './popup'
 
 export interface TooltipProps extends StyleProps<[TooltipProps]> {
     /** Content of the tooltip */
@@ -94,43 +94,43 @@ const tooltipArrowStyles = (
     { width, height, margin, color }: TooltipArrowProps,
     { side, align }: TooltipContextProps
 ) => {
-    const root: React.CSSProperties = { position: "absolute" }
+    const root: React.CSSProperties = { position: 'absolute' }
 
     const triangle: React.CSSProperties = {
-        width: "100%",
-        height: "100%",
-        position: "absolute",
+        width: '100%',
+        height: '100%',
+        position: 'absolute',
         top: 0,
         left: 0,
-        fill: color,
+        fill: color
     }
-    if (side === "left" || side === "top") triangle.transform = "rotate(180deg)"
+    if (side === 'left' || side === 'top') triangle.transform = 'rotate(180deg)'
 
-    if (side === "top") root.bottom = 0
-    else if (side === "bottom") root.top = 0
-    else if (side === "left") root.left = 0
-    else if (side === "right") root.top = 0
+    if (side === 'top') root.bottom = 0
+    else if (side === 'bottom') root.top = 0
+    else if (side === 'left') root.left = 0
+    else if (side === 'right') root.top = 0
 
     let translateAcross =
-        side === "left" || side === "bottom" ? "-100%" : "100%"
+        side === 'left' || side === 'bottom' ? '-100%' : '100%'
     let translateAlong
-    if (align === "start") translateAcross = "0"
-    else if (align === "center") translateAlong = "-50%"
-    else translateAlong = "-100%"
+    if (align === 'start') translateAcross = '0'
+    else if (align === 'center') translateAlong = '-50%'
+    else translateAlong = '-100%'
 
-    if (side === "top" || side === "bottom") {
+    if (side === 'top' || side === 'bottom') {
         root.width = width
         root.height = height
-        if (align === "start") root.left = margin
-        else if (align === "center") root.left = "50%"
-        else if (align === "end") root.right = margin
+        if (align === 'start') root.left = margin
+        else if (align === 'center') root.left = '50%'
+        else if (align === 'end') root.right = margin
         root.transform = `translateY(${translateAcross}) translateX(${translateAlong})`
     } else {
         root.width = height
         root.height = width
-        if (align === "start") root.top = margin
-        else if (align === "center") root.top = "50%"
-        else if (align === "end") root.bottom = margin
+        if (align === 'start') root.top = margin
+        else if (align === 'center') root.top = '50%'
+        else if (align === 'end') root.bottom = margin
         root.transform = `translateY(${translateAlong}) translateX(${translateAcross})`
     }
 
@@ -141,7 +141,7 @@ const TooltipArrow = (props: TooltipArrowProps) => {
     const context = useContext(TooltipContext)
     if (!context) {
         throw new Error(
-            "You can use <TooltipArrow> only inside <Tooltip> component"
+            'You can use <TooltipArrow> only inside <Tooltip> component'
         )
     }
     const styles = useStyles(tooltipArrowStyles, [props, context])
@@ -154,7 +154,7 @@ const TooltipArrow = (props: TooltipArrowProps) => {
                 preserveAspectRatio="none"
                 style={styles.triangle}
             >
-                {context.side === "top" || context.side === "bottom" ? (
+                {context.side === 'top' || context.side === 'bottom' ? (
                     // ^
                     <path d="M5 0L0 10H10L5 0Z" />
                 ) : (
@@ -170,10 +170,10 @@ TooltipArrow.defaultProps = {
     width: 16,
     height: 8,
     margin: 8,
-    color: "white",
+    color: 'white'
 }
 
-type TooltipState = "closed" | "willClose" | "open" | "willOpen"
+type TooltipState = 'closed' | 'willClose' | 'open' | 'willOpen'
 
 const defaultProps = {
     showDelay: 0, // 150,
@@ -182,12 +182,12 @@ const defaultProps = {
     showOnFocus: true,
     showOnTap: false,
     placement: {
-        side: "top",
-        align: "center",
-        offset: 8,
+        side: 'top',
+        align: 'center',
+        offset: 8
     },
-    animation: animationFunctions.fade(),
-    springConfig: configs.stiff,
+    animation: animationFunctions.fade,
+    springConfig: configs.stiff
 }
 
 const Tooltip = (_props: TooltipProps) => {
@@ -202,11 +202,11 @@ const Tooltip = (_props: TooltipProps) => {
         tooltip,
         children,
         animation,
-        springConfig,
+        springConfig
     } = props
 
-    const state = useRef<TooltipState>("closed")
-    const [isOpen, setIsOpen] = useControlledState(props, "isOpen", false)
+    const state = useRef<TooltipState>('closed')
+    const [isOpen, setIsOpen] = useControlledState(props, 'isOpen', false)
     const styles = useStyles(undefined, [props, { isOpen }])
 
     const onClick = useCallback(() => {
@@ -219,13 +219,13 @@ const Tooltip = (_props: TooltipProps) => {
 
     const timer = useRef<number>()
     const [openValue, isRest] = useAnimatedValue(isOpen ? 1 : 0, {
-        config: springConfig,
+        config: springConfig
     })
-    const [side, setSide] = useState<PopupSide>("top")
+    const [side, setSide] = useState<PopupSide>('top')
 
     useEffect(() => {
-        if (state.current === "willOpen") state.current = "open"
-        else if (state.current === "willClose") state.current = "closed"
+        if (state.current === 'willOpen') state.current = 'open'
+        else if (state.current === 'willClose') state.current = 'closed'
     }, [isRest])
 
     /*
@@ -235,33 +235,33 @@ const Tooltip = (_props: TooltipProps) => {
     */
 
     const openWithDelay = useCallback(() => {
-        if (state.current === "open" || state.current === "willOpen") return
+        if (state.current === 'open' || state.current === 'willOpen') return
         clearTimeout(timer.current)
-        if (state.current === "willClose") {
-            state.current = "open"
+        if (state.current === 'willClose') {
+            state.current = 'open'
             return
         }
-        state.current = "willOpen"
+        state.current = 'willOpen'
         timer.current = setTimeout(
             () => {
                 setIsOpen(true)
-                state.current = "open"
+                state.current = 'open'
             },
             tooltipTaply.tapState.isHovered ? 0 : showDelay
         )
     }, [showDelay, tooltipTaply.tapState])
 
     const closeWithDelay = useCallback(() => {
-        if (state.current === "closed" || state.current === "willClose") return
+        if (state.current === 'closed' || state.current === 'willClose') return
         clearTimeout(timer.current)
-        if (state.current === "willOpen") {
-            state.current = "closed"
+        if (state.current === 'willOpen') {
+            state.current = 'closed'
             return
         }
-        state.current = "willClose"
+        state.current = 'willClose'
         timer.current = setTimeout(() => {
             setIsOpen(false)
-            state.current = "closed"
+            state.current = 'closed'
         }, hideDelay)
     }, [hideDelay])
 
@@ -288,10 +288,10 @@ const Tooltip = (_props: TooltipProps) => {
             tooltipTaply.render((attrs, taplyRef) => (
                 <div ref={mergeRefs(ref, taplyRef)} {...attrs}>
                     <OpenAnimation
-                        animation={animation}
+                        fn={animation}
                         openValue={openValue}
                         style={styles.root}
-                        // side={oppositeSides[side]}
+                        props={{ side: oppositeSides[side] }}
                     >
                         <TooltipContext.Provider value={context}>
                             {tooltip}
@@ -303,14 +303,14 @@ const Tooltip = (_props: TooltipProps) => {
     )
 
     const target = (popupRef: React.Ref<HTMLElement>) =>
-        typeof children === "function"
-            /* @ts-ignore */
-            ? children({ onChangeTapState: setTapState, onClick, popupRef })
+        typeof children === 'function'
+            ? /* @ts-ignore */
+              children({ onChangeTapState: setTapState, onClick, popupRef })
             : targetTaply.render((attrs, taplyRef) =>
                   cloneElement(children, {
                       /* @ts-ignore */
                       ref: mergeRefs(children.ref, popupRef, taplyRef),
-                      ...attrs,
+                      ...attrs
                   })
               )
 
