@@ -1,6 +1,6 @@
 {
     "name": "oriente-docs",
-    "version": "0.0.10",
+    "version": "0.1.0",
     "description": "Oriente docs",
     "private": true,
     "scripts": {
@@ -14,7 +14,7 @@
         "lodash-es": "^4.17.21",
         "minibook": "^0.10.0",
         "minimark-renderer": "^0.10.0",
-        "oriente": "*",
+        "oriente": "^0.1.0",
         "react-draggable": "^4.4.3"
     },
     "devDependencies": {
