@@ -6,14 +6,13 @@
     "main": "lib/index.js",
     "scripts": {
         "test": "karma start",
-        "build": "gnoll lib",
+        "build": "pnpm -r run build",
         "docs": "gnoll start --config docs.webpack.config.js --no-html",
         "build-docs": "gnoll build --config docs.webpack.config.js --no-html --assets-caching",
-        "lint": "eslint ./src"
+        "lint": "eslint ./src",
+        "prepublishOnly": "pnpm run build"
     },
-    "workspaces": [
-        "packages/*"
-    ],
+    "workspaces": ["packages/*"],
     "author": "sunflowerdeath",
     "license": "Unlicense",
     "devDependencies": {

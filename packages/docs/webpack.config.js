@@ -32,7 +32,7 @@ const rules = [
 
 module.exports = {
     entry: {
-        main: ['./src/index.js'],
+        main: ['./src/index.tsx'],
         'popup-demo': ['./src/PopupDemo.js']
     },
     output: {
