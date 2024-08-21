@@ -1,12 +1,13 @@
 {
     "name": "oriente",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "React UI library",
     "main": "lib/main.js",
     "types": "types/index.d.ts",
     "scripts": {
         "test": "karma start",
         "build": "NODE_ENV=production webpack",
+        "watch": "webpack --watch",
         "lint": "eslint ./src"
     },
     "author": "sunflowerdeath",

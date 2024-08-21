@@ -161,8 +161,9 @@ const Modal = (_props: ModalProps) => {
 Modal.defaultProps = modalDefaultProps
 
 export interface UseModalProps
-    extends Omit<React.ComponentProps<typeof Modal>, 'isOpen'> {
+    extends Omit<React.ComponentProps<typeof Modal>, 'isOpen' | 'onClose'> {
     Component: React.ComponentType<ModalProps>
+    onClose?: () => void
 }
 
 export interface UseModal {

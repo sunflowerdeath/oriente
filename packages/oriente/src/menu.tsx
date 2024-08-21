@@ -83,7 +83,8 @@ export interface MenuListProps extends StyleProps<[MenuListProps]> {
     closeOnSelect?: boolean
 }
 
-export interface MenuItemProps extends StyleProps<[MenuItemProps]> {
+export interface MenuItemProps
+    extends StyleProps<[MenuItemProps, { isSelected: boolean }]> {
     /** Value of the item that will be passed to the `onSelect()` handler of
      * the Menu */
     value?: string
@@ -438,7 +439,10 @@ const Menu = (props: MenuProps) => {
 Menu.defaultProps = {
     closeOnSelect: true,
     placement: { ...defaultPlacement, constrain: true, padding: 16 },
-    animation: animationFunctions.compose([animationFunctions.slide, animationFunctions.fade]),
+    animation: animationFunctions.compose([
+        animationFunctions.slide,
+        animationFunctions.fade
+    ]),
     springConfig: configs.stiff,
     autoSelectFirstItem: true
 }

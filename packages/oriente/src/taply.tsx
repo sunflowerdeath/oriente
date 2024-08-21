@@ -1,8 +1,4 @@
 import { useRef, useEffect, useState, useCallback } from 'react'
-// useLayoutEffect,
-// useImperativeHandle,
-// forwardRef,
-// useMemo,
 import { defaults } from 'lodash-es'
 
 const ENTER_KEYCODE = 13
@@ -16,7 +12,7 @@ export interface TapState {
 export type TaplyRenderFn = (attrs: any, ref: any) => React.ReactElement | null
 
 export type TaplyProps = {
-    onClick?: () => void
+    onClick?: (e: MouseEvent | KeyboardEvent) => void
     tapState?: TapState
     onChangeTapState?: (tapState: TapState) => void
     onFocus?: (event: FocusEvent) => void
@@ -245,7 +241,7 @@ const useTaply = (props: TaplyProps) => {
             if (isDisabled) return
             if (tapState.isFocused && event.keyCode === ENTER_KEYCODE) {
                 changeTapState({ isPressed: true })
-                if (onClick) onClick()
+                if (onClick) onClick(event)
                 setTimeout(() => {
                     changeTapState({ isPressed: false })
                 }, 150)
@@ -258,7 +254,7 @@ const useTaply = (props: TaplyProps) => {
         (event: MouseEvent) => {
             if (elem.current!.tagName === 'BUTTON' && event.detail === 0) return
             if (isDisabled) return
-            if (onClick) onClick()
+            if (onClick) onClick(event)
         },
         [isDisabled, onClick]
     )

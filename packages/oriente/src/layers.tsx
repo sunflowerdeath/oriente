@@ -47,7 +47,14 @@ const ParentLayerContext = createContext<number>(-1)
 const getStyle = (type: LayerType): React.CSSProperties =>
     type === 'initial'
         ? { position: 'relative', height: '100%', zIndex: 0 }
-        : { position: 'absolute', top: 0, left: 0 }
+        : {
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              // Zero height is needed to not have non-clickable element
+              // at the top-left corner of the page.
+              height: 0
+          }
 
 interface LayerViewProps {
     id: number
