@@ -19,6 +19,7 @@ export type TaplyProps = {
     onBlur?: (event: FocusEvent) => void
     isDisabled?: boolean
     preventFocusOnTap?: boolean
+    preventFocusSteal?: boolean
     isFocusable?: boolean
     isPinchable?: boolean
     tabIndex?: number
@@ -27,6 +28,7 @@ export type TaplyProps = {
 const defaultProps = {
     isDisabled: false,
     preventFocusOnTap: true,
+    preventFocusSteal: false,
     isFocusable: true,
     isPinchable: false,
     tabIndex: 0
@@ -94,6 +96,7 @@ const useTaply = (props: TaplyProps) => {
         onBlur,
         isDisabled,
         preventFocusOnTap,
+        preventFocusSteal,
         isFocusable,
         tabIndex,
         onChangeTapState
@@ -163,10 +166,14 @@ const useTaply = (props: TaplyProps) => {
     const mouseDownHandler = useCallback(
         (event: MouseEvent) => {
             if (isDisabled) return
-            ctx.current.preventFocus = true
-            setTimeout(() => {
-                ctx.current.preventFocus = false
-            })
+            if (preventFocusSteal) {
+                event.preventDefault()
+            } else if (preventFocusOnTap) {
+                ctx.current.preventFocus = true
+                setTimeout(() => {
+                    ctx.current.preventFocus = false
+                })
+            }
             if (ctx.current.ignoreMouse) {
                 ctx.current.ignoreMouse = false
                 return
@@ -176,7 +183,7 @@ const useTaply = (props: TaplyProps) => {
             document.addEventListener('mouseup', onDocumentMouseUp)
             changeTapState({ isPressed: true })
         },
-        [isDisabled, onDocumentMouseUp, changeTapState]
+        [isDisabled, preventFocusSteal, onDocumentMouseUp, changeTapState]
     )
 
     const touchStartHandler = useCallback(

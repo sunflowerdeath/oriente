@@ -1,6 +1,6 @@
 ---
 imports:
-    '{ useTaply }': 'oriente'
+    '{ TaplyExample }': '../examples/TaplyExample'
 ---
 
 # Taply
@@ -22,6 +22,12 @@ const Button = (props) => {
         </div>
     ))
 }
+```
+
+## Example
+
+```@render
+<TaplyExample />
 ```
 
 ## Props
