@@ -1,21 +1,22 @@
 {
     "compilerOptions": {
-        "sourceMap": true,
-        "declaration": true,
-        "declarationDir": "./types",
         "strict": true,
-        "allowJs": true,
-        "module": "esnext",
-        "moduleResolution": "node",
-        "isolatedModules": true,
-        "allowSyntheticDefaultImports": true,
-        "esModuleInterop": true,
-        "jsx": "react-jsx",
+
         "target": "es2015",
         "lib": ["es6", "es7", "dom", "esnext"],
+        "module": "esnext",
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "isolatedModules": true,
+
+        "declaration": true,
+        "declarationDir": "./types",
+        "jsx": "react-jsx",
+
         "noImplicitAny": true,
         "noImplicitReturns": true,
         "noImplicitThis": true
     },
-    "include": ["src/**/*.ts*", "types"]
+    "include": ["src/**/*.ts*"]
 }

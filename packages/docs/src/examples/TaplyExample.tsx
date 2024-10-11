@@ -5,6 +5,7 @@ import buttonStyle from '../buttonStyle'
 
 const style = (state: TapState) => ({
     ...buttonStyle,
+    background: state.isPressed ? 'red' : state.isHovered ? '#777' : '#444',
     outline: state.isFocused ? '2px solid cornflowerblue' : 'none'
 })
 

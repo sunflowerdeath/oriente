@@ -30,12 +30,20 @@ import {
 } from './PopupController'
 import { Popup } from './popup'
 
+export type TooltipChildrenProps = {
+    onChangeTapState: (tapState: TapState) => void
+    onClick: () => void
+    popupRef: React.Ref<HTMLElement>
+}
+
 export interface TooltipProps extends StyleProps<[TooltipProps]> {
     /** Content of the tooltip */
     tooltip: React.ReactNode
 
     /** Target element for the tooltip */
-    children: React.ReactElement<any> | (() => React.ReactNode)
+    children:
+        | React.ReactElement<any>
+        | ((props: TooltipChildrenProps) => React.ReactNode)
 
     /** Placement of the tooltip relative to the target */
     placement?: Partial<PopupPlacement>
@@ -137,7 +145,15 @@ const tooltipArrowStyles = (
     return { root, triangle }
 }
 
-const TooltipArrow = (props: TooltipArrowProps) => {
+const tooltipArrowDefaultProps = {
+    width: 16,
+    height: 8,
+    margin: 8,
+    color: 'white'
+}
+
+const TooltipArrow = (inProps: TooltipArrowProps) => {
+    const props = { ...tooltipArrowDefaultProps, ...inProps }
     const context = useContext(TooltipContext)
     if (!context) {
         throw new Error(
@@ -166,32 +182,26 @@ const TooltipArrow = (props: TooltipArrowProps) => {
     )
 }
 
-TooltipArrow.defaultProps = {
-    width: 16,
-    height: 8,
-    margin: 8,
-    color: 'white'
-}
-
 type TooltipState = 'closed' | 'willClose' | 'open' | 'willOpen'
 
-const defaultProps = {
+const tooltipDefaultPlacement: Partial<PopupPlacement> = {
+    side: 'top',
+    align: 'center',
+    offset: 8
+}
+const tooltipDefaultProps = {
     showDelay: 0, // 150,
     hideDelay: 0,
     showOnHover: true,
     showOnFocus: true,
     showOnTap: false,
-    placement: {
-        side: 'top',
-        align: 'center',
-        offset: 8
-    },
+    placement: tooltipDefaultPlacement,
     animation: animationFunctions.fade,
     springConfig: configs.stiff
 }
 
-const Tooltip = (_props: TooltipProps) => {
-    const props = _props as TooltipProps & typeof defaultProps
+const Tooltip = (inProps: TooltipProps) => {
+    const props = { ...tooltipDefaultProps, ...inProps }
     const {
         placement,
         showOnTap,
@@ -304,11 +314,10 @@ const Tooltip = (_props: TooltipProps) => {
 
     const target = (popupRef: React.Ref<HTMLElement>) =>
         typeof children === 'function'
-            ? /* @ts-ignore */
-              children({ onChangeTapState: setTapState, onClick, popupRef })
+            ? children({ onChangeTapState: setTapState, onClick, popupRef })
             : targetTaply.render((attrs, taplyRef) =>
                   cloneElement(children, {
-                      /* @ts-ignore */
+                      // @ts-expect-error children ref
                       ref: mergeRefs(children.ref, popupRef, taplyRef),
                       ...attrs
                   })
@@ -325,7 +334,5 @@ const Tooltip = (_props: TooltipProps) => {
         </Popup>
     )
 }
-
-Tooltip.defaultProps = defaultProps
 
 export { TooltipArrow, Tooltip }

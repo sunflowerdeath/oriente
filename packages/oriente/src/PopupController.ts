@@ -1,4 +1,4 @@
-import observeRect from '@reach/observe-rect'
+import observeRect from './utils/observeRect'
 import type { ViewportMeasurements, ViewportObserver } from './utils/viewport'
 import { measureViewport, observeViewport } from './utils/viewport'
 
@@ -65,7 +65,10 @@ export const oppositeSides: { [key in PopupSide]: PopupSide } = {
     bottom: 'top'
 }
 
-const calcPosition = (measurements: PopupMeasurements, config: PlacementConfig) => {
+const calcPosition = (
+    measurements: PopupMeasurements,
+    config: PlacementConfig
+) => {
     const { popup, target, bounds } = measurements
     const { side, align, offset } = config
     let top = 0
@@ -155,7 +158,10 @@ const constrainPosition = (
     return res
 }
 
-const getPopupPosition = (measurements: PopupMeasurements, placement: PopupPlacement) => {
+const getPopupPosition = (
+    measurements: PopupMeasurements,
+    placement: PopupPlacement
+) => {
     const { side, align, offset, flip, constrain, padding } = placement
     const configs = getFlipConfigs(flip, { side, align, offset })
     let position: Position | undefined
@@ -170,11 +176,12 @@ const getPopupPosition = (measurements: PopupMeasurements, placement: PopupPlace
             position = option
         }
     }
-    if (constrain) position = constrainPosition(position!, measurements, padding)
+    if (constrain)
+        position = constrainPosition(position!, measurements, padding)
     return { position: position!, config: config! }
 }
 
-const forceDefined = <T>() => (undefined as any) as T
+const forceDefined = <T>() => undefined as any as T
 
 type RectObserver = ReturnType<typeof observeRect>
 
@@ -247,7 +254,10 @@ class PopupController {
             target: this.targetRect,
             bounds: getViewportBounds(this.viewport)
         }
-        const { config, position } = getPopupPosition(measurements, this.placement)
+        const { config, position } = getPopupPosition(
+            measurements,
+            this.placement
+        )
         this.setPosition(position)
         if (this.onChangeSide) this.onChangeSide(config.side)
     }

@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react'
-import { useStyles, useTaply, TapState, mergeRefs } from 'oriente'
+import { useStyles, useTaply, TapState, StyleProps, mergeRefs } from 'oriente'
 
 const buttonStyles = (props: ExampleButtonProps, tapState: TapState) => ({
     root: {
@@ -13,7 +13,8 @@ const buttonStyles = (props: ExampleButtonProps, tapState: TapState) => ({
     }
 })
 
-interface ExampleButtonProps {
+interface ExampleButtonProps
+    extends StyleProps<[ExampleButtonProps, TapState]> {
     onTap: () => void
     children: React.ReactNode
 }

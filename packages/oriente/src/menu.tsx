@@ -9,11 +9,10 @@ import {
     useState
 } from 'react'
 import FocusLock from 'react-focus-lock'
-// @ts-ignore
-import { AnimatedValue, SpringConfig } from 'react-spring'
+import { SpringValue, SpringConfig } from 'react-spring'
 import { useKey } from 'react-use'
 
-import { useTaply, TapState, initialTapState } from './taply'
+import { useTaply, TapState } from './taply'
 import { StyleProps, StyleMap, useStyles } from './styles'
 import {
     OpenAnimation,
@@ -58,7 +57,7 @@ export interface MenuProps extends StyleProps<[MenuProps]> {
     closeOnSelect?: boolean
 
     /** Component for hide and show animation */
-    animation: AnimationFunction
+    animation?: AnimationFunction
 
     /** Maximum height of the list, in px. */
     maxHeight?: number
@@ -305,7 +304,7 @@ const menuStyles = (props: MenuProps, isOpen: boolean): StyleMap => ({
 
 interface MenuPopupProps {
     renderProps: MenuRenderProps
-    menuProps: React.ComponentProps<typeof Menu>
+    menuProps: MenuProps & typeof menuDefaultProps
     styles: { [key: string]: React.CSSProperties }
 }
 
@@ -361,17 +360,35 @@ const MenuPopup = forwardRef((props: MenuPopupProps, ref) => {
     )
 })
 
-export interface MenuRenderProps {
+export type MenuRenderProps = {
     isOpen: boolean
     isActive: boolean
     open: () => void
     close: () => void
     side: PopupSide
     triggerWidth: number
-    openValue: AnimatedValue<object>
+    openValue: SpringValue<object>
 }
 
-const Menu = (props: MenuProps) => {
+const menuDefaultPlacement: Partial<PopupPlacement> = {
+    ...defaultPlacement,
+    constrain: true,
+    padding: 16
+}
+
+const menuDefaultProps = {
+    closeOnSelect: true,
+    placement: menuDefaultPlacement,
+    animation: animationFunctions.compose([
+        animationFunctions.slide,
+        animationFunctions.fade
+    ]),
+    springConfig: configs.stiff as SpringConfig,
+    autoSelectFirstItem: true
+}
+
+const Menu = (inProps: MenuProps) => {
+    const props = { ...menuDefaultProps, ...inProps }
     const { children, placement, springConfig, matchWidth } = props
     const [isOpen, setIsOpen] = useControlledState(props, 'isOpen', false)
     const [openValue, isRest] = useAnimatedValue(isOpen ? 1 : 0, {
@@ -434,17 +451,6 @@ const Menu = (props: MenuProps) => {
             </Popup>
         </>
     )
-}
-
-Menu.defaultProps = {
-    closeOnSelect: true,
-    placement: { ...defaultPlacement, constrain: true, padding: 16 },
-    animation: animationFunctions.compose([
-        animationFunctions.slide,
-        animationFunctions.fade
-    ]),
-    springConfig: configs.stiff,
-    autoSelectFirstItem: true
 }
 
 export { Menu, MenuList, MenuItem }

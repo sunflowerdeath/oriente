@@ -15,16 +15,17 @@ export interface PopupProps {
     popup: React.ReactElement | ((ref: any) => React.ReactNode)
 
     /**
-     * An object that configures placement of the popup with the following properties:
-     * - **side** `'bottom'|'top'|'left'|'right'` – At which side of the target to place
-     *   the popup. Default is `'bottom'`.
-     * - **align** `'start'|'center'|'end'` – Alignment of the popup relative to the target.
-     *   Default is `'start'`.
+     * An object that configures placement of the popup with the following
+     * properties:
+     * - **side** `'bottom'|'top'|'left'|'right'` – At which side of the target
+     *   to place the popup. Default is `'bottom'`.
+     * - **align** `'start'|'center'|'end'` – Alignment of the popup relative to
+     *   the target. Default is `'start'`.
      * - **offset** `number` – Offset of the popup from the target. Default is `0`.
-     * - **flip** `boolean` – Whether to allow flipping side and placement when original
-     *   placement doesn't fit in the viewport. Default is `true`.
-     * - **constrain** `boolean` – Whether to constrain the popup inside the viewport when
-     *   it can not fit in. Default is `false`.
+     * - **flip** `boolean` – Whether to allow flipping side and placement when
+     *   original placement doesn't fit in the viewport. Default is `true`.
+     * - **constrain** `boolean` – Whether to constrain the popup inside the
+     *   viewport when it can not fit in. Default is `false`.
      * - **padding** `boolean` – Maximum allowed distance from the popup element
      *   to the side of the viewport. Default is `0`.
      */
@@ -33,8 +34,15 @@ export interface PopupProps {
     onChangeSide?: (side: PopupSide) => void
 }
 
+const popupDefaultProps = {
+    isActive: true
+}
+
 const Popup = forwardRef((props: PopupProps, ref) => {
-    const { children, popup, isActive, placement, onChangeSide } = props
+    const { children, popup, isActive, placement, onChangeSide } = {
+        ...popupDefaultProps,
+        ...props
+    }
 
     const [targetElem, setTargetElem] = useState<HTMLElement>()
     const [popupElem, setPopupElem] = useState<HTMLElement>()
@@ -89,9 +97,5 @@ const Popup = forwardRef((props: PopupProps, ref) => {
         </>
     )
 })
-
-Popup.defaultProps = {
-    isActive: true
-}
 
 export { Popup }

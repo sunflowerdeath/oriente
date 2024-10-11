@@ -49,12 +49,14 @@ const flexDefaultProps = {
     align: 'start'
 }
 
-const Flex = forwardRef<HTMLDivElement, FlexProps>((inProps: FlexProps, ref) => {
-    const props = { ...flexDefaultProps, ...inProps }
-    const rest = omit(props, 'dir', 'gap', 'align', 'justify', 'wrap')
-    const styles = useStyles(flexStyles, [props])
-    return <div ref={ref} {...rest} style={styles.root} />
-})
+const Flex = forwardRef<HTMLDivElement, FlexProps>(
+    (inProps: FlexProps, ref) => {
+        const props = { ...flexDefaultProps, ...inProps }
+        const rest = omit(props, 'dir', 'gap', 'align', 'justify', 'wrap')
+        const styles = useStyles(flexStyles, [props])
+        return <div ref={ref} {...rest} style={styles.root} />
+    }
+)
 
 const Row = forwardRef<HTMLDivElement, Omit<FlexProps, 'dir'>>((props, ref) => (
     <Flex ref={ref} {...props} dir="row" />

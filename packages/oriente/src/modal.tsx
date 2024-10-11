@@ -98,8 +98,8 @@ const modalDefaultProps = {
     isOpen: false
 }
 
-const Modal = (_props: ModalProps) => {
-    const props = _props as ModalProps & typeof modalDefaultProps
+const Modal = (inProps: ModalProps) => {
+    const props = { ...modalDefaultProps, ...inProps }
     const {
         isOpen,
         children,
@@ -157,8 +157,6 @@ const Modal = (_props: ModalProps) => {
         </>
     )
 }
-
-Modal.defaultProps = modalDefaultProps
 
 export interface UseModalProps
     extends Omit<React.ComponentProps<typeof Modal>, 'isOpen' | 'onClose'> {

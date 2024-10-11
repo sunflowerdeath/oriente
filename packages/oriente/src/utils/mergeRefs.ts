@@ -1,11 +1,11 @@
-import React from "react"
+import React from 'react'
 
 const mergeRefs =
-    <T>(...refs: (React.Ref<T> | null | undefined)[]) =>
+    <T>(...refs: (React.Ref<T> | React.LegacyRef<T> | null | undefined)[]) =>
     (value: T) => {
         refs.forEach((ref) => {
             if (ref == null) return
-            if (typeof ref === "function") {
+            if (typeof ref === 'function') {
                 ref(value)
                 return
             }

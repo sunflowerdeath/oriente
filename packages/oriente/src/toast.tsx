@@ -128,7 +128,15 @@ const getContainerStyle = (placement: ToastPlacement) => {
     return style
 }
 
-const ToastContainer = ({ children, springConfig }: ToastContainerProps) => {
+const toastContainerDefaultProps = {
+    springConfig: configs.stiffer
+}
+
+const ToastContainer = (props: ToastContainerProps) => {
+    const { children, springConfig } = {
+        ...toastContainerDefaultProps,
+        ...props
+    }
     const idRef = useRef(0)
     const [toasts, setToasts] = useState<ToastsState>({
         top: [],
@@ -176,10 +184,6 @@ const ToastContainer = ({ children, springConfig }: ToastContainerProps) => {
             </Layer>
         </>
     )
-}
-
-ToastContainer.defaultProps = {
-    springConfig: configs.stiffer
 }
 
 const useToast = () => {
