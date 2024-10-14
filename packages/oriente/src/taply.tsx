@@ -143,28 +143,31 @@ const useTaply = (props: TaplyProps) => {
         [changeTapState]
     )
 
+    const isSynthesizedMouseEvent = (e: React.MouseEvent) => {
+        // @ts-expect-error
+        return e.nativeEvent.sourceCapabilities?.firesTouchEvents
+    }
+
     const mouseEnterHandler = useCallback(
         (event: React.MouseEvent) => {
             if (isDisabled) return
-            // @ts-expect-error
-            if (event.nativeEvent.sourceCapabilities?.firesTouchEvents) {
-                return
-            }
+            if (isSynthesizedMouseEvent(event)) return
             changeTapState({ isHovered: true })
         },
         [isDisabled, changeTapState]
     )
 
     const mouseLeaveHandler = useCallback(
-        (event: MouseEvent) => {
+        (event: React.MouseEvent) => {
             if (isDisabled) return
+            if (isSynthesizedMouseEvent(event)) return
             changeTapState({ isHovered: false })
         },
         [isDisabled, changeTapState]
     )
 
     const mouseDownHandler = useCallback(
-        (event: MouseEvent) => {
+        (event: React.MouseEvent) => {
             if (isDisabled) return
             if (preventFocusSteal) {
                 event.preventDefault()
@@ -174,6 +177,7 @@ const useTaply = (props: TaplyProps) => {
                     ctx.current.isPreventingFocus = false
                 })
             }
+            if (isSynthesizedMouseEvent(event)) return
             if (event.button !== 0) return
             ctx.current.mouseUpListener = onDocumentMouseUp
             document.addEventListener('mouseup', onDocumentMouseUp)
