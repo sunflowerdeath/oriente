@@ -36,8 +36,7 @@ const defaultProps = {
 
 interface TaplyCtx {
     isTouched: boolean
-    ignoreMouse: boolean
-    preventFocus: boolean
+    isPreventingFocus: boolean
     scrollParents: HTMLElement[]
     scrollPos: ScrollPos
     mouseUpListener: ((e: MouseEvent) => void) | null
@@ -104,8 +103,7 @@ const useTaply = (props: TaplyProps) => {
 
     const ctx = useRef<TaplyCtx>({
         isTouched: false,
-        ignoreMouse: false,
-        preventFocus: false,
+        isPreventingFocus: false,
         scrollParents: [],
         scrollPos: { top: 0, left: 0 },
         mouseUpListener: null
@@ -146,9 +144,12 @@ const useTaply = (props: TaplyProps) => {
     )
 
     const mouseEnterHandler = useCallback(
-        (event: MouseEvent) => {
+        (event: React.MouseEvent) => {
             if (isDisabled) return
-            if (ctx.current.ignoreMouse) return
+            // @ts-expect-error
+            if (event.nativeEvent.sourceCapabilities?.firesTouchEvents) {
+                return
+            }
             changeTapState({ isHovered: true })
         },
         [isDisabled, changeTapState]
@@ -157,7 +158,6 @@ const useTaply = (props: TaplyProps) => {
     const mouseLeaveHandler = useCallback(
         (event: MouseEvent) => {
             if (isDisabled) return
-            if (ctx.current.ignoreMouse) return
             changeTapState({ isHovered: false })
         },
         [isDisabled, changeTapState]
@@ -169,14 +169,10 @@ const useTaply = (props: TaplyProps) => {
             if (preventFocusSteal) {
                 event.preventDefault()
             } else if (preventFocusOnTap) {
-                ctx.current.preventFocus = true
+                ctx.current.isPreventingFocus = true
                 setTimeout(() => {
-                    ctx.current.preventFocus = false
+                    ctx.current.isPreventingFocus = false
                 })
-            }
-            if (ctx.current.ignoreMouse) {
-                ctx.current.ignoreMouse = false
-                return
             }
             if (event.button !== 0) return
             ctx.current.mouseUpListener = onDocumentMouseUp
@@ -207,8 +203,9 @@ const useTaply = (props: TaplyProps) => {
             if (isDisabled) return
             if (event.touches.length === 1) {
                 const { scrollParents, scrollPos } = ctx.current
-                if (detectScroll(elem.current!, scrollParents, scrollPos))
+                if (detectScroll(elem.current!, scrollParents, scrollPos)) {
                     endTouch()
+                }
             }
         },
         [isDisabled]
@@ -223,9 +220,9 @@ const useTaply = (props: TaplyProps) => {
         (event: FocusEvent) => {
             if (isDisabled) return
             if (!isFocusable) return
-            if (ctx.current.preventFocus) {
+            if (ctx.current.isPreventingFocus) {
                 event.stopPropagation()
-                ctx.current.preventFocus = false
+                ctx.current.isPreventingFocus = false
             } else {
                 changeTapState({ isFocused: true })
                 if (onFocus) onFocus(event)
@@ -272,7 +269,6 @@ const useTaply = (props: TaplyProps) => {
             removeListeners()
             Object.assign(ctx.current, {
                 preventFocus: false,
-                ignoreMouse: false,
                 isTouched: false
             })
         }

@@ -205,11 +205,18 @@ export interface OpenAnimationProps
 
 const OpenAnimation = forwardRef<HTMLDivElement, OpenAnimationProps>(
     (props, ref) => {
-        const { children, openValue, fn, style, ...restProps } = props
+        const {
+            children,
+            openValue,
+            fn,
+            style,
+            props: animationProps,
+            ...restProps
+        } = props
         return (
             <animated.div
                 ref={ref}
-                style={{ ...style, ...fn(openValue, props.props) }}
+                style={{ ...style, ...fn(openValue, animationProps) }}
                 {...restProps}
             >
                 {children}
