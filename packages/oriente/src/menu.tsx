@@ -437,7 +437,7 @@ const Menu = (inProps: MenuProps) => {
     return (
         <>
             {isActive && (
-                <Layer type="popup" isActive={true}>
+                <Layer type="popup" isActive={true} key="layer">
                     <div
                         onClick={close}
                         onDragStart={(e) => e.preventDefault()}
@@ -450,6 +450,7 @@ const Menu = (inProps: MenuProps) => {
                 isActive={isActive}
                 onChangeSide={setSide}
                 popup={popup}
+                key="popup"
             >
                 {(ref) =>
                     children(

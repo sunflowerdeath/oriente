@@ -5,24 +5,30 @@ const src = path.resolve(__dirname, 'src')
 
 const rules = [
     {
-        test: /\.(js|jsx)$/,
+        test: /\.ts$/,
         include: [src],
         use: [
             {
-                loader: 'esbuild-loader',
-                options: { loader: 'jsx', jsx: 'automatic' }
+                loader: 'builtin:swc-loader',
+                options: {
+                    jsc: { parser: { syntax: 'typescript' } }
+                }
             }
         ]
     },
     {
-        test: /\.(ts|tsx)$/,
+        test: /\.tsx$/,
         include: [src],
         use: [
             {
-                loader: 'esbuild-loader',
-                options: { loader: 'tsx', jsx: 'automatic' }
-            },
-            { loader: 'ts-loader' }
+                loader: 'builtin:swc-loader',
+                options: {
+                    jsc: {
+                        parser: { syntax: 'typescript', jsx: true },
+                        transform: { react: { runtime: 'automatic' } }
+                    }
+                }
+            }
         ]
     }
 ]

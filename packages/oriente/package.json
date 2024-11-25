@@ -6,7 +6,7 @@
     "types": "types/index.d.ts",
     "scripts": {
         "test": "karma start",
-        "build": "NODE_ENV=production webpack",
+        "build": "tsc && NODE_ENV=production rspack -c webpack.config.js",
         "watch": "webpack --watch",
         "lint": "eslint ./src"
     },
@@ -22,6 +22,8 @@
         "ts-loader": "^9.5.1"
     },
     "devDependencies": {
+        "@rspack/cli": "^1.1.3",
+        "@rspack/core": "^1.1.3",
         "@types/lodash-es": "^4.17.11",
         "esbuild": "^0.24.0",
         "esbuild-loader": "^4.2.2",
