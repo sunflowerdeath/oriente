@@ -14,7 +14,7 @@
         "lodash-es": "^4.17.21",
         "minibook": "^0.10.0",
         "minimark-renderer": "^0.10.0",
-        "oriente": "^0.1.5",
+        "oriente": "workspace:*",
         "react-draggable": "^4.4.3"
     },
     "devDependencies": {

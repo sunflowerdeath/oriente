@@ -10,10 +10,12 @@
         "lint": "pnpm -r run lint",
         "prepublishOnly": "pnpm run build"
     },
-    "workspaces": ["packages/*"],
+    "workspaces": [
+        "packages/*"
+    ],
     "author": "sunflowerdeath",
     "license": "Unlicense",
-    "packageManager": "pnpm@8.15.4+sha256.cea6d0bdf2de3a0549582da3983c70c92ffc577ff4410cbf190817ddc35137c2",
+    "packageManager": "pnpm@9.14.2+sha512.6e2baf77d06b9362294152c851c4f278ede37ab1eba3a55fda317a4a17b209f4dbb973fb250a77abc463a341fcb1f17f17cfa24091c4eb319cda0d9b84278387",
     "devDependencies": {
         "@types/react": "^18.3.11",
         "@types/react-dom": "^18.3.0",

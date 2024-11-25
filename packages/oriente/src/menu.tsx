@@ -308,57 +308,61 @@ interface MenuPopupProps {
     styles: { [key: string]: React.CSSProperties }
 }
 
-const MenuPopup = forwardRef((props: MenuPopupProps, ref) => {
-    const { renderProps, menuProps, styles } = props
-    const { isOpen, isActive, open, close, openValue, side, triggerWidth } =
-        renderProps
-    const {
-        maxHeight,
-        placement,
-        onSelect,
-        closeOnSelect,
-        matchWidth,
-        menu,
-        autoSelectFirstItem,
-        animation
-    } = menuProps
+const MenuPopup = forwardRef<HTMLElement, MenuPopupProps>(
+    (props: MenuPopupProps, ref) => {
+        const { renderProps, menuProps, styles } = props
+        const { isOpen, isActive, open, close, openValue, side, triggerWidth } =
+            renderProps
+        const {
+            maxHeight,
+            placement,
+            onSelect,
+            closeOnSelect,
+            matchWidth,
+            menu,
+            autoSelectFirstItem,
+            animation
+        } = menuProps
 
-    const viewport = useViewport()
-    const [contrainedMaxHeight, setConstrainedMaxHeight] = useState(0)
-    useLayoutEffect(() => {
-        if (!isActive) return
-        let availableHeight = viewport.height - 2 * (placement?.padding || 0)
-        if (maxHeight !== undefined) {
-            availableHeight = Math.min(availableHeight, maxHeight)
-        }
-        setConstrainedMaxHeight(availableHeight)
-    }, [isActive, maxHeight, placement, viewport.height])
+        const viewport = useViewport()
+        const [contrainedMaxHeight, setConstrainedMaxHeight] = useState(0)
+        useLayoutEffect(() => {
+            if (!isActive) return
+            let availableHeight =
+                viewport.height - 2 * (placement?.padding || 0)
+            if (maxHeight !== undefined) {
+                availableHeight = Math.min(availableHeight, maxHeight)
+            }
+            setConstrainedMaxHeight(availableHeight)
+        }, [isActive, maxHeight, placement, viewport.height])
 
-    return (
-        <OpenAnimation
-            openValue={openValue}
-            fn={animation}
-            props={{ side: oppositeSides[side] }}
-        >
-            <FocusLock disabled={!isOpen}>
-                <MenuList
-                    style={{
-                        ...styles.list,
-                        maxHeight: contrainedMaxHeight,
-                        minWidth: matchWidth ? triggerWidth : 'auto'
-                    }}
-                    ref={ref}
-                    onSelect={onSelect}
-                    onClose={close}
-                    closeOnSelect={closeOnSelect}
-                    autoSelectFirstItem={Boolean(autoSelectFirstItem)}
-                >
-                    {menu(renderProps)}
-                </MenuList>
-            </FocusLock>
-        </OpenAnimation>
-    )
-})
+        return (
+            <OpenAnimation
+                openValue={openValue}
+                fn={animation}
+                props={{ side: oppositeSides[side] }}
+                style={{ height: 0, overflow: 'visible' }}
+            >
+                <FocusLock disabled={!isOpen}>
+                    <MenuList
+                        ref={ref}
+                        style={{
+                            ...styles.list,
+                            maxHeight: contrainedMaxHeight,
+                            minWidth: matchWidth ? triggerWidth : 'auto'
+                        }}
+                        onSelect={onSelect}
+                        onClose={close}
+                        closeOnSelect={closeOnSelect}
+                        autoSelectFirstItem={Boolean(autoSelectFirstItem)}
+                    >
+                        {menu(renderProps)}
+                    </MenuList>
+                </FocusLock>
+            </OpenAnimation>
+        )
+    }
+)
 
 export type MenuRenderProps = {
     isOpen: boolean
