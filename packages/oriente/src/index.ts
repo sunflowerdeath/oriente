@@ -41,7 +41,7 @@ export type { StyleProps, StyleMap } from './styles'
 
 export { Popup } from './popup'
 export type { PopupProps } from './popup'
-export type { PopupPlacement, PopupSide } from './PopupController'
+export type { PopupPlacement, PopupSide, PopupAlign } from './PopupController'
 
 export { useTaply, initialTapState } from './taply'
 export type { TaplyProps, TapState } from './taply'

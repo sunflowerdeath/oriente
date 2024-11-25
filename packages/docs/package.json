@@ -4,8 +4,8 @@
     "description": "Oriente docs",
     "private": true,
     "scripts": {
-        "start": "webpack serve",
-        "build": "NODE_ENV=production webpack",
+        "start": "rspack serve -c webpack.config.js",
+        "build": "NODE_ENV=production rspack -c webpack.config.js",
         "deploy": "npm run build && push-dir --dir=build --branch=gh-pages"
     },
     "author": "sunflowerdeath",
@@ -18,6 +18,8 @@
         "react-draggable": "^4.4.3"
     },
     "devDependencies": {
+        "@rspack/cli": "^1.1.3",
+        "@rspack/core": "^1.1.3",
         "@types/lodash-es": "^4.17.11",
         "esbuild-loader": "^2.20.0",
         "html-webpack-plugin": "^5.3.1",

@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect } from 'react'
+import { useState, useLayoutEffect } from 'react'
 import { useSpring, SpringConfig } from 'react-spring'
 
 import configs from './springConfigs'
@@ -13,7 +13,7 @@ const useAnimatedValue = (
 ) => {
     const [isRest, setIsRest] = useState(true)
     const [prevValue, setPrevValue] = useState(to)
-    const [props, set] = useSpring(() => ({
+    const [props, api] = useSpring(() => ({
         value: to,
         onRest: () => setIsRest(true),
         config
@@ -22,7 +22,8 @@ const useAnimatedValue = (
         if (prevValue !== to) {
             setPrevValue(to)
             setIsRest(false)
-            set({ value: to })
+            // console.log("API", api)
+            api.start({ value: to })
         }
     }, [to])
     return [props.value, isRest]

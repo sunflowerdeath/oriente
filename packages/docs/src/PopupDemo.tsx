@@ -1,9 +1,16 @@
 import ReactDOM from 'react-dom'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import Draggable from 'react-draggable'
-import { Popup, Stack, Layer } from 'oriente'
+import {
+    Popup,
+    PopupPlacement,
+    PopupSide,
+    PopupAlign,
+    Stack,
+    Layer
+} from 'oriente'
 
-const styles = {
+const styles: { [key: string]: React.CSSProperties } = {
     root: {
         height: window.innerHeight * 2
     },
@@ -70,7 +77,7 @@ const PopupExample = () => {
         left: 100
     })
     const [isActive, setIsActive] = useState(true)
-    const [placement, setPlacement] = useState({
+    const [placement, setPlacement] = useState<PopupPlacement>({
         side: 'bottom',
         align: 'start',
         flip: true,
@@ -98,7 +105,7 @@ const PopupExample = () => {
                     type="checkbox"
                     style={{ verticalAlign: 'middle' }}
                     checked={isActive}
-                    onChange={(e) => setIsActive((v) => !v)}
+                    onChange={() => setIsActive((v) => !v)}
                 />
                 <span style={styles.label}>active</span>
             </div>
@@ -110,7 +117,7 @@ const PopupExample = () => {
                     onChange={(e) =>
                         setPlacement((val) => ({
                             ...val,
-                            side: e.target.value
+                            side: e.target.value as PopupSide
                         }))
                     }
                 >
@@ -125,7 +132,7 @@ const PopupExample = () => {
                     onChange={(e) =>
                         setPlacement((val) => ({
                             ...val,
-                            align: e.target.value
+                            align: e.target.value as PopupAlign
                         }))
                     }
                 >
@@ -137,7 +144,7 @@ const PopupExample = () => {
             <div style={styles.row}>
                 <input
                     style={styles.input}
-                    checked={placement.offset}
+                    checked={placement.offset !== 0}
                     onChange={(e) =>
                         setPlacement((val) => ({
                             ...val,
@@ -147,11 +154,12 @@ const PopupExample = () => {
                 />
             </div>
 
+            {/*
             <div style={styles.title}>padding</div>
             <div style={styles.row}>
                 <input
                     style={styles.input}
-                    checked={placement.padding}
+                    value={placement.padding}
                     onChange={(e) =>
                         setPlacement((val) => ({
                             ...val,
@@ -187,10 +195,11 @@ const PopupExample = () => {
                 />
                 <span style={styles.label}>constrain</span>
             </div>
+            */}
         </div>
     )
 
-    const target = (ref) => (
+    const target = (ref: React.Ref<HTMLDivElement>) => (
         <Draggable
             onDrag={(e, data) => setPos({ left: data.x, top: data.y })}
             position={{ x: pos.left, y: pos.top }}
@@ -201,7 +210,7 @@ const PopupExample = () => {
         </Draggable>
     )
 
-    const popup = (ref) => (
+    const popup = (ref: React.Ref<HTMLDivElement>) => (
         <Layer>
             <div ref={ref} style={{ ...styles.popup, height: big ? 200 : 100 }}>
                 ELEMENT

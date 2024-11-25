@@ -436,15 +436,6 @@ const Menu = (inProps: MenuProps) => {
 
     return (
         <>
-            {isActive && (
-                <Layer type="popup" isActive={true} key="layer">
-                    <div
-                        onClick={close}
-                        onDragStart={(e) => e.preventDefault()}
-                        style={styles.overlay}
-                    />
-                </Layer>
-            )}
             <Popup
                 placement={placement}
                 isActive={isActive}
@@ -459,6 +450,15 @@ const Menu = (inProps: MenuProps) => {
                     )
                 }
             </Popup>
+            {isActive && (
+                <Layer type="popup" isActive={true} key="layer">
+                    <div
+                        onClick={close}
+                        onDragStart={(e) => e.preventDefault()}
+                        style={styles.overlay}
+                    />
+                </Layer>
+            )}
         </>
     )
 }

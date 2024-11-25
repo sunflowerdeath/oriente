@@ -68,8 +68,8 @@ const scale: AnimationFunction = (
 ) => ({
     transformOrigin: origins[origin],
     transform: value
-        .interpolate([0, 1], [initialScale, 1])
-        .interpolate((v: number) => `scale(${v})`)
+        .to([0, 1], [initialScale, 1])
+        .to((v: number) => `scale(${v})`)
 })
 
 const compose =
