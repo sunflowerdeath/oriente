@@ -8,7 +8,8 @@
         "test": "karma start",
         "build": "pnpm -r run build",
         "lint": "pnpm -r run lint",
-        "prepublishOnly": "pnpm run build"
+        "prepublishOnly": "pnpm run build",
+        "publish": "lerna publish"
     },
     "workspaces": [
         "packages/*"
