@@ -173,10 +173,6 @@ const getNextIndex = (index: number, length: number) =>
 const getPrevIndex = (index: number, length: number) =>
     index > 0 ? index - 1 : length - 1
 
-const menuListStyles = {
-    root: { outline: 'none' }
-}
-
 const MenuList = forwardRef((props: MenuListProps, ref) => {
     const {
         children,
@@ -221,7 +217,7 @@ const MenuList = forwardRef((props: MenuListProps, ref) => {
         setSelectedIndex,
         onSelect: select
     }
-    const styles = useStyles(menuListStyles, [props])
+    const styles = useStyles(undefined, [props])
     const containerRef = useRef<HTMLElement>()
 
     const onKeyDown = useCallback(
@@ -281,7 +277,11 @@ const MenuList = forwardRef((props: MenuListProps, ref) => {
     return (
         <div style={styles.root} ref={mergeRefs(containerRef, ref)}>
             <FocusLock disabled={!focusLock}>
-                <div tabIndex={0} onKeyDown={onKeyDown}>
+                <div
+                    tabIndex={0}
+                    onKeyDown={onKeyDown}
+                    style={{ outline: 'none' }}
+                >
                     <MenuContext.Provider value={context}>
                         {children}
                     </MenuContext.Provider>
