@@ -74,6 +74,7 @@ export interface MenuProps extends StyleProps<[MenuProps]> {
 
 export interface MenuListProps extends StyleProps<[MenuListProps]> {
     children: React.ReactNode
+    focusLock: boolean
     onFocus?: () => void
     onBlur?: () => void
     onClose: () => void
@@ -177,8 +178,14 @@ const menuListStyles = {
 }
 
 const MenuList = forwardRef((props: MenuListProps, ref) => {
-    const { children, onSelect, autoSelectFirstItem, onClose, closeOnSelect } =
-        props
+    const {
+        children,
+        onSelect,
+        autoSelectFirstItem,
+        onClose,
+        closeOnSelect,
+        focusLock
+    } = props
 
     const descendants = useDescendants<MenuDescendantProps>()
     const [selectedIndex, setSelectedIndex] = useState(-1)
@@ -272,15 +279,14 @@ const MenuList = forwardRef((props: MenuListProps, ref) => {
     )
 
     return (
-        <div
-            style={styles.root}
-            onKeyDown={onKeyDown}
-            tabIndex={0}
-            ref={mergeRefs(containerRef, ref)}
-        >
-            <MenuContext.Provider value={context}>
-                {children}
-            </MenuContext.Provider>
+        <div style={styles.root} ref={mergeRefs(containerRef, ref)}>
+            <FocusLock disabled={!focusLock}>
+                <div tabIndex={0} onKeyDown={onKeyDown}>
+                    <MenuContext.Provider value={context}>
+                        {children}
+                    </MenuContext.Provider>
+                </div>
+            </FocusLock>
         </div>
     )
 })
@@ -343,22 +349,21 @@ const MenuPopup = forwardRef<HTMLElement, MenuPopupProps>(
                 props={{ side: oppositeSides[side] }}
                 style={{ height: 0, overflow: 'visible' }}
             >
-                <FocusLock disabled={!isOpen}>
-                    <MenuList
-                        ref={ref}
-                        style={{
-                            ...styles.list,
-                            maxHeight: contrainedMaxHeight,
-                            minWidth: matchWidth ? triggerWidth : 'auto'
-                        }}
-                        onSelect={onSelect}
-                        onClose={close}
-                        closeOnSelect={closeOnSelect}
-                        autoSelectFirstItem={Boolean(autoSelectFirstItem)}
-                    >
-                        {menu(renderProps)}
-                    </MenuList>
-                </FocusLock>
+                <MenuList
+                    ref={ref}
+                    focusLock={isOpen}
+                    style={{
+                        ...styles.list,
+                        maxHeight: contrainedMaxHeight,
+                        minWidth: matchWidth ? triggerWidth : 'auto'
+                    }}
+                    onSelect={onSelect}
+                    onClose={close}
+                    closeOnSelect={closeOnSelect}
+                    autoSelectFirstItem={Boolean(autoSelectFirstItem)}
+                >
+                    {menu(renderProps)}
+                </MenuList>
             </OpenAnimation>
         )
     }
