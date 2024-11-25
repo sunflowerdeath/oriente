@@ -1,6 +1,6 @@
 {
     "name": "oriente-docs",
-    "version": "0.1.10",
+    "version": "0.1.11",
     "description": "Oriente docs",
     "private": true,
     "scripts": {
