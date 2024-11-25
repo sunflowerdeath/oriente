@@ -60,7 +60,7 @@ const TooltipAnimationExample = () => {
         <>
             <TooltipExample animation={animations[animation]} />{' '}
             {Object.keys(animations).map((value) => (
-                <label>
+                <label key={value}>
                     <input
                         type="checkbox"
                         onChange={() => setAnimation(value)}

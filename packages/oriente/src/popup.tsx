@@ -1,4 +1,11 @@
-import { forwardRef, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import {
+    forwardRef,
+    useLayoutEffect,
+    useMemo,
+    useRef,
+    useState,
+    Fragment
+} from 'react'
 import { Layer } from './layers'
 import PopupController, { PopupPlacement, PopupSide } from './PopupController'
 import cloneElementWithRef from './utils/cloneElementWithRef'
@@ -84,11 +91,15 @@ const Popup = forwardRef((props: PopupProps, ref) => {
     )
 
     const mergedRef = mergeRefs(ref, setTargetElem)
+    // wrap children in fragment with key, because code is transpiled to array
+    // and gives warning about keys
     return (
         <>
-            {typeof children === 'function'
-                ? children(mergedRef)
-                : cloneElementWithRef(children, { ref: mergedRef })}
+            <Fragment key="child">
+                {typeof children === 'function'
+                    ? children(mergedRef)
+                    : cloneElementWithRef(children, { ref: mergedRef })}
+            </Fragment>
             {isActive && (
                 <Layer type="popup" isActive={true} key="layer">
                     {memoizedPopup}
