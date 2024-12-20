@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { capitalize } from "lodash-es"
+import { capitalize } from "es-toolkit"
 
 const useControlledState = <T>(
     props: Record<string, any>,

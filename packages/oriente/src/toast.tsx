@@ -1,10 +1,26 @@
 import { useRef, useState, useContext, createContext } from 'react'
-import { mapValues } from 'lodash-es'
 import { animated, useTransition, SpringConfig } from 'react-spring'
+import { mapValues } from "es-toolkit"
 
 import configs from './utils/springConfigs'
 import { Layer } from './layers'
 import { CollapseAnimation } from './animation'
+
+/*
+// this saves ~30kb compared to lodash
+const mapValues = <T, M = T, K extends string = string>(
+    obj: { [key in K]: T },
+    cb: (val: T) => M
+): { [key in K]: M } => {
+    const res: { [key: string]: M } = {}
+    for (let key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            res[key] = cb(obj[key])
+        }
+    }
+    return res as { [key in K]: M }
+}
+*/
 
 export type ToastPlacement =
     | 'top'

@@ -1,4 +1,5 @@
 const path = require('path')
+const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer")
 
 const isProduction = process.env.NODE_ENV === 'production'
 const src = path.resolve(__dirname, 'src')
@@ -33,6 +34,11 @@ const rules = [
     }
 ]
 
+const plugins = []
+if (process.env.ANALYZE) {
+    plugins.push(new BundleAnalyzerPlugin())
+}
+
 module.exports = {
     entry: {
         main: './src/index.ts'
@@ -51,6 +57,7 @@ module.exports = {
     resolve: {
         extensions: ['.js', '.jsx', '.ts', '.tsx']
     },
+    plugins,
     optimization: {
         minimize: false
     }

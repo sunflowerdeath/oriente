@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { flattenDeep, compact, omit } from 'lodash-es'
+import { flattenDeep, omit, compact } from 'es-toolkit'
 
 export interface StyleProps<D extends any[] = []> {
     styles?: StyleDefinition<D>
@@ -55,6 +55,7 @@ const useStyles = <P extends StyleProps<[P, ...R]>, R extends any[] = []>(
 const omitStyleProps = <P extends object>(
     props: P
 ): Omit<P, 'style' | 'styles'> =>
+    // @ts-ignore
     omit(props, ['style', 'styles']) as Omit<P, 'style' | 'styles'>
 
 /*

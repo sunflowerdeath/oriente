@@ -1,5 +1,4 @@
 import { useRef, useEffect, useState, useCallback } from 'react'
-import { defaults } from 'lodash-es'
 
 const ENTER_KEYCODE = 13
 
@@ -99,7 +98,7 @@ const useTaply = (props: TaplyProps) => {
         isFocusable,
         tabIndex,
         onChangeTapState
-    } = defaults(props, defaultProps)
+    } = { ...defaultProps, ...props }
 
     const ctx = useRef<TaplyCtx>({
         isTouched: false,

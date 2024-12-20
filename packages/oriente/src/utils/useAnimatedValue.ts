@@ -16,13 +16,12 @@ const useAnimatedValue = (
     const [props, api] = useSpring(() => ({
         value: to,
         onRest: () => setIsRest(true),
+        onStart: () => setIsRest(false),
         config
     }))
     useLayoutEffect(() => {
         if (prevValue !== to) {
             setPrevValue(to)
-            setIsRest(false)
-            // console.log("API", api)
             api.start({ value: to })
         }
     }, [to])

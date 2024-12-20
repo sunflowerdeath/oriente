@@ -1,5 +1,5 @@
 import { forwardRef } from 'react'
-import { omit } from 'lodash-es'
+import { omit } from 'es-toolkit'
 
 import { useStyles, StyleProps, StyleMap } from './styles'
 
@@ -52,6 +52,7 @@ const flexDefaultProps = {
 const Flex = forwardRef<HTMLDivElement, FlexProps>(
     (inProps: FlexProps, ref) => {
         const props = { ...flexDefaultProps, ...inProps }
+        // @ts-ignore
         const rest = omit(props, 'dir', 'gap', 'align', 'justify', 'wrap')
         const styles = useStyles(flexStyles, [props])
         return <div ref={ref} {...rest} style={styles.root} />
