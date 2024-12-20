@@ -52,8 +52,7 @@ const flexDefaultProps = {
 const Flex = forwardRef<HTMLDivElement, FlexProps>(
     (inProps: FlexProps, ref) => {
         const props = { ...flexDefaultProps, ...inProps }
-        // @ts-ignore
-        const rest = omit(props, 'dir', 'gap', 'align', 'justify', 'wrap')
+        const rest = omit(props, ['dir', 'gap', 'align', 'justify', 'wrap'])
         const styles = useStyles(flexStyles, [props])
         return <div ref={ref} {...rest} style={styles.root} />
     }
