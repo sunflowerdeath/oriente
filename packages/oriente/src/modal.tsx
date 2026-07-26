@@ -2,7 +2,7 @@ import { useMemo, createContext, useRef, useState, useCallback } from 'react'
 import FocusLock from 'react-focus-lock'
 import { useKey, useClickAway } from 'react-use'
 import { RemoveScroll } from 'react-remove-scroll'
-import { SpringConfig } from 'react-spring'
+import { SpringConfig } from '@react-spring/web'
 
 import { useStyles, StyleProps, StyleMap } from './styles'
 import { Layer } from './layers'

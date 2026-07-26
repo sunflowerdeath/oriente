@@ -1,5 +1,5 @@
 import { useState, useLayoutEffect } from 'react'
-import { useSpring, SpringConfig } from 'react-spring'
+import { useSpring, SpringConfig } from '@react-spring/web'
 
 import configs from './springConfigs'
 

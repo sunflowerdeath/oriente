@@ -1,5 +1,5 @@
 import { useState, forwardRef, useEffect, useLayoutEffect, useRef } from 'react'
-import { useSpring, animated, SpringConfig, SpringValue } from 'react-spring'
+import { useSpring, animated, SpringConfig, SpringValue } from '@react-spring/web'
 import { useMeasure } from 'react-use'
 
 export type AnimationFunction = (value: any, props?: object) => object
@@ -137,11 +137,11 @@ const appearDefaultProps = {
 
 const Appear = forwardRef<HTMLDivElement, AppearProps>(
     (_props: AppearProps, ref) => {
-        const props = _props as AppearProps & typeof appearDefaultProps
+        const props = { ...appearDefaultProps, ..._props }
         const { children, animation, config, delay, style, ...restProps } =
             props
         const [spring, api] = useSpring(() => ({ value: 0, config }))
-        const timeoutRef = useRef<ReturnType<typeof setTimeout>>()
+        const timeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined)
         useEffect(() => {
             timeoutRef.current = setTimeout(
                 () => api.start({ value: 1 }),
@@ -164,7 +164,6 @@ const Appear = forwardRef<HTMLDivElement, AppearProps>(
     }
 )
 
-Appear.defaultProps = appearDefaultProps
 Appear.displayName = 'Appear'
 
 export interface CollapseAnimationProps

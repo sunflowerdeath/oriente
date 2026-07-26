@@ -51,7 +51,7 @@ Shows a toast. Returns id of the toast.
 -   **children** `React.ReactNode` - Content of the toast.
 -   **duration** `number` - Duration of the toast in ms.
 -   **placement** `PopupPlacement` - Placement of the toast.
--   **onClose** `() => void` - Function that is called when the toast closes.
+-   **onClose** `() =&gt; void` - Function that is called when the toast closes.
 
 **`ToastController.close(id: number)`**
 

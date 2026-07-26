@@ -9,7 +9,7 @@ import {
     useState
 } from 'react'
 import FocusLock from 'react-focus-lock'
-import { SpringValue, SpringConfig } from 'react-spring'
+import { SpringValue, SpringConfig } from '@react-spring/web'
 import { useKey } from 'react-use'
 
 import { useTaply, TapState } from './taply'
@@ -218,7 +218,7 @@ const MenuList = forwardRef((props: MenuListProps, ref) => {
         onSelect: select
     }
     const styles = useStyles(undefined, [props])
-    const containerRef = useRef<HTMLElement>()
+    const containerRef = useRef<HTMLElement>(undefined)
 
     const onKeyDown = useCallback(
         (event: React.KeyboardEvent) => {

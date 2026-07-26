@@ -1,3 +1,4 @@
+import React from "react"
 import { createRoot } from 'react-dom/client'
 import { Minibook, themes } from 'minibook'
 // import { dark } from 'minibook/lib/themes'

@@ -44,7 +44,8 @@ Modal displays content in the window above the page.
 
 ## Modal Props
 
-```@propsdoc
+```
+@propsdoc
 file: ../../../oriente/src/modal.tsx
 allowMarkdown: true
 component: Modal
@@ -52,7 +53,8 @@ component: Modal
 
 ## ModalCloseButton Props
 
-```-@propsdoc
+```
+@propsdoc
 file: ../../../oriente/src/modal.tsx
 allowMarkdown: true
 component: ModalCloseButton

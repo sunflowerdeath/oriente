@@ -1,5 +1,7 @@
-const path = require('path')
-const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer")
+import path from 'node:path';
+import { defineConfig } from "@rspack/cli"
+
+// const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer")
 
 const isProduction = process.env.NODE_ENV === 'production'
 const src = path.resolve(__dirname, 'src')
@@ -35,11 +37,12 @@ const rules = [
 ]
 
 const plugins = []
-if (process.env.ANALYZE) {
-    plugins.push(new BundleAnalyzerPlugin())
-}
 
-module.exports = {
+// if (process.env.ANALYZE) {
+    // plugins.push(new BundleAnalyzerPlugin())
+// }
+
+export default defineConfig({
     entry: {
         main: './src/index.ts'
     },
@@ -47,7 +50,7 @@ module.exports = {
         path: path.resolve(__dirname, './lib'),
         filename: '[name].js',
         library: {
-            type: 'commonjs'
+            type: 'module'
         }
     },
     mode: isProduction ? 'production' : 'development',
@@ -61,4 +64,4 @@ module.exports = {
     optimization: {
         minimize: false
     }
-}
+})

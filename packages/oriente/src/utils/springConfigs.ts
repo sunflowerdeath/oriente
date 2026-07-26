@@ -1,5 +1,3 @@
-import { SpringConfig } from 'react-spring'
-
 const configs = {
     normal: { tension: 180, friction: 26 },
     stiffer: { tension: 240, friction: 26 },

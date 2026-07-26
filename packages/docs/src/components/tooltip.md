@@ -103,7 +103,8 @@ import { Tooltip } from 'oriente'
 
 ## Tooltip Props
 
-```@propsdoc
+```
+@propsdoc
 file: ../../../oriente/src/tooltip.tsx
 allowMarkdown: true
 component: Tooltip
@@ -111,7 +112,8 @@ component: Tooltip
 
 ## TooltipArrow Props
 
-```@propsdoc
+```
+@propsdoc
 file: ../../../oriente/src/tooltip.tsx
 allowMarkdown: true
 component: TooltipArrow

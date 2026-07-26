@@ -59,7 +59,8 @@ If `true`, menu width will match the width of the button element.
 
 ## Menu Props
 
-```@propsdoc
+```
+@propsdoc
 file: ../../../oriente/src/menu.tsx
 allowMarkdown: true
 component: Menu
@@ -67,7 +68,8 @@ component: Menu
 
 ## MenuItem Props
 
-```-@propsdoc
+```
+@propsdoc
 file: ../../../oriente/src/menu.tsx
 allowMarkdown: true
 component: MenuItem

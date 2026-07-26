@@ -24,7 +24,8 @@ lang: jsx
 
 ## Props
 
-```@propsdoc
+```
+@propsdoc
 file: ../../../oriente/src/popup.tsx
 allowMarkdown: true
 ```

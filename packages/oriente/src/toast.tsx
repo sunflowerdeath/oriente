@@ -1,5 +1,5 @@
 import { useRef, useState, useContext, createContext } from 'react'
-import { animated, useTransition, SpringConfig } from 'react-spring'
+import { animated, useTransition, SpringConfig } from '@react-spring/web'
 import { mapValues } from "es-toolkit"
 
 import configs from './utils/springConfigs'

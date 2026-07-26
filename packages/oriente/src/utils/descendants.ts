@@ -41,7 +41,7 @@ const useDescendants = <T>() => {
 
 const useDescendant = <T>(descendants: DescendantsManager<T>, props: T) => {
     const forceUpdate = useForceUpdate()
-    const ref = useRef<HTMLElement>()
+    const ref = useRef<HTMLElement>(undefined)
     const element = ref.current
 
     useLayoutEffect(() => {

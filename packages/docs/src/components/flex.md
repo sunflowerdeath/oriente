@@ -41,7 +41,8 @@ Row
 
 ## Props
 
-```@propsdoc
+```
+@propsdoc
 file: ../../../oriente/src/flex.tsx
 allowMarkdown: true
 component: Flex

@@ -4,7 +4,8 @@
 
 ## Stack Props
 
-```@propsdoc
+```
+@propsdoc
 file: '../../../oriente/src/layers.tsx'
 allowMarkdown: true
 component: Stack
@@ -12,7 +13,8 @@ component: Stack
 
 ## Layer Props
 
-```@propsdoc
+```
+@propsdoc
 file: '../../../oriente/src/layers.tsx'
 allowMarkdown: true
 component: Layer

@@ -53,7 +53,7 @@ const Popup = forwardRef((props: PopupProps, ref) => {
 
     const [targetElem, setTargetElem] = useState<HTMLElement>()
     const [popupElem, setPopupElem] = useState<HTMLElement>()
-    const controllerRef = useRef<PopupController>()
+    const controllerRef = useRef<PopupController>(undefined)
 
     useLayoutEffect(() => {
         if (isActive && targetElem && popupElem) {
