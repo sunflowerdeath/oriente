@@ -6,3 +6,4 @@ packages/*/lib
 packages/*/build
 packages/*/types
 .DS_Store
+.npmrc
